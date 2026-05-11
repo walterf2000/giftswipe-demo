@@ -1,0 +1,2914 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GiftSwipe — Demo v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --primary: #E63F57;
+    --primary-soft: #FF6B7A;
+    --primary-bg: #FDECEE;
+    --background: #FFFBF7;
+    --surface: #FFFFFF;
+    --text: #1A1A1A;
+    --text-muted: #6B6B6B;
+    --text-soft: #9A9A9A;
+    --border: #EFEAE5;
+    --success: #2CB67D;
+    --info: #4D7CFE;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #1a1625 0%, #2d1f3d 50%, #1a1625 100%);
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  .page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 36px;
+    padding: 32px 48px;
+    align-items: center;
+  }
+  @media (max-width: 1180px) {
+    .page { grid-template-columns: 1fr; padding: 24px; }
+    .info-left, .info-right { max-width: 100%; }
+  }
+
+  /* === LEFT: branding + meta === */
+  .info-left { max-width: 340px; justify-self: end; }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+  .brand-mark {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), #FF8A5C);
+    display: grid; place-items: center; font-size: 22px;
+    box-shadow: 0 8px 24px rgba(230,63,87,0.4);
+  }
+  .brand-text { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .brand-tagline { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .version-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(230,63,87,0.2);
+    border: 1px solid rgba(230,63,87,0.4);
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffd0d8;
+    margin-bottom: 16px;
+    letter-spacing: 0.04em;
+  }
+  .info-left h1 {
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, #fff 0%, #ffd0d8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .info-left .lead {
+    color: rgba(255,255,255,0.7);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .changelog {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    backdrop-filter: blur(20px);
+  }
+  .changelog-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .changelog ul {
+    list-style: none;
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.6;
+  }
+  .changelog li::before { content: '+ '; color: #6ee7a8; font-weight: 700; }
+
+  /* === PHONE === */
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .phone {
+    width: 390px; height: 812px;
+    background: #000;
+    border-radius: 50px;
+    padding: 14px;
+    box-shadow:
+      0 50px 100px rgba(0,0,0,0.5),
+      0 0 0 2px rgba(255,255,255,0.1),
+      inset 0 0 0 2px rgba(255,255,255,0.05);
+    position: relative;
+  }
+  .phone::before {
+    content: '';
+    position: absolute;
+    top: 14px; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 32px;
+    background: #000;
+    border-radius: 18px;
+    z-index: 100;
+  }
+  .screen {
+    width: 100%; height: 100%;
+    background: var(--background);
+    border-radius: 38px;
+    overflow: hidden;
+    position: relative;
+    color: var(--text);
+  }
+  .view {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .view.active { display: flex; animation: fadeSlide 0.3s ease; }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateX(6px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .demo-tip { font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; }
+
+  /* === Common: status bar === */
+  .status-bar {
+    height: 50px;
+    padding: 18px 28px 0;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 14px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .status-bar .right { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+
+  /* === Top bar (sub-page) === */
+  .top-bar {
+    display: flex; align-items: center; padding: 8px 20px 16px;
+    flex-shrink: 0;
+  }
+  .top-bar .back, .top-bar .menu {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: grid; place-items: center;
+    background: var(--surface); border: 1px solid var(--border);
+    cursor: pointer; font-size: 16px;
+  }
+  .top-bar .title { flex: 1; text-align: center; font-size: 15px; font-weight: 600; }
+
+  /* === Buttons === */
+  .btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+    color: white; border: none;
+    padding: 16px; border-radius: 16px;
+    font-size: 16px; font-weight: 600; font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 12px 28px rgba(230,63,87,0.32);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 16px 36px rgba(230,63,87,0.45); }
+  .btn-primary:active { transform: translateY(0) scale(0.98); }
+  .btn-secondary {
+    width: 100%;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 14px; border-radius: 14px;
+    font-size: 14px; font-weight: 600; font-family: inherit;
+    cursor: pointer;
+  }
+  .link-tertiary {
+    display: block; text-align: center;
+    color: var(--text-muted); font-size: 13px;
+    margin-top: 14px; cursor: pointer; font-weight: 500;
+  }
+
+  /* === Avatar === */
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-soft), var(--primary));
+    display: grid; place-items: center;
+    font-size: 20px; color: white; flex-shrink: 0;
+  }
+  .avatar.lg { width: 56px; height: 56px; font-size: 26px; }
+  .avatar.xl { width: 72px; height: 72px; font-size: 32px; }
+  .avatar.sm { width: 32px; height: 32px; font-size: 16px; }
+  .avatar.purple { background: linear-gradient(135deg, #9F7AEA, #6B46C1); }
+  .avatar.green  { background: linear-gradient(135deg, #68D391, #38A169); }
+  .avatar.blue   { background: linear-gradient(135deg, #63B3ED, #3182CE); }
+  .avatar.yellow { background: linear-gradient(135deg, #F6E05E, #D69E2E); }
+
+  /* === Chips === */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip-row.scroll { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+  .chip-row.scroll::-webkit-scrollbar { display: none; }
+  .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--border);
+    font-size: 13px; font-weight: 500; color: var(--text);
+    cursor: pointer; white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .chip.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+  /* === Bottom nav (3 tabs) === */
+  .bottom-nav {
+    height: 72px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    flex-shrink: 0;
+    padding-bottom: 6px;
+  }
+  .nav-tab {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    color: var(--text-soft);
+    font-size: 11px;
+    font-weight: 600;
+    transition: color 0.15s ease;
+  }
+  .nav-tab.active { color: var(--primary); }
+  .nav-tab .icon { font-size: 22px; line-height: 1; }
+  .nav-tab.active .icon { transform: scale(1.05); }
+
+  .sticky-cta {
+    position: absolute; bottom: 72px; left: 0; right: 0;
+    padding: 12px 20px 16px;
+    background: linear-gradient(180deg, rgba(255,251,247,0) 0%, rgba(255,251,247,1) 30%);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+  }
+  .sticky-cta > * { pointer-events: auto; }
+
+  /* ============ VIEW: WELKOM ============ */
+  #view-welcome { background: linear-gradient(180deg, var(--primary-bg) 0%, var(--background) 60%); }
+  .welcome-demo {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px;
+    position: relative;
+  }
+  .demo-card {
+    width: 220px; height: 290px;
+    background: white; border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(230,63,87,0.25);
+    overflow: hidden;
+    animation: demoSwipe 4s ease-in-out infinite;
+    position: relative;
+  }
+  .demo-card img { width: 100%; height: 65%; object-fit: cover; }
+  .demo-card .meta { padding: 10px 14px; }
+  .demo-card .price-pill {
+    position: absolute; top: 12px; right: 12px;
+    background: white; padding: 4px 10px;
+    border-radius: 999px; font-size: 13px; font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .demo-card .brand { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 4px; }
+  .demo-card .title { font-size: 13px; font-weight: 600; line-height: 1.3; color: var(--text); }
+  @keyframes demoSwipe {
+    0%, 30%   { transform: translateX(0) rotate(0); }
+    50%       { transform: translateX(120px) rotate(15deg); opacity: 1; }
+    51%       { transform: translateX(120px) rotate(15deg); opacity: 0; }
+    52%       { transform: translateX(-30px) rotate(0); opacity: 0; }
+    70%, 100% { transform: translateX(0) rotate(0); opacity: 1; }
+  }
+  .demo-actions { display: flex; gap: 28px; margin-top: 24px; }
+  .demo-btn {
+    width: 56px; height: 56px; border-radius: 50%;
+    display: grid; place-items: center; background: white;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08); font-size: 22px;
+  }
+  .demo-btn.like {
+    background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+    color: white;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 20px rgba(230,63,87,0.4); }
+    50%      { transform: scale(1.08); box-shadow: 0 12px 30px rgba(230,63,87,0.6); }
+  }
+  .welcome-bottom {
+    background: white; border-radius: 24px 24px 0 0;
+    padding: 28px 24px 32px;
+    flex-shrink: 0;
+  }
+  .welcome-bottom h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 8px; }
+  .welcome-bottom .lead { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; }
+  .welcome-features {
+    display: grid; gap: 6px;
+    margin-bottom: 20px;
+    font-size: 12px; color: var(--text);
+  }
+  .welcome-features li {
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .welcome-features li::before {
+    content: '✓'; color: var(--primary); font-weight: 700;
+  }
+
+  /* ============ VIEW: GEVEN HUB ============ */
+  #view-geven { background: var(--background); }
+  .page-header {
+    padding: 16px 20px 8px;
+    flex-shrink: 0;
+  }
+  .page-header h1 {
+    font-size: 28px; font-weight: 800; letter-spacing: -0.02em;
+  }
+  .page-header .subtitle {
+    font-size: 13px; color: var(--text-muted); margin-top: 2px;
+  }
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 100px;
+  }
+  .scroll-area::-webkit-scrollbar { width: 0; }
+
+  .section-label {
+    padding: 16px 20px 8px;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted); font-weight: 600;
+  }
+  .urgent-scroll {
+    display: flex; gap: 12px; overflow-x: auto;
+    padding: 0 20px 8px;
+  }
+  .urgent-scroll::-webkit-scrollbar { display: none; }
+  .urgent-card {
+    flex: 0 0 130px; min-height: 140px;
+    background: var(--primary-bg);
+    border: 1px solid rgba(230,63,87,0.2);
+    border-radius: 16px;
+    padding: 14px;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .urgent-card:hover { transform: translateY(-2px); }
+  .urgent-card .avatar { margin-bottom: 10px; }
+  .urgent-card .name { font-size: 14px; font-weight: 700; }
+  .urgent-card .when { font-size: 11px; color: var(--primary); font-weight: 600; margin-top: 2px; }
+  .urgent-card .label { font-size: 10px; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .recipient-list { padding: 0 20px; }
+  .recipient-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .recipient-card:hover { transform: translateX(2px); background: #fffaf6; }
+  .recipient-card .info { flex: 1; min-width: 0; }
+  .recipient-card .info .name { font-size: 14px; font-weight: 600; }
+  .recipient-card .info .meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .recipient-card .chevron { color: var(--text-soft); font-size: 16px; }
+  .recipient-card .badge {
+    background: var(--primary-bg); color: var(--primary);
+    font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 999px;
+    margin-left: 6px;
+  }
+
+  .fab {
+    position: absolute;
+    right: 20px; bottom: 90px;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+    color: white;
+    display: grid; place-items: center;
+    font-size: 26px;
+    box-shadow: 0 12px 28px rgba(230,63,87,0.4);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    border: none;
+  }
+  .fab:hover { transform: scale(1.05); }
+  .fab:active { transform: scale(0.95); }
+
+  /* ============ VIEW: RECIPIENT FORM ============ */
+  #view-recipient { background: var(--background); }
+  .form-scroll {
+    flex: 1; overflow-y: auto; padding: 0 20px 120px;
+  }
+  .form-section { margin-bottom: 22px; }
+  .form-section h3 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted); margin-bottom: 10px; font-weight: 600;
+  }
+  .input {
+    width: 100%; padding: 14px 16px;
+    border-radius: 12px; border: 1px solid var(--border);
+    background: var(--surface); font-size: 15px; font-family: inherit;
+    margin-bottom: 10px;
+  }
+  .input:focus { outline: none; border-color: var(--primary); }
+
+  .budget-display {
+    text-align: center; font-size: 20px; font-weight: 700;
+    color: var(--primary); margin-bottom: 12px;
+  }
+  .slider {
+    width: 100%; height: 4px; border-radius: 2px;
+    background: var(--border); position: relative;
+  }
+  .slider .fill { position: absolute; left: 15%; right: 30%; top: 0; bottom: 0; background: var(--primary); border-radius: 2px; }
+  .slider .knob {
+    position: absolute; width: 20px; height: 20px; border-radius: 50%;
+    background: white; border: 3px solid var(--primary);
+    top: 50%; transform: translateY(-50%);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .knob.left { left: calc(15% - 10px); }
+  .knob.right { left: calc(70% - 10px); }
+  .slider-labels {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--text-muted); margin-top: 8px;
+  }
+
+  /* ============ INTAKE: free-text textarea (v4) ============ */
+  .intake-text {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: none;
+    min-height: 80px;
+    background: var(--surface);
+    line-height: 1.5;
+  }
+  .intake-text:focus { outline: none; border-color: var(--primary); }
+  .intake-text-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .intake-text-hint strong { color: var(--info); font-weight: 600; }
+
+  /* ============ WELCOME v4: use-case picker ============ */
+  .welcome-v4 {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 22px 26px;
+  }
+  .welcome-v4::-webkit-scrollbar { display: none; }
+  .welcome-v4 .brand-strip {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 22px;
+  }
+  .welcome-v4 .brand-strip .mark {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), #FF8A5C);
+    display: grid; place-items: center;
+    font-size: 18px;
+    box-shadow: 0 6px 16px rgba(230,63,87,0.3);
+  }
+  .welcome-v4 .brand-strip .name {
+    font-size: 17px; font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .welcome-v4 h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 6px;
+  }
+  .welcome-v4 .lead {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 22px;
+  }
+  .usecase-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .usecase-tile {
+    position: relative;
+    aspect-ratio: 1.05 / 1;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: var(--text);
+  }
+  .usecase-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.25);
+  }
+  .usecase-tile:active { transform: scale(0.98); }
+  .usecase-tile img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .usecase-tile:hover img { transform: scale(1.08); }
+  .usecase-tile::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.75) 100%);
+  }
+  .usecase-tile .label-block {
+    position: absolute;
+    bottom: 12px; left: 14px; right: 14px;
+    z-index: 2;
+  }
+  .usecase-tile .uc-label {
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+  .usecase-tile .uc-sub {
+    color: rgba(255,255,255,0.85);
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  .welcome-footer {
+    text-align: center;
+    margin-top: 10px;
+  }
+  .welcome-footer a {
+    color: var(--text-muted);
+    font-size: 13px;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  /* ============ INTAKE: mood grid (v3) ============ */
+  .intake-hero {
+    padding: 4px 0 16px;
+  }
+  .intake-hero h2 {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .intake-hero p {
+    font-size: 13px; color: var(--text-muted); line-height: 1.5;
+  }
+  .mood-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .mood-tile {
+    position: relative;
+    aspect-ratio: 1.1 / 1;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    border: 3px solid transparent;
+  }
+  .mood-tile:hover { transform: translateY(-2px); }
+  .mood-tile img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .mood-tile.selected {
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px rgba(230,63,87,0.3);
+  }
+  .mood-tile.selected img { transform: scale(1.05); }
+  .mood-tile::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.6) 100%);
+    pointer-events: none;
+  }
+  .mood-tile .mood-label {
+    position: absolute;
+    bottom: 8px; left: 10px;
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    z-index: 2;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .mood-tile .mood-check {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: none;
+    place-items: center;
+    font-size: 14px;
+    font-weight: 700;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(230,63,87,0.4);
+  }
+  .mood-tile.selected .mood-check { display: grid; }
+  .intake-counter {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: -8px 0 16px;
+  }
+  .intake-counter strong { color: var(--primary); }
+
+  .recipient-check {
+    background: var(--primary-bg);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .recipient-check .info { flex: 1; }
+  .recipient-check .info .name { font-size: 16px; font-weight: 700; }
+  .recipient-check .info .sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .intake-hint {
+    background: rgba(77,124,254,0.1);
+    border: 1px solid rgba(77,124,254,0.3);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 18px;
+  }
+  .intake-hint strong { color: var(--info); }
+
+  /* ============ VIEW: SWIPE DECK ============ */
+  .swipe-view { background: var(--background); }
+  .deck-top {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 20px 12px;
+    flex-shrink: 0;
+  }
+  .recipient-mini { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+  .recipient-name { font-size: 13px; font-weight: 600; }
+  .recipient-meta { font-size: 11px; color: var(--text-muted); }
+  .deck-progress { display: flex; align-items: center; gap: 8px; }
+  .progress-bar { width: 50px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.3s ease; }
+  .progress-label { font-size: 11px; color: var(--text-muted); font-feature-settings: 'tnum'; }
+
+  .deck-area { flex: 1; position: relative; padding: 12px 20px; }
+  .deck { position: relative; width: 100%; height: 100%; }
+
+  .swipe-card {
+    position: absolute; inset: 0;
+    background: var(--surface); border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+    overflow: hidden; cursor: grab;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
+    user-select: none;
+  }
+  .swipe-card.dragging { transition: none; cursor: grabbing; }
+  .swipe-card.gone-right { transform: translate(600px, 0) rotate(30deg) !important; opacity: 0; }
+  .swipe-card.gone-left { transform: translate(-600px, 0) rotate(-30deg) !important; opacity: 0; }
+  .swipe-card.behind { transform: scale(0.94) translateY(10px); opacity: 0.8; }
+  .swipe-card.claimed-already {
+    cursor: default;
+  }
+  .swipe-card.claimed-already::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.85);
+  }
+  .swipe-card.claimed-already .claimed-stamp {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-12deg);
+    background: rgba(154,154,154,0.95);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    z-index: 2;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  .card-image { width: 100%; height: 58%; object-fit: cover; pointer-events: none; }
+  .card-content { padding: 14px 18px; }
+  .card-brand { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 600; margin-bottom: 5px; }
+  .card-title { font-size: 15px; font-weight: 700; line-height: 1.3; margin-bottom: 5px; }
+  .card-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .card-tags { display: flex; gap: 6px; font-size: 11px; color: var(--text-muted); align-items: center; flex-wrap: wrap; }
+  .card-tag { background: var(--primary-bg); color: var(--primary); padding: 3px 8px; border-radius: 999px; font-weight: 500; }
+  .card-price {
+    position: absolute; top: 12px; right: 12px;
+    background: white; padding: 6px 12px; border-radius: 999px;
+    font-size: 14px; font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .card-samen-btn {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(0,0,0,0.7); color: white;
+    padding: 5px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    border: none;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .card-samen-btn:hover { background: rgba(0,0,0,0.85); }
+
+  .swipe-overlay {
+    position: absolute; top: 28px;
+    padding: 8px 16px;
+    border-radius: 8px; border: 3px solid;
+    font-weight: 800; font-size: 22px;
+    text-transform: uppercase; opacity: 0;
+    transition: opacity 0.1s ease; pointer-events: none;
+    z-index: 3;
+  }
+  .swipe-overlay.like { right: 24px; color: var(--success); border-color: var(--success); transform: rotate(15deg); }
+  .swipe-overlay.skip { left: 24px; color: #999; border-color: #999; transform: rotate(-15deg); }
+
+  .deck-actions {
+    display: flex; justify-content: center; gap: 20px;
+    padding: 12px 20px 16px;
+    flex-shrink: 0;
+  }
+  .deck-btn {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--surface); border: none;
+    display: grid; place-items: center;
+    font-size: 22px; cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    transition: transform 0.15s ease;
+  }
+  .deck-btn:hover { transform: scale(1.05); }
+  .deck-btn:active { transform: scale(0.95); }
+  .deck-btn.skip { color: #999; }
+  .deck-btn.info { width: 48px; height: 48px; font-size: 18px; color: var(--text-muted); }
+  .deck-btn.samen { width: 48px; height: 48px; font-size: 18px; background: linear-gradient(135deg, #FFB347, #FF8A5C); color: white; box-shadow: 0 8px 20px rgba(255,138,92,0.4); }
+  .deck-btn.like {
+    background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+    color: white;
+    box-shadow: 0 8px 20px rgba(230,63,87,0.4);
+  }
+
+  /* ============ VIEW: WISHLIST FOR OTHER (Lena) ============ */
+  .wishlist-header {
+    background: var(--primary-bg); padding: 16px 20px 20px;
+    flex-shrink: 0;
+  }
+  .wishlist-header .row { display: flex; align-items: center; gap: 12px; }
+  .wishlist-header h2 { font-size: 18px; font-weight: 700; }
+  .wishlist-header .meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .wishlist-stats { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
+  .wishlist-stats span { color: var(--text); font-weight: 600; }
+
+  .wishlist-tabs {
+    display: flex; gap: 8px;
+    padding: 12px 20px;
+    background: var(--background);
+    flex-shrink: 0;
+  }
+  .wishlist-tab {
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--border);
+    font-size: 12px; font-weight: 500; cursor: pointer;
+  }
+  .wishlist-tab.active { background: var(--text); color: white; border-color: var(--text); }
+
+  .wishlist-grid {
+    flex: 1; overflow-y: auto;
+    padding: 4px 20px 160px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    align-content: start;
+  }
+  .wish-item {
+    background: var(--surface); border-radius: 14px;
+    overflow: hidden; cursor: pointer;
+    transition: transform 0.15s ease;
+    position: relative;
+  }
+  .wish-item:hover { transform: translateY(-2px); }
+  .wish-item img { width: 100%; height: 110px; object-fit: cover; }
+  .wish-item .body { padding: 8px 10px 10px; }
+  .wish-item .price-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 4px;
+  }
+  .wish-item .price { font-size: 13px; font-weight: 700; color: var(--primary); }
+  .wish-item .heart { color: var(--primary); font-size: 12px; }
+  .wish-item .name { font-size: 11px; color: var(--text); line-height: 1.3; font-weight: 500; }
+  .wish-item .brand { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+  .wish-item.claimed::after {
+    content: 'Al geclaimd ✓';
+    position: absolute;
+    top: 8px; left: 8px;
+    background: rgba(0,0,0,0.75);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    backdrop-filter: blur(4px);
+  }
+  .wish-item.claimed { opacity: 0.7; }
+  .wish-item.claimed img { filter: grayscale(0.5); }
+  .wish-item.samen-running::after {
+    content: 'Samen geven · 2/4';
+    background: linear-gradient(135deg, #FFB347, #FF8A5C);
+  }
+  .wish-item.samen-running { opacity: 1; }
+
+  /* ============ VIEW: WENSEN HUB ============ */
+  #view-wensen { background: var(--background); }
+  .own-hero {
+    margin: 0 20px;
+    background: linear-gradient(135deg, var(--primary), #FF8A5C);
+    color: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(230,63,87,0.3);
+    flex-shrink: 0;
+  }
+  .own-hero .occasion { font-size: 12px; opacity: 0.9; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .own-hero h2 { font-size: 22px; font-weight: 800; margin-top: 4px; letter-spacing: -0.02em; }
+  .own-hero .countdown { font-size: 13px; opacity: 0.9; margin-top: 4px; }
+  .own-hero .stats {
+    display: flex; gap: 24px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+  }
+  .own-hero .stat { font-size: 11px; opacity: 0.9; }
+  .own-hero .stat strong { display: block; font-size: 20px; font-weight: 800; opacity: 1; }
+
+  .own-actions {
+    display: flex; gap: 8px;
+    padding: 14px 20px 6px;
+    flex-shrink: 0;
+  }
+  .own-actions .btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 13px; font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .own-actions .btn.add {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .own-actions .btn.share {
+    background: var(--text);
+    color: white;
+  }
+
+  /* ============ VIEW: SHARE SHEET (own) ============ */
+  #view-share-own, #view-samen-geven { background: rgba(0,0,0,0.5); justify-content: flex-end; }
+  .share-sheet {
+    background: var(--surface);
+    border-radius: 24px 24px 0 0;
+    padding: 0 0 20px;
+    max-height: 80%;
+    display: flex; flex-direction: column;
+    animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow: hidden;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .sheet-handle {
+    width: 40px; height: 4px;
+    background: var(--border); border-radius: 2px;
+    margin: 12px auto 16px; flex-shrink: 0;
+  }
+  .share-header { padding: 0 24px 16px; flex-shrink: 0; }
+  .share-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .share-header p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .share-scroll { flex: 1; overflow-y: auto; padding-bottom: 8px; }
+  .share-scroll::-webkit-scrollbar { display: none; }
+
+  .share-preview {
+    margin: 0 24px 16px;
+    background: var(--primary-bg);
+    border-radius: 14px; padding: 14px;
+    border: 1px solid rgba(230,63,87,0.2);
+  }
+  .share-preview .row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .stack-images { display: flex; }
+  .stack-images img {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid white; object-fit: cover; margin-left: -8px;
+  }
+  .stack-images img:first-child { margin-left: 0; }
+  .share-preview .title { font-size: 13px; font-weight: 600; }
+  .share-preview .meta { font-size: 11px; color: var(--text-muted); }
+  .share-preview .url { font-size: 11px; color: var(--primary); font-weight: 600; margin-top: 6px; font-family: 'SF Mono', Menlo, monospace; }
+
+  .share-toggles { padding: 8px 24px 8px; }
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-row .label { font-size: 13px; font-weight: 500; flex: 1; padding-right: 12px; }
+  .toggle-row .desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .toggle {
+    width: 42px; height: 24px; border-radius: 999px;
+    background: var(--border); position: relative; cursor: pointer; flex-shrink: 0;
+    transition: background 0.2s ease;
+  }
+  .toggle::after {
+    content: ''; position: absolute;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: white; top: 2px; left: 2px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
+  }
+  .toggle.on { background: var(--primary); }
+  .toggle.on::after { transform: translateX(18px); }
+
+  .share-channels { padding: 12px 24px 12px; }
+  .share-channels h3 {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted); margin-bottom: 10px; font-weight: 600;
+  }
+  .channels-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .channel { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+  .channel-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    display: grid; place-items: center; font-size: 22px;
+  }
+  .channel.whatsapp .channel-icon { background: #25D366; }
+  .channel.imessage .channel-icon { background: #007AFF; color: white; }
+  .channel.mail .channel-icon { background: #FFCC00; }
+  .channel.copy .channel-icon { background: var(--text); color: white; }
+  .channel.instagram .channel-icon { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+  .channel.tiktok .channel-icon { background: black; color: white; }
+  .channel.twitter .channel-icon { background: #1DA1F2; color: white; }
+  .channel.more .channel-icon { background: var(--border); color: var(--text); }
+  .channel-label { font-size: 10px; color: var(--text-muted); }
+
+  .share-actions { padding: 8px 24px 0; flex-shrink: 0; }
+
+  /* ============ VIEW: FRIEND PUBLIC WISHLIST ============ */
+  #view-friend {
+    background: linear-gradient(180deg, #f8eff0 0%, var(--background) 30%);
+  }
+  .friend-banner {
+    padding: 16px 20px 12px;
+    flex-shrink: 0;
+  }
+  .friend-banner .row { display: flex; align-items: center; gap: 12px; }
+  .friend-banner .info { flex: 1; min-width: 0; }
+  .friend-banner h2 { font-size: 16px; font-weight: 700; line-height: 1.2; }
+  .friend-banner .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .friend-intro {
+    background: rgba(230,63,87,0.08);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin: 4px 20px 8px;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
+  .friend-intro strong { color: var(--primary); }
+
+  /* ============ VIEW: SAMEN GEVEN SHEET ============ */
+  .samen-sheet {
+    background: var(--surface);
+    border-radius: 24px 24px 0 0;
+    padding: 0 0 16px;
+    max-height: 85%;
+    display: flex; flex-direction: column;
+    animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow: hidden;
+  }
+  .samen-content { padding: 0 24px 16px; flex: 1; overflow-y: auto; }
+  .samen-content::-webkit-scrollbar { display: none; }
+  .samen-product {
+    display: flex; gap: 12px;
+    background: var(--primary-bg);
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  .samen-product img {
+    width: 60px; height: 60px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+  .samen-product .info .brand { font-size: 9px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.08em; font-weight: 600; margin-bottom: 2px; }
+  .samen-product .info .title { font-size: 13px; font-weight: 700; line-height: 1.3; }
+  .samen-product .info .price { font-size: 14px; color: var(--primary); font-weight: 700; margin-top: 4px; }
+
+  .stepper-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--background);
+    border-radius: 14px;
+    margin-bottom: 12px;
+  }
+  .stepper-row .label .title { font-size: 13px; font-weight: 600; }
+  .stepper-row .label .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .stepper { display: flex; align-items: center; gap: 8px; }
+  .stepper-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-size: 18px; font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    display: grid; place-items: center;
+  }
+  .stepper-btn:active { background: var(--border); }
+  .stepper-value {
+    min-width: 28px;
+    text-align: center;
+    font-size: 18px; font-weight: 700;
+    font-feature-settings: 'tnum';
+  }
+  .calc-card {
+    text-align: center;
+    background: linear-gradient(135deg, rgba(255,179,71,0.15), rgba(255,138,92,0.1));
+    border: 1px solid rgba(255,138,92,0.3);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .calc-card .big {
+    font-size: 28px; font-weight: 800;
+    color: #C76A20;
+    letter-spacing: -0.02em;
+  }
+  .calc-card .small {
+    font-size: 12px; color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .samen-msg {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 13px; font-family: inherit;
+    resize: none;
+    min-height: 60px;
+  }
+  .samen-msg:focus { outline: none; border-color: var(--primary); }
+
+  .samen-participants {
+    margin-top: 14px;
+    padding: 12px;
+    background: var(--background);
+    border-radius: 12px;
+  }
+  .samen-participants .label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted); font-weight: 600; margin-bottom: 8px;
+  }
+  .participant-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 0;
+  }
+  .participant-row .name { font-size: 13px; font-weight: 500; flex: 1; }
+  .participant-row .status { font-size: 11px; color: var(--text-muted); }
+  .participant-row .status.you { color: var(--primary); font-weight: 600; }
+
+  .samen-actions {
+    padding: 0 24px;
+    flex-shrink: 0;
+  }
+
+  /* ============ VIEW: PROFIEL ============ */
+  #view-profiel { background: var(--background); }
+  .profile-scroll {
+    flex: 1; overflow-y: auto;
+    padding-bottom: 100px;
+  }
+  .profile-scroll::-webkit-scrollbar { display: none; }
+  .profile-hero {
+    background: linear-gradient(135deg, var(--primary), #FF8A5C);
+    padding: 20px;
+    margin: 0 20px 20px;
+    border-radius: 20px;
+    color: white;
+    box-shadow: 0 16px 40px rgba(230,63,87,0.25);
+  }
+  .profile-hero .top { display: flex; align-items: center; gap: 14px; }
+  .profile-hero .avatar-big {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(20px);
+    border: 2px solid white;
+    display: grid; place-items: center;
+    font-size: 26px; font-weight: 700;
+  }
+  .profile-hero .info { flex: 1; }
+  .profile-hero .name { font-size: 20px; font-weight: 800; }
+  .profile-hero .email { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+  .profile-hero .plan-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .profile-hero .edit-btn {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 11px; font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .profile-section {
+    margin: 0 20px 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .profile-section .header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px 8px;
+  }
+  .profile-section .header h3 {
+    font-size: 14px; font-weight: 700;
+    flex: 1;
+  }
+  .profile-section .header .badge-new {
+    background: linear-gradient(135deg, #FFB347, #FF8A5C);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .profile-section .body { padding: 4px 16px 14px; }
+  .profile-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .profile-row:last-child { border-bottom: none; }
+  .profile-row .label { font-size: 13px; }
+  .profile-row .value { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+  .agenda-status {
+    background: linear-gradient(135deg, rgba(44,182,125,0.12), rgba(44,182,125,0.05));
+    border: 1px solid rgba(44,182,125,0.3);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin: 0 16px 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .agenda-status .check {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--success);
+    color: white;
+    display: grid; place-items: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .agenda-status .info { flex: 1; min-width: 0; }
+  .agenda-status .info .title { font-size: 13px; font-weight: 700; }
+  .agenda-status .info .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .birthday-list { padding: 0 16px 12px; }
+  .birthday-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .birthday-item:hover { background: #fffaf6; }
+  .birthday-item:last-child { border-bottom: none; }
+  .birthday-item .info { flex: 1; min-width: 0; }
+  .birthday-item .name { font-size: 13px; font-weight: 600; }
+  .birthday-item .when { font-size: 11px; color: var(--text-muted); }
+  .birthday-item .when.urgent { color: var(--primary); font-weight: 600; }
+  .birthday-item .cta {
+    color: var(--primary);
+    font-size: 11px; font-weight: 700;
+  }
+
+  .quick-links { padding: 4px 16px 14px; }
+  .quick-link {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .quick-link:last-child { border-bottom: none; }
+  .quick-link .left-side { display: flex; align-items: center; gap: 10px; }
+  .quick-link .icon { font-size: 16px; }
+  .quick-link .label { font-size: 13px; font-weight: 500; }
+  .quick-link .count {
+    background: var(--primary-bg);
+    color: var(--primary);
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .quick-link .chevron { color: var(--text-soft); }
+
+  .notif-banner {
+    position: absolute;
+    top: 56px; left: 16px; right: 16px;
+    background: white;
+    border-radius: 14px;
+    padding: 12px 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+    display: flex; align-items: center; gap: 10px;
+    z-index: 50;
+    transform: translateY(-200%);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    cursor: pointer;
+  }
+  .notif-banner.show { transform: translateY(0); }
+  .notif-banner .emoji { font-size: 24px; }
+  .notif-banner .text { flex: 1; }
+  .notif-banner .title { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+  .notif-banner .body { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
+
+  /* === Right side step list === */
+  .info-right { max-width: 320px; }
+  .info-right h4 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.5); margin-bottom: 12px;
+  }
+  .flow-group { margin-bottom: 18px; }
+  .flow-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 6px; padding-left: 4px;
+    font-weight: 700;
+  }
+  .step-list { display: flex; flex-direction: column; gap: 6px; }
+  .step {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .step:hover { background: rgba(255,255,255,0.08); transform: translateX(2px); }
+  .step.active {
+    background: linear-gradient(135deg, rgba(230,63,87,0.22), rgba(255,107,122,0.12));
+    border-color: var(--primary);
+    box-shadow: 0 8px 24px rgba(230,63,87,0.2);
+  }
+  .step-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 11px;
+    flex-shrink: 0;
+  }
+  .step.active .step-num { background: linear-gradient(135deg, var(--primary), var(--primary-soft)); }
+  .step-body { flex: 1; min-width: 0; }
+  .step-title { font-size: 13px; font-weight: 600; margin-bottom: 1px; }
+  .step-desc { font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.35; }
+
+  .hint {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(230,63,87,0.1);
+    border: 1px solid rgba(230,63,87,0.3);
+    border-radius: 10px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.5;
+  }
+  .hint strong { color: white; }
+
+  /* === Toast === */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--text);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 14px; font-weight: 500;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    z-index: 1000;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  @media (max-width: 1180px) {
+    .info-left, .info-right { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ============ LEFT: BRANDING ============ -->
+  <div class="info-left">
+    <div class="brand">
+      <div class="brand-mark">🎁</div>
+      <div>
+        <div class="brand-text">GiftSwipe</div>
+        <div class="brand-tagline">Tinder voor cadeaus</div>
+      </div>
+    </div>
+    <div class="version-pill">VERSIE 4.0 · DEMO</div>
+    <h1>Begin bij je situatie, niet bij de app.</h1>
+    <p class="lead">Nieuw welkomstscherm vraagt direct waarvoor je komt — geen abstracte demo meer. Plus vrije tekstvelden in beide intakes voor context die niet in chips past.</p>
+
+    <div class="changelog">
+      <div class="changelog-title">Nieuw in v4</div>
+      <ul>
+        <li>Welkom = 6 situatie-tegels (use-case kiezer)</li>
+        <li>Vrij tekstveld in Mark-intake voor context</li>
+        <li>Vrij tekstveld in Wens-intake voor wat er speelt</li>
+        <li>Snellere route: 1 tap = juiste flow</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ CENTER: PHONE ============ -->
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="screen">
+
+        <!-- ====== VIEW: WELCOME v4 (use-case picker) ====== -->
+        <div class="view active" id="view-welcome">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="welcome-v4">
+            <div class="brand-strip">
+              <div class="mark">🎁</div>
+              <div class="name">GiftSwipe</div>
+            </div>
+            <h1>Wat speelt er bij jou?</h1>
+            <p class="lead">Tap wat past — we brengen je direct naar de juiste flow. Geen onboarding-tutorial, geen omweg.</p>
+
+            <div class="usecase-grid">
+              <div class="usecase-tile" onclick="goTo('mark-intake')">
+                <img src="https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=500&q=80" alt="">
+                <div class="label-block">
+                  <div class="uc-label">Vriend wordt jarig</div>
+                  <div class="uc-sub">Snel een passend cadeau</div>
+                </div>
+              </div>
+              <div class="usecase-tile" onclick="goTo('wens-intake')">
+                <img src="https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80" alt="">
+                <div class="label-block">
+                  <div class="uc-label">Mijn verjaardag komt</div>
+                  <div class="uc-sub">Eigen wensenlijst maken</div>
+                </div>
+              </div>
+              <div class="usecase-tile" onclick="goTo('geven')">
+                <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?w=500&q=80" alt="">
+                <div class="label-block">
+                  <div class="uc-label">Cadeau voor mama</div>
+                  <div class="uc-sub">Iets persoonlijks geven</div>
+                </div>
+              </div>
+              <div class="usecase-tile" onclick="goTo('recipient')">
+                <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?w=500&q=80" alt="">
+                <div class="label-block">
+                  <div class="uc-label">Vriendin krijgt baby</div>
+                  <div class="uc-sub">Babyborrel-cadeau</div>
+                </div>
+              </div>
+              <div class="usecase-tile" onclick="goTo('recipient')">
+                <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=500&q=80" alt="">
+                <div class="label-block">
+                  <div class="uc-label">Collega afscheid</div>
+                  <div class="uc-sub">Bedankje van het team</div>
+                </div>
+              </div>
+              <div class="usecase-tile" onclick="goTo('geven')">
+                <img src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=500&q=80" alt="">
+                <div class="label-block">
+                  <div class="uc-label">Nog geen idee</div>
+                  <div class="uc-sub">Verken hoe de app werkt</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="welcome-footer">
+              <a onclick="goTo('profiel')">Al een account? Inloggen →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: GEVEN HUB ====== -->
+        <div class="view" id="view-geven">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+
+          <!-- Notification banner -->
+          <div class="notif-banner" id="notif-banner" onclick="dismissNotif(); goTo('mark-intake');">
+            <div class="emoji">🎂</div>
+            <div class="text">
+              <div class="title">Mark wordt over 7 dagen jarig</div>
+              <div class="body">Heb je al iets gevonden? Tap om te swipen.</div>
+            </div>
+            <div style="color: var(--primary); font-weight: 700; font-size: 12px;">→</div>
+          </div>
+
+          <div class="page-header">
+            <h1>Geven</h1>
+            <div class="subtitle">Cadeaus voor anderen</div>
+          </div>
+
+          <div class="scroll-area">
+            <div class="section-label">🎂 Binnenkort jarig</div>
+            <div class="urgent-scroll">
+              <div class="urgent-card" onclick="goTo('swipe')">
+                <div class="avatar lg">👩</div>
+                <div class="name">Lena</div>
+                <div class="when">🎂 over 6 dagen</div>
+                <div class="label">Vriendin · 28</div>
+              </div>
+              <div class="urgent-card" onclick="goTo('mark-intake')">
+                <div class="avatar lg blue">👨</div>
+                <div class="name">Mark</div>
+                <div class="when">🎂 over 17 dagen</div>
+                <div class="label">Vriend · 31</div>
+              </div>
+              <div class="urgent-card" onclick="showToast('Demo: alleen Lena en Mark zijn klikbaar')">
+                <div class="avatar lg green">👩</div>
+                <div class="name">Sophie</div>
+                <div class="when">🎂 over 25 dagen</div>
+                <div class="label">Collega · 26</div>
+              </div>
+              <div class="urgent-card" onclick="showToast('Demo: alleen Lena en Mark zijn klikbaar')">
+                <div class="avatar lg yellow">👵</div>
+                <div class="name">Mama</div>
+                <div class="when">🎂 over 38 dagen</div>
+                <div class="label">Familie · 62</div>
+              </div>
+            </div>
+
+            <div class="section-label">Alle ontvangers</div>
+            <div class="recipient-list">
+              <div class="recipient-card" onclick="goTo('lena-wishlist')">
+                <div class="avatar lg">👩</div>
+                <div class="info">
+                  <div class="name">Lena <span class="badge">5 cadeaus</span></div>
+                  <div class="meta">Vriendin · Verjaardag 14 mei</div>
+                </div>
+                <div class="chevron">›</div>
+              </div>
+              <div class="recipient-card" onclick="goTo('mark-intake')">
+                <div class="avatar lg blue">👨</div>
+                <div class="info">
+                  <div class="name">Mark</div>
+                  <div class="meta">Vriend · Verjaardag 28 mei</div>
+                </div>
+                <div class="chevron">›</div>
+              </div>
+              <div class="recipient-card" onclick="showToast('Sophie\'s lijstje (post-MVP)')">
+                <div class="avatar lg green">👩</div>
+                <div class="info">
+                  <div class="name">Sophie</div>
+                  <div class="meta">Collega · Verjaardag 5 juni</div>
+                </div>
+                <div class="chevron">›</div>
+              </div>
+              <div class="recipient-card" onclick="showToast('Mama\'s lijstje (post-MVP)')">
+                <div class="avatar lg yellow">👵</div>
+                <div class="info">
+                  <div class="name">Mama (Annemiek)</div>
+                  <div class="meta">Familie · Verjaardag 12 juni</div>
+                </div>
+                <div class="chevron">›</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="fab" onclick="goTo('recipient')" aria-label="Nieuwe ontvanger">+</button>
+
+          <div class="bottom-nav">
+            <div class="nav-tab active" onclick="goTo('geven')">
+              <div class="icon">🎁</div>
+              <div>Geven</div>
+            </div>
+            <div class="nav-tab" onclick="goTo('wensen')">
+              <div class="icon">💝</div>
+              <div>Wensen</div>
+            </div>
+            <div class="nav-tab" onclick="goTo('profiel')">
+              <div class="icon">👤</div>
+              <div>Profiel</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: RECIPIENT FORM ====== -->
+        <div class="view" id="view-recipient">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="top-bar">
+            <div class="back" onclick="goTo('geven')">←</div>
+            <div class="title">Voor wie zoek je?</div>
+            <div class="menu" style="visibility:hidden">⋯</div>
+          </div>
+          <div class="form-scroll">
+            <div class="form-section">
+              <h3>Naam & relatie</h3>
+              <input class="input" value="Lena" placeholder="Bijv. Lena, Mam, Jasper">
+              <div class="chip-row scroll">
+                <div class="chip active">Vriendin</div>
+                <div class="chip">Partner</div>
+                <div class="chip">Familie</div>
+                <div class="chip">Collega</div>
+                <div class="chip">Kind</div>
+                <div class="chip">Anders</div>
+              </div>
+            </div>
+            <div class="form-section">
+              <h3>Leeftijd</h3>
+              <div class="chip-row">
+                <div class="chip">0–6</div>
+                <div class="chip">7–12</div>
+                <div class="chip">13–18</div>
+                <div class="chip active">19–30</div>
+                <div class="chip">31–50</div>
+                <div class="chip">51+</div>
+              </div>
+            </div>
+            <div class="form-section">
+              <h3>Wat vindt Lena leuk? — kies max 3</h3>
+              <div class="chip-row">
+                <div class="chip active">Tech</div>
+                <div class="chip">Gaming</div>
+                <div class="chip">Boeken</div>
+                <div class="chip">Koken</div>
+                <div class="chip">Reizen</div>
+                <div class="chip">Beauty</div>
+                <div class="chip">Mode</div>
+                <div class="chip active">Muziek</div>
+                <div class="chip">Wellness</div>
+                <div class="chip active">Wonen</div>
+                <div class="chip">Outdoor</div>
+              </div>
+            </div>
+            <div class="form-section">
+              <h3>Budget</h3>
+              <div class="budget-display">€25 – €100</div>
+              <div class="slider">
+                <div class="fill"></div>
+                <div class="knob left"></div>
+                <div class="knob right"></div>
+              </div>
+              <div class="slider-labels">
+                <span>€10</span><span>€50</span><span>€100</span><span>€200</span>
+              </div>
+            </div>
+            <div class="form-section">
+              <h3>Gelegenheid</h3>
+              <div class="chip-row">
+                <div class="chip active">🎂 Verjaardag</div>
+                <div class="chip">🎄 Kerst</div>
+                <div class="chip">💝 Valentijn</div>
+                <div class="chip">🎓 Diploma</div>
+                <div class="chip">🙏 Bedankje</div>
+              </div>
+            </div>
+          </div>
+          <div class="sticky-cta" style="bottom:0">
+            <button class="btn-primary" onclick="goTo('swipe')">Begin met swipen →</button>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: SWIPE DECK (for Lena) ====== -->
+        <div class="view swipe-view" id="view-swipe">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="deck-top">
+            <div class="recipient-mini">
+              <div class="avatar">👩</div>
+              <div>
+                <div class="recipient-name">Voor Lena, 28</div>
+                <div class="recipient-meta">🎂 over 6 dagen · €25–€100</div>
+              </div>
+            </div>
+            <div class="deck-progress">
+              <div class="progress-bar"><div class="progress-fill" id="progress-fill-lena" style="width:0%"></div></div>
+              <div class="progress-label" id="progress-label-lena">0/8</div>
+            </div>
+          </div>
+          <div class="deck-area">
+            <div class="deck" id="deck-lena"></div>
+          </div>
+          <div class="deck-actions">
+            <button class="deck-btn skip" onclick="programmaticSwipe('lena', 'left')">✕</button>
+            <button class="deck-btn info" onclick="showToast('Productdetails')">ⓘ</button>
+            <button class="deck-btn like" onclick="programmaticSwipe('lena', 'right')">❤</button>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-tab active" onclick="goTo('geven')">
+              <div class="icon">🎁</div><div>Geven</div>
+            </div>
+            <div class="nav-tab" onclick="goTo('wensen')">
+              <div class="icon">💝</div><div>Wensen</div>
+            </div>
+            <div class="nav-tab" onclick="goTo('profiel')">
+              <div class="icon">👤</div><div>Profiel</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: MARK INTAKE (v3 new) ====== -->
+        <div class="view" id="view-mark-intake">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="top-bar">
+            <div class="back" onclick="goTo('geven')">←</div>
+            <div class="title">Even checken</div>
+            <div class="menu" style="visibility:hidden">⋯</div>
+          </div>
+          <div class="form-scroll">
+            <div class="recipient-check">
+              <div class="avatar lg blue">👨</div>
+              <div class="info">
+                <div class="name">Mark Vermeer, 31</div>
+                <div class="sub">🎂 over 17 dagen · Vriend</div>
+              </div>
+            </div>
+            <div class="intake-hint">
+              💡 <strong>Check of dit nog klopt</strong> over Mark. Hoe scherper het profiel, hoe relevanter de cadeaus die je straks ziet.
+            </div>
+
+            <div class="form-section">
+              <h3>Wat doet Mark in zijn vrije tijd?</h3>
+              <div class="chip-row">
+                <div class="chip active">Mountainbiken</div>
+                <div class="chip">Hardlopen</div>
+                <div class="chip active">Koken</div>
+                <div class="chip">Gamen</div>
+                <div class="chip">Lezen</div>
+                <div class="chip active">Reizen</div>
+                <div class="chip">Tuinieren</div>
+                <div class="chip">Muziek maken</div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Levensstijl & smaak</h3>
+              <div class="chip-row">
+                <div class="chip active">Outdoor</div>
+                <div class="chip">Tech-savvy</div>
+                <div class="chip active">Foodie</div>
+                <div class="chip">Minimalist</div>
+                <div class="chip">Sportief</div>
+                <div class="chip active">Reisliefhebber</div>
+                <div class="chip">Verzamelaar</div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Heeft Mark al iets?</h3>
+              <div class="chip-row">
+                <div class="chip active">Goede koptelefoon</div>
+                <div class="chip">Espresso-machine</div>
+                <div class="chip active">Fiets</div>
+                <div class="chip">E-reader</div>
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Zo voorkomen we dubbele cadeaus</div>
+            </div>
+
+            <div class="form-section">
+              <h3>Budget</h3>
+              <div class="budget-display">€50 – €150</div>
+              <div class="slider">
+                <div class="fill" style="left: 25%; right: 25%;"></div>
+                <div class="knob left" style="left: calc(25% - 10px);"></div>
+                <div class="knob right" style="left: calc(75% - 10px);"></div>
+              </div>
+              <div class="slider-labels">
+                <span>€10</span><span>€50</span><span>€150</span><span>€300</span>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Gelegenheid</h3>
+              <div class="chip-row">
+                <div class="chip active">🎂 Verjaardag</div>
+                <div class="chip">🎄 Kerst</div>
+                <div class="chip">🎓 Promotie</div>
+                <div class="chip">🙏 Bedankje</div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Iets dat we moeten weten? (optioneel)</h3>
+              <textarea class="intake-text" placeholder="Bv: Mark werkt veel buiten, is dol op zijn fiets, kookt graag Italiaans. Heeft net een huis gekocht en is bezig met inrichten."></textarea>
+              <div class="intake-text-hint">
+                <strong>Pro-tip:</strong> &nbsp;hoe specifieker, hoe relevanter de suggesties straks worden
+              </div>
+            </div>
+          </div>
+          <div class="sticky-cta" style="bottom:0">
+            <button class="btn-primary" onclick="goTo('swipe-mark')">Begin met swipen voor Mark →</button>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: SWIPE DECK (for Mark) — minimal version ====== -->
+        <div class="view swipe-view" id="view-swipe-mark">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="deck-top">
+            <div class="recipient-mini">
+              <div class="avatar blue">👨</div>
+              <div>
+                <div class="recipient-name">Voor Mark, 31</div>
+                <div class="recipient-meta">🎂 over 17 dagen · €50–€150</div>
+              </div>
+            </div>
+            <div class="deck-progress">
+              <div class="progress-bar"><div class="progress-fill" id="progress-fill-mark" style="width:0%"></div></div>
+              <div class="progress-label" id="progress-label-mark">0/8</div>
+            </div>
+          </div>
+          <div class="deck-area">
+            <div class="deck" id="deck-mark"></div>
+          </div>
+          <div class="deck-actions">
+            <button class="deck-btn skip" onclick="programmaticSwipe('mark', 'left')">✕</button>
+            <button class="deck-btn info" onclick="showToast('Productdetails')">ⓘ</button>
+            <button class="deck-btn like" onclick="programmaticSwipe('mark', 'right')">❤</button>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-tab active" onclick="goTo('geven')">
+              <div class="icon">🎁</div><div>Geven</div>
+            </div>
+            <div class="nav-tab" onclick="goTo('wensen')">
+              <div class="icon">💝</div><div>Wensen</div>
+            </div>
+            <div class="nav-tab" onclick="goTo('profiel')">
+              <div class="icon">👤</div><div>Profiel</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: LENA'S WISHLIST ====== -->
+        <div class="view" id="view-lena-wishlist">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="top-bar">
+            <div class="back" onclick="goTo('geven')">←</div>
+            <div class="title">Voor Lena</div>
+            <div class="menu">⋯</div>
+          </div>
+          <div class="wishlist-header">
+            <div class="row">
+              <div class="avatar lg">👩</div>
+              <div>
+                <h2>Lena, 28</h2>
+                <div class="meta">🎂 over 6 dagen · €25 – €100</div>
+              </div>
+            </div>
+            <div class="wishlist-stats">
+              <span id="wish-count-lena">5</span> cadeaus bewaard ·
+              <span>32</span> doorgeswiped
+            </div>
+          </div>
+          <div style="background: var(--primary-bg); padding: 10px 16px; margin: 12px 20px 4px; border-radius: 12px; font-size: 12px; color: var(--text); line-height: 1.4;">
+            💡 <strong>Dit is jouw selectie</strong> — alles wat jij hebt geliket tijdens het swipen voor Lena. Alleen voor jou zichtbaar.
+          </div>
+          <div class="wishlist-grid" id="wishlist-grid-lena"></div>
+          <div class="sticky-cta">
+            <button class="btn-primary" onclick="showToast('Voor anderen: alleen voor jou zichtbaar')">Bestel zelf →</button>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-tab active" onclick="goTo('geven')">
+              <div class="icon">🎁</div><div>Geven</div>
+            </div>
+            <div class="nav-tab" onclick="goTo('wensen')">
+              <div class="icon">💝</div><div>Wensen</div>
+            </div>
+            <div class="nav-tab" onclick="goTo('profiel')">
+              <div class="icon">👤</div><div>Profiel</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: WENSEN HUB (own wishlist) ====== -->
+        <div class="view" id="view-wensen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="page-header">
+            <h1>Wensen</h1>
+            <div class="subtitle">Jouw verlanglijst</div>
+          </div>
+
+          <div class="own-hero">
+            <div class="occasion">🎂 Mijn verjaardag</div>
+            <h2>14 mei</h2>
+            <div class="countdown">over 23 dagen</div>
+            <div class="stats">
+              <div class="stat"><strong id="my-wish-count">7</strong>cadeau-wensen</div>
+              <div class="stat"><strong id="my-claim-count">3</strong>al geclaimd</div>
+              <div class="stat"><strong>2</strong>actieve links</div>
+            </div>
+          </div>
+
+          <div class="own-actions">
+            <button class="btn add" onclick="goTo('wens-intake')">
+              <span style="font-size: 16px;">+</span> Voeg wens toe
+            </button>
+            <button class="btn share" onclick="goTo('share-own')">
+              <span>↗</span> Deel met vrienden
+            </button>
+          </div>
+
+          <div class="section-label">Mijn wensen</div>
+          <div class="scroll-area" style="padding: 4px 20px 100px;">
+            <div class="wishlist-grid" id="my-wishlist-grid" style="padding: 0; overflow: visible;"></div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-tab" onclick="goTo('geven')">
+              <div class="icon">🎁</div><div>Geven</div>
+            </div>
+            <div class="nav-tab active" onclick="goTo('wensen')">
+              <div class="icon">💝</div><div>Wensen</div>
+            </div>
+            <div class="nav-tab" onclick="goTo('profiel')">
+              <div class="icon">👤</div><div>Profiel</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: WENS INTAKE (v3 new) ====== -->
+        <div class="view" id="view-wens-intake">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="top-bar">
+            <div class="back" onclick="goTo('wensen')">←</div>
+            <div class="title">Wens toevoegen</div>
+            <div class="menu" style="visibility:hidden">⋯</div>
+          </div>
+          <div class="form-scroll">
+            <div class="intake-hero">
+              <h2>Waar heb je zin in?</h2>
+              <p>Tap 3 sferen die nu bij je passen. Op basis hiervan kiezen we suggesties die echt kloppen — geen toevallige zoekresultaten.</p>
+            </div>
+
+            <div class="mood-grid">
+              <div class="mood-tile selected" onclick="toggleMood(this)">
+                <img src="https://images.unsplash.com/photo-1499063078284-f64f9d2d6f44?w=400&q=80" alt="">
+                <div class="mood-label">Reizen</div>
+                <div class="mood-check">✓</div>
+              </div>
+              <div class="mood-tile selected" onclick="toggleMood(this)">
+                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80" alt="">
+                <div class="mood-label">Koken</div>
+                <div class="mood-check">✓</div>
+              </div>
+              <div class="mood-tile selected" onclick="toggleMood(this)">
+                <img src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&q=80" alt="">
+                <div class="mood-label">Avontuur</div>
+                <div class="mood-check">✓</div>
+              </div>
+              <div class="mood-tile" onclick="toggleMood(this)">
+                <img src="https://images.unsplash.com/photo-1531947300508-829d76aa1bee?w=400&q=80" alt="">
+                <div class="mood-label">Cozy thuis</div>
+                <div class="mood-check">✓</div>
+              </div>
+              <div class="mood-tile" onclick="toggleMood(this)">
+                <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80" alt="">
+                <div class="mood-label">Tech</div>
+                <div class="mood-check">✓</div>
+              </div>
+              <div class="mood-tile" onclick="toggleMood(this)">
+                <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80" alt="">
+                <div class="mood-label">Wellness</div>
+                <div class="mood-check">✓</div>
+              </div>
+              <div class="mood-tile" onclick="toggleMood(this)">
+                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=80" alt="">
+                <div class="mood-label">Mode & stijl</div>
+                <div class="mood-check">✓</div>
+              </div>
+              <div class="mood-tile" onclick="toggleMood(this)">
+                <img src="https://images.unsplash.com/photo-1543353071-10c8ba85a904?w=400&q=80" alt="">
+                <div class="mood-label">Lezen</div>
+                <div class="mood-check">✓</div>
+              </div>
+            </div>
+            <div class="intake-counter">
+              <strong id="mood-count">3</strong>/3 sferen gekozen — perfect
+            </div>
+
+            <div class="form-section">
+              <h3>Voor welke gelegenheid?</h3>
+              <div class="chip-row">
+                <div class="chip active">🎂 Mijn verjaardag</div>
+                <div class="chip">🎄 Kerst</div>
+                <div class="chip">🎓 Diploma</div>
+                <div class="chip">💭 Zomaar</div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Budgetrange waar vrienden uit kunnen kiezen</h3>
+              <div class="budget-display">€25 – €200</div>
+              <div class="slider">
+                <div class="fill" style="left: 12%; right: 30%;"></div>
+                <div class="knob left" style="left: calc(12% - 10px);"></div>
+                <div class="knob right" style="left: calc(70% - 10px);"></div>
+              </div>
+              <div class="slider-labels">
+                <span>€10</span><span>€50</span><span>€150</span><span>€350</span>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Wat speelt er nu in jouw leven? (optioneel)</h3>
+              <textarea class="intake-text" placeholder="Bv: ik ga binnenkort verhuizen, leer Italiaans, probeer dit jaar minimalistisch te leven. Heb laatst een hond geadopteerd en wil meer planten in huis."></textarea>
+              <div class="intake-text-hint">
+                <strong>Pro-tip:</strong> &nbsp;hoe persoonlijker, hoe beter we matchen op wat jij echt wilt
+              </div>
+            </div>
+          </div>
+          <div class="sticky-cta" style="bottom:0">
+            <button class="btn-primary" onclick="goTo('swipe-self')">Toon mijn cadeau-suggesties →</button>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: SWIPE DECK (for SELF) ====== -->
+        <div class="view swipe-view" id="view-swipe-self">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="top-bar">
+            <div class="back" onclick="goTo('wensen')">←</div>
+            <div class="title">Voeg wens toe</div>
+            <div class="menu" style="visibility:hidden">⋯</div>
+          </div>
+          <div class="deck-top">
+            <div class="recipient-mini">
+              <div class="avatar" style="background: linear-gradient(135deg, #FFB347, #FF8A5C);">⭐</div>
+              <div>
+                <div class="recipient-name">Voor mezelf</div>
+                <div class="recipient-meta">Verjaardag · Tech, Reizen, Koken</div>
+              </div>
+            </div>
+            <div class="deck-progress">
+              <div class="progress-bar"><div class="progress-fill" id="progress-fill-self" style="width:0%"></div></div>
+              <div class="progress-label" id="progress-label-self">0/8</div>
+            </div>
+          </div>
+          <div class="deck-area">
+            <div class="deck" id="deck-self"></div>
+          </div>
+          <div class="deck-actions">
+            <button class="deck-btn skip" onclick="programmaticSwipe('self', 'left')">✕</button>
+            <button class="deck-btn info" onclick="showToast('Productdetails')">ⓘ</button>
+            <button class="deck-btn like" onclick="programmaticSwipe('self', 'right')">❤</button>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-tab" onclick="goTo('geven')">
+              <div class="icon">🎁</div><div>Geven</div>
+            </div>
+            <div class="nav-tab active" onclick="goTo('wensen')">
+              <div class="icon">💝</div><div>Wensen</div>
+            </div>
+            <div class="nav-tab" onclick="goTo('profiel')">
+              <div class="icon">👤</div><div>Profiel</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: SHARE OWN WISHLIST ====== -->
+        <div class="view" id="view-share-own">
+          <div class="share-sheet">
+            <div class="sheet-handle"></div>
+            <div class="share-header">
+              <h2>Deel je verlanglijst</h2>
+              <p>Vrienden swipen door jouw wensen en claimen wat ze willen geven. Anoniem — je ziet alleen wat al geclaimd is, niet door wie.</p>
+            </div>
+            <div class="share-scroll">
+              <div class="share-preview">
+                <div class="row">
+                  <div class="stack-images" id="own-stack-images"></div>
+                  <div>
+                    <div class="title">🎁 Sam's verjaardagslijstje</div>
+                    <div class="meta" id="own-share-count">7 cadeaus, €25 – €200</div>
+                  </div>
+                </div>
+                <div class="url">giftswipe.app/w/sam-14mei</div>
+              </div>
+
+              <div class="share-toggles">
+                <div class="toggle-row">
+                  <div>
+                    <div class="label">"Samen geven" toegestaan</div>
+                    <div class="desc">Vrienden kunnen voor dure items een groep starten</div>
+                  </div>
+                  <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="toggle-row">
+                  <div>
+                    <div class="label">Verberg prijzen voor anderen</div>
+                    <div class="desc">Vrienden zien alleen het cadeau, niet de prijs</div>
+                  </div>
+                  <div class="toggle" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="toggle-row">
+                  <div>
+                    <div class="label">Anonieme claims</div>
+                    <div class="desc">Standaard aan — vrienden zien geen namen bij geclaimde items</div>
+                  </div>
+                  <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                </div>
+              </div>
+
+              <div class="share-channels">
+                <h3>Deel via</h3>
+                <div class="channels-grid">
+                  <div class="channel whatsapp" onclick="showToast('Geopend in WhatsApp'); setTimeout(() => goTo('friend'), 800)">
+                    <div class="channel-icon">💬</div>
+                    <div class="channel-label">WhatsApp</div>
+                  </div>
+                  <div class="channel imessage" onclick="showToast('Geopend in Berichten')">
+                    <div class="channel-icon">💭</div>
+                    <div class="channel-label">Berichten</div>
+                  </div>
+                  <div class="channel mail" onclick="showToast('Mail geopend')">
+                    <div class="channel-icon">✉</div>
+                    <div class="channel-label">Mail</div>
+                  </div>
+                  <div class="channel copy" onclick="showToast('Link gekopieerd ✓')">
+                    <div class="channel-icon">🔗</div>
+                    <div class="channel-label">Kopieer</div>
+                  </div>
+                  <div class="channel instagram" onclick="showToast('Instagram Stories')">
+                    <div class="channel-icon">📷</div>
+                    <div class="channel-label">Instagram</div>
+                  </div>
+                  <div class="channel tiktok" onclick="showToast('TikTok geopend')">
+                    <div class="channel-icon">🎵</div>
+                    <div class="channel-label">TikTok</div>
+                  </div>
+                  <div class="channel twitter" onclick="showToast('X geopend')">
+                    <div class="channel-icon">𝕏</div>
+                    <div class="channel-label">X</div>
+                  </div>
+                  <div class="channel more" onclick="goTo('wensen')">
+                    <div class="channel-icon">⋯</div>
+                    <div class="channel-label">Sluit</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="share-actions">
+              <button class="btn-primary" onclick="goTo('friend')">Bekijk preview van vriend-view →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: FRIEND PUBLIC WISHLIST (perspective shift) ====== -->
+        <div class="view swipe-view" id="view-friend">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="friend-banner">
+            <div class="row">
+              <div class="avatar lg" style="background: linear-gradient(135deg, #FFB347, #FF8A5C);">S</div>
+              <div class="info">
+                <h2>Sam's verjaardagslijstje</h2>
+                <div class="sub">Verjaardag 14 mei · 7 wensen · 3 al geclaimd</div>
+              </div>
+            </div>
+          </div>
+          <div class="friend-intro">
+            👋 <strong>Sam</strong> heeft 7 cadeau-wensen. Swipe rechts wat <em>jij</em> wilt geven — of tap "Samen" voor dure items.
+          </div>
+          <div class="deck-top" style="padding: 4px 20px 8px;">
+            <div class="recipient-mini">
+              <div class="avatar sm" style="background: linear-gradient(135deg, #FFB347, #FF8A5C);">S</div>
+              <div>
+                <div class="recipient-name">Jouw keuze blijft anoniem</div>
+                <div class="recipient-meta">Sam ziet alleen aantal geclaimd</div>
+              </div>
+            </div>
+            <div class="deck-progress">
+              <div class="progress-bar"><div class="progress-fill" id="progress-fill-friend" style="width:0%"></div></div>
+              <div class="progress-label" id="progress-label-friend">0/7</div>
+            </div>
+          </div>
+          <div class="deck-area">
+            <div class="deck" id="deck-friend"></div>
+          </div>
+          <div class="deck-actions">
+            <button class="deck-btn skip" onclick="programmaticSwipe('friend', 'left')">✕</button>
+            <button class="deck-btn samen" onclick="openSamen()" title="Samen geven">👥</button>
+            <button class="deck-btn like" onclick="programmaticSwipe('friend', 'right')">❤</button>
+          </div>
+          <div style="padding: 0 20px 16px; flex-shrink: 0;">
+            <button class="btn-secondary" onclick="goTo('wensen')">← Terug naar Sam's perspectief</button>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: SAMEN GEVEN SHEET ====== -->
+        <div class="view" id="view-samen-geven">
+          <div class="samen-sheet">
+            <div class="sheet-handle"></div>
+            <div class="share-header">
+              <h2>Samen geven 👥</h2>
+              <p>Te duur alleen? Vraag andere vrienden mee te doen. Iedereen betaalt een deel, één persoon koopt.</p>
+            </div>
+            <div class="samen-content">
+              <div class="samen-product">
+                <img id="samen-img" src="" alt="">
+                <div class="info">
+                  <div class="title" id="samen-title">Sony WH-1000XM5</div>
+                  <div class="price" id="samen-price">€89</div>
+                </div>
+              </div>
+
+              <div class="stepper-row">
+                <div class="label">
+                  <div class="title">Met hoeveel mensen?</div>
+                  <div class="sub">Inclusief jezelf</div>
+                </div>
+                <div class="stepper">
+                  <button class="stepper-btn" onclick="changeSamen(-1)">−</button>
+                  <div class="stepper-value" id="samen-count">4</div>
+                  <button class="stepper-btn" onclick="changeSamen(1)">+</button>
+                </div>
+              </div>
+
+              <div class="calc-card">
+                <div class="big" id="samen-perhead">€22</div>
+                <div class="small">per persoon (excl. verzendkosten)</div>
+              </div>
+
+              <textarea class="samen-msg" placeholder="Berichtje aan je vrienden (optioneel)&#10;Bv. 'Wie doet er mee voor Sam's koptelefoon? Veel goedkoper samen!'"></textarea>
+
+              <div class="samen-participants">
+                <div class="label">Wie doet er al mee?</div>
+                <div class="participant-row">
+                  <div class="avatar sm">M</div>
+                  <div class="name">Jij (Mark)</div>
+                  <div class="status you">Initiator</div>
+                </div>
+                <div class="participant-row" style="opacity:0.5">
+                  <div class="avatar sm" style="background: var(--border); color: var(--text-muted)">?</div>
+                  <div class="name">Wachten op vrienden...</div>
+                  <div class="status">0/3</div>
+                </div>
+              </div>
+            </div>
+            <div class="samen-actions">
+              <button class="btn-primary" onclick="confirmSamen()">Deel uitnodiging in WhatsApp →</button>
+              <span class="link-tertiary" onclick="goTo('friend')">Annuleer</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: PROFIEL ====== -->
+        <div class="view" id="view-profiel">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="page-header">
+            <h1>Profiel</h1>
+            <div class="subtitle">Account, agenda en instellingen</div>
+          </div>
+
+          <div class="profile-scroll">
+            <div class="profile-hero">
+              <div class="top">
+                <div class="avatar-big">S</div>
+                <div class="info">
+                  <div class="name">Sam de Vries</div>
+                  <div class="email">sam@giftswipe.app</div>
+                  <div class="plan-pill">FREE plan</div>
+                </div>
+                <button class="edit-btn" onclick="showToast('Profiel bewerken')">Bewerk</button>
+              </div>
+            </div>
+
+            <div class="profile-section">
+              <div class="header">
+                <h3>Mijn verjaardag</h3>
+              </div>
+              <div class="body">
+                <div class="profile-row">
+                  <div class="label">Geboortedatum</div>
+                  <div class="value">14 mei 1997</div>
+                </div>
+                <div class="profile-row">
+                  <div>
+                    <div class="label">Herinner me 4 weken vóór mijn verjaardag</div>
+                  </div>
+                  <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="profile-row">
+                  <div>
+                    <div class="label">Toon mijn wensen automatisch in netwerk</div>
+                  </div>
+                  <div class="toggle" onclick="this.classList.toggle('on')"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-section">
+              <div class="header">
+                <h3>Agenda-koppeling</h3>
+                <div class="badge-new">Nieuw</div>
+              </div>
+              <div class="agenda-status">
+                <div class="check">✓</div>
+                <div class="info">
+                  <div class="title">Google Calendar verbonden</div>
+                  <div class="sub">Sinds 2 mei · 8 verjaardagen gevonden</div>
+                </div>
+                <div style="color: var(--success); font-size: 18px;">●</div>
+              </div>
+              <div class="birthday-list">
+                <div class="birthday-item" onclick="goTo('mark-intake')">
+                  <div class="avatar sm blue">M</div>
+                  <div class="info">
+                    <div class="name">Mark Vermeer</div>
+                    <div class="when urgent">🎂 over 7 dagen</div>
+                  </div>
+                  <div class="cta">Vind iets →</div>
+                </div>
+                <div class="birthday-item" onclick="showToast('Sophie\'s swipe (demo: alleen Mark werkt)')">
+                  <div class="avatar sm green">S</div>
+                  <div class="info">
+                    <div class="name">Sophie Jansen</div>
+                    <div class="when">🎂 over 25 dagen</div>
+                  </div>
+                  <div class="cta">Vind iets →</div>
+                </div>
+                <div class="birthday-item" onclick="showToast('Mama\'s swipe (demo: alleen Mark werkt)')">
+                  <div class="avatar sm yellow">A</div>
+                  <div class="info">
+                    <div class="name">Mama (Annemiek)</div>
+                    <div class="when">🎂 over 38 dagen</div>
+                  </div>
+                  <div class="cta">Vind iets →</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-section">
+              <div class="header"><h3>Snelkoppelingen</h3></div>
+              <div class="quick-links">
+                <div class="quick-link" onclick="goTo('wensen')">
+                  <div class="left-side">
+                    <div class="icon">💝</div>
+                    <div class="label">Mijn wensen</div>
+                  </div>
+                  <div>
+                    <span class="count">7</span>
+                    <span class="chevron" style="margin-left: 8px;">›</span>
+                  </div>
+                </div>
+                <div class="quick-link" onclick="showToast('Mijn gedeelde lijstjes (demo)')">
+                  <div class="left-side">
+                    <div class="icon">🔗</div>
+                    <div class="label">Mijn gedeelde links</div>
+                  </div>
+                  <div>
+                    <span class="count">2</span>
+                    <span class="chevron" style="margin-left: 8px;">›</span>
+                  </div>
+                </div>
+                <div class="quick-link" onclick="showToast('Geschiedenis (demo)')">
+                  <div class="left-side">
+                    <div class="icon">📦</div>
+                    <div class="label">Cadeaus die ik gaf</div>
+                  </div>
+                  <div>
+                    <span class="count">12</span>
+                    <span class="chevron" style="margin-left: 8px;">›</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-section">
+              <div class="header"><h3>Instellingen</h3></div>
+              <div class="quick-links">
+                <div class="quick-link" onclick="showToast('Notificaties')">
+                  <div class="left-side"><div class="icon">🔔</div><div class="label">Notificaties</div></div>
+                  <span class="chevron">›</span>
+                </div>
+                <div class="quick-link" onclick="showToast('Privacy & data')">
+                  <div class="left-side"><div class="icon">🔒</div><div class="label">Privacy & data</div></div>
+                  <span class="chevron">›</span>
+                </div>
+                <div class="quick-link" onclick="showToast('Help & support')">
+                  <div class="left-side"><div class="icon">❓</div><div class="label">Help & support</div></div>
+                  <span class="chevron">›</span>
+                </div>
+              </div>
+              <div style="padding: 10px 16px 14px; font-size: 10px; color: var(--text-soft); text-align: center;">
+                Versie 2.0.0 — GiftSwipe
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-tab" onclick="goTo('geven')">
+              <div class="icon">🎁</div><div>Geven</div>
+            </div>
+            <div class="nav-tab" onclick="goTo('wensen')">
+              <div class="icon">💝</div><div>Wensen</div>
+            </div>
+            <div class="nav-tab active" onclick="goTo('profiel')">
+              <div class="icon">👤</div><div>Profiel</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="demo-tip">💡 Sleep een kaart, of klik rechts om door flows te springen</div>
+  </div>
+
+  <!-- ============ RIGHT: STEP LIST ============ -->
+  <div class="info-right">
+    <h4>Drie flows · vier perspectieven</h4>
+
+    <div class="flow-group">
+      <div class="flow-title">🎁 Voor iemand anders (Geven)</div>
+      <div class="step-list">
+        <div class="step active" data-target="welcome" onclick="goTo('welcome')">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Welkom (use-case kiezer)</div>
+            <div class="step-desc">6 situatie-tegels — tap = directe flow</div>
+          </div>
+        </div>
+        <div class="step" data-target="geven" onclick="goTo('geven')">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Geven hub</div>
+            <div class="step-desc">Mensen + binnenkort jarig + agenda-melding</div>
+          </div>
+        </div>
+        <div class="step" data-target="mark-intake" onclick="goTo('mark-intake')">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Mark-intake (nieuw)</div>
+            <div class="step-desc">Check zijn levensstijl voor je swipet</div>
+          </div>
+        </div>
+        <div class="step" data-target="swipe-mark" onclick="goTo('swipe-mark')">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Swipe deck — Mark</div>
+            <div class="step-desc">Gerichte suggesties op basis van intake</div>
+          </div>
+        </div>
+        <div class="step" data-target="lena-wishlist" onclick="goTo('lena-wishlist')">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Lena's verlanglijst</div>
+            <div class="step-desc">Wat jij voor haar hebt geliket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
+      <div class="flow-title">💝 Voor mezelf (Wensen)</div>
+      <div class="step-list">
+        <div class="step" data-target="wensen" onclick="goTo('wensen')">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Mijn wensen</div>
+            <div class="step-desc">Eigen verjaardagslijst, status van claims</div>
+          </div>
+        </div>
+        <div class="step" data-target="wens-intake" onclick="goTo('wens-intake')">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <div class="step-title">Wens-intake (nieuw)</div>
+            <div class="step-desc">Mood-sferen + gelegenheid + budget</div>
+          </div>
+        </div>
+        <div class="step" data-target="swipe-self" onclick="goTo('swipe-self')">
+          <div class="step-num">8</div>
+          <div class="step-body">
+            <div class="step-title">Wensen swipen</div>
+            <div class="step-desc">Cadeau-suggesties op basis van je mood</div>
+          </div>
+        </div>
+        <div class="step" data-target="share-own" onclick="goTo('share-own')">
+          <div class="step-num">9</div>
+          <div class="step-body">
+            <div class="step-title">Delen met vrienden</div>
+            <div class="step-desc">WhatsApp-link met privacy-toggles</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
+      <div class="flow-title">👋 Vriend opent je link</div>
+      <div class="step-list">
+        <div class="step" data-target="friend" onclick="goTo('friend')">
+          <div class="step-num">10</div>
+          <div class="step-body">
+            <div class="step-title">Anoniem claimen</div>
+            <div class="step-desc">Vriend swipet Sam's wensen, geclaimd = grijs</div>
+          </div>
+        </div>
+        <div class="step" data-target="samen-geven" onclick="openSamen()">
+          <div class="step-num">11</div>
+          <div class="step-body">
+            <div class="step-title">Samen geven</div>
+            <div class="step-desc">Duur cadeau splitsen onder vrienden</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
+      <div class="flow-title">👤 Profiel</div>
+      <div class="step-list">
+        <div class="step" data-target="profiel" onclick="goTo('profiel')">
+          <div class="step-num">12</div>
+          <div class="step-body">
+            <div class="step-title">Profiel + agenda</div>
+            <div class="step-desc">Geboortedatum, agenda-koppeling, snelkoppelingen</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <strong>Demo-volgorde tip:</strong> Loop 1→4 (Geven), dan 5→7 (Wensen), dan 8→9 (vriend-perspectief). Eindig op 10 (profiel) om de agenda-koppeling te tonen.
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const PRODUCTS_LENA = [
+  { brand: "Bol.com",  title: "Sony WH-1000XM5 Koptelefoon", price: "€89",  sub: "Vandaag besteld, morgen in huis",   tags: ["tech", "muziek"], img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80" },
+  { brand: "Bol.com",  title: "Smeg Theekist 9 Soorten",     price: "€34",  sub: "Verzending vandaag",                tags: ["wonen"],          img: "https://images.unsplash.com/photo-1597481499750-3e6b22637e12?w=600&q=80" },
+  { brand: "Amazon",   title: "Polaroid Now Camera",         price: "€119", sub: "Op voorraad",                       tags: ["tech"],           img: "https://images.unsplash.com/photo-1606293459339-aa5d34a7b0e1?w=600&q=80" },
+  { brand: "Coolblue", title: "JBL Flip 6 Speaker",          price: "€99",  sub: "Vandaag besteld, morgen in huis",   tags: ["tech", "muziek"], img: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&q=80" },
+  { brand: "Bol.com",  title: "Mr. Boho Zonnebril",          price: "€69",  sub: "Verzending binnen 2 dagen",         tags: ["mode"],           img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&q=80" },
+  { brand: "Amazon",   title: "Lego Botanical Bonsai",       price: "€49",  sub: "Op voorraad",                       tags: ["wonen"],          img: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600&q=80" },
+  { brand: "Bol.com",  title: "Diptyque Geurkaars Baies",    price: "€78",  sub: "Vandaag besteld, morgen in huis",   tags: ["wonen"],          img: "https://images.unsplash.com/photo-1602874801006-e26c4e8b9f9a?w=600&q=80" },
+  { brand: "Coolblue", title: "Kindle Paperwhite",           price: "€159", sub: "Op voorraad",                       tags: ["boeken", "tech"], img: "https://images.unsplash.com/photo-1603162525937-92a92d8a82ff?w=600&q=80" },
+];
+
+const PRODUCTS_MARK = [
+  { brand: "Coolblue", title: "GoPro Hero 12 Black",         price: "€399", sub: "Op voorraad", tags: ["tech", "outdoor"],   img: "https://images.unsplash.com/photo-1526406915894-7bcd65f60845?w=600&q=80" },
+  { brand: "Bol.com",  title: "Whisky-tasting set",          price: "€85",  sub: "Vandaag besteld, morgen in huis", tags: ["food"], img: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=600&q=80" },
+  { brand: "Amazon",   title: "Marshall Acton III Speaker",  price: "€279", sub: "Op voorraad", tags: ["tech", "muziek"], img: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=600&q=80" },
+  { brand: "Bol.com",  title: "Le Creuset Gietijzeren Pan",  price: "€189", sub: "Verzending vandaag", tags: ["koken"], img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80" },
+];
+
+// Sam's own wishes (different products, framed as what Sam wants)
+const PRODUCTS_SELF = [
+  { brand: "Bol.com",  title: "Lonely Planet Japan Reisgids",    price: "€34",  sub: "Op voorraad",        tags: ["reizen"],          img: "https://images.unsplash.com/photo-1480796927426-f609979314bd?w=600&q=80" },
+  { brand: "Coolblue", title: "De'Longhi Espresso Machine",      price: "€229", sub: "Op voorraad",        tags: ["koken"],          img: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=600&q=80" },
+  { brand: "Amazon",   title: "Marcato Atlas 150 Pastamachine",  price: "€85",  sub: "Op voorraad",        tags: ["koken"],          img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80" },
+  { brand: "Bol.com",  title: "Ottolenghi Simple Kookboek",       price: "€29",  sub: "Verzending vandaag", tags: ["koken", "boeken"], img: "https://images.unsplash.com/photo-1543353071-873f17a7a088?w=600&q=80" },
+  { brand: "Amazon",   title: "Fujifilm Instax Mini 12",          price: "€79",  sub: "Op voorraad",        tags: ["tech", "reizen"],  img: "https://images.unsplash.com/photo-1606293459339-aa5d34a7b0e1?w=600&q=80" },
+  { brand: "Coolblue", title: "Apple AirPods Pro 2",              price: "€279", sub: "Op voorraad",        tags: ["tech", "muziek"],  img: "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=600&q=80" },
+  { brand: "Bol.com",  title: "Filson Original Briefcase Tas",    price: "€349", sub: "Op voorraad",        tags: ["mode", "reizen"],  img: "https://images.unsplash.com/photo-1547949003-9792a18a2601?w=600&q=80" },
+  { brand: "Bol.com",  title: "Riedel Wijnkaraf Decanter",        price: "€69",  sub: "Verzending vandaag", tags: ["wonen"],          img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=80" },
+];
+
+// Initial state
+let savedLena   = [PRODUCTS_LENA[1], PRODUCTS_LENA[3], PRODUCTS_LENA[5], PRODUCTS_LENA[6], PRODUCTS_LENA[7]];
+let myWishlist  = [...PRODUCTS_SELF.slice(0, 7)];
+let claimedSet  = new Set([1, 4, 6]); // indices of my wishes already claimed by friends (anon)
+let deckState   = { lena: 0, mark: 0, self: 0, friend: 0 };
+let currentSamenProduct = null;
+let samenCount = 4;
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function goTo(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const target = document.getElementById('view-' + view);
+  if (target) target.classList.add('active');
+
+  // Update step nav
+  document.querySelectorAll('.step').forEach(s => s.classList.toggle('active', s.dataset.target === view));
+
+  // Per-view init
+  if (view === 'swipe')      buildDeck('lena', PRODUCTS_LENA);
+  if (view === 'swipe-mark') buildDeck('mark', PRODUCTS_MARK);
+  if (view === 'swipe-self') buildDeck('self', PRODUCTS_SELF);
+  if (view === 'friend')     buildFriendDeck();
+  if (view === 'lena-wishlist') renderLenaWishlist();
+  if (view === 'wensen')        renderMyWishlist();
+  if (view === 'share-own')     renderOwnShare();
+
+  // Show notif banner first time on geven hub
+  if (view === 'geven' && !window._notifShown) {
+    window._notifShown = true;
+    setTimeout(() => {
+      const b = document.getElementById('notif-banner');
+      if (b) b.classList.add('show');
+      setTimeout(() => { if (b) b.classList.remove('show'); }, 5000);
+    }, 700);
+  }
+}
+
+function dismissNotif() {
+  document.getElementById('notif-banner').classList.remove('show');
+}
+
+// ============================================================
+// MOOD SELECTION (v3)
+// ============================================================
+function toggleMood(el) {
+  const grid = el.parentElement;
+  const isSelected = el.classList.contains('selected');
+  if (isSelected) {
+    el.classList.remove('selected');
+  } else {
+    const currentlySelected = grid.querySelectorAll('.mood-tile.selected').length;
+    if (currentlySelected >= 3) {
+      showToast('Max 3 sferen — deselecteer eerst een andere');
+      return;
+    }
+    el.classList.add('selected');
+  }
+  const count = grid.querySelectorAll('.mood-tile.selected').length;
+  const counter = document.getElementById('mood-count');
+  if (counter) counter.textContent = count;
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ============================================================
+// DECK BUILDING & SWIPE
+// ============================================================
+function buildDeck(key, products) {
+  const deck = document.getElementById('deck-' + key);
+  if (!deck) return;
+  deck.innerHTML = '';
+  deckState[key] = 0;
+  for (let i = products.length - 1; i >= 0; i--) {
+    deck.appendChild(buildCard(products[i], i, key));
+  }
+  attachDrag(key);
+  updateProgress(key, products.length);
+}
+
+function buildFriendDeck() {
+  const deck = document.getElementById('deck-friend');
+  deck.innerHTML = '';
+  deckState.friend = 0;
+  for (let i = myWishlist.length - 1; i >= 0; i--) {
+    const card = buildCard(myWishlist[i], i, 'friend');
+    if (claimedSet.has(i)) {
+      card.classList.add('claimed-already');
+      const stamp = document.createElement('div');
+      stamp.className = 'claimed-stamp';
+      stamp.textContent = 'Al geclaimd ✓';
+      card.appendChild(stamp);
+    }
+    deck.appendChild(card);
+  }
+  attachDrag('friend');
+  updateProgress('friend', myWishlist.length);
+}
+
+function buildCard(p, idx, deckKey) {
+  const c = document.createElement('div');
+  c.className = 'swipe-card';
+  c.dataset.idx = idx;
+  c.dataset.deck = deckKey;
+  c.innerHTML = `
+    <img class="card-image" src="${p.img}" alt="">
+    <div class="card-price">${p.price}</div>
+    ${deckKey === 'friend' ? '<button class="card-samen-btn" onclick="event.stopPropagation(); openSamenForProduct(' + idx + ')">👥 Samen</button>' : ''}
+    <div class="swipe-overlay like">${deckKey === 'friend' ? 'CLAIM' : 'SAVE'}</div>
+    <div class="swipe-overlay skip">SKIP</div>
+    <div class="card-content">
+      <div class="card-title">${p.title}</div>
+      <div class="card-sub">${p.sub}</div>
+      <div class="card-tags">
+        ${deckKey === 'self' ? '⭐' : '🎁'} Past bij: ${p.tags.map(t => `<span class="card-tag">${t}</span>`).join('')}
+      </div>
+    </div>
+  `;
+  return c;
+}
+
+function topCard(key) {
+  const cards = document.querySelectorAll(`#deck-${key} .swipe-card:not(.gone-left):not(.gone-right):not(.claimed-already)`);
+  return cards[cards.length - 1];
+}
+
+function attachDrag(key) {
+  const cards = document.querySelectorAll(`#deck-${key} .swipe-card`);
+  cards.forEach(card => {
+    if (card.classList.contains('claimed-already')) return;
+    let startX = 0, startY = 0, currentX = 0, dragging = false;
+
+    const onStart = (e) => {
+      if (card !== topCard(key)) return;
+      dragging = true;
+      const pt = e.touches ? e.touches[0] : e;
+      startX = pt.clientX; startY = pt.clientY;
+      card.classList.add('dragging');
+    };
+    const onMove = (e) => {
+      if (!dragging) return;
+      const pt = e.touches ? e.touches[0] : e;
+      currentX = pt.clientX - startX;
+      const currentY = pt.clientY - startY;
+      const rotate = currentX / 20;
+      card.style.transform = `translate(${currentX}px, ${currentY * 0.3}px) rotate(${rotate}deg)`;
+      const likeOpacity = Math.max(0, Math.min(1, currentX / 100));
+      const skipOpacity = Math.max(0, Math.min(1, -currentX / 100));
+      card.querySelector('.swipe-overlay.like').style.opacity = likeOpacity;
+      card.querySelector('.swipe-overlay.skip').style.opacity = skipOpacity;
+    };
+    const onEnd = () => {
+      if (!dragging) return;
+      dragging = false;
+      card.classList.remove('dragging');
+      if (currentX > 100) finishSwipe(card, key, 'right');
+      else if (currentX < -100) finishSwipe(card, key, 'left');
+      else {
+        card.style.transform = '';
+        card.querySelector('.swipe-overlay.like').style.opacity = 0;
+        card.querySelector('.swipe-overlay.skip').style.opacity = 0;
+      }
+      currentX = 0;
+    };
+
+    card.addEventListener('mousedown', onStart);
+    card.addEventListener('touchstart', onStart, { passive: true });
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('touchmove', onMove, { passive: true });
+    document.addEventListener('mouseup', onEnd);
+    document.addEventListener('touchend', onEnd);
+  });
+}
+
+function programmaticSwipe(key, direction) {
+  const card = topCard(key);
+  if (!card) return;
+  finishSwipe(card, key, direction);
+}
+
+function finishSwipe(card, key, direction) {
+  const idx = parseInt(card.dataset.idx);
+  if (direction === 'right') {
+    card.classList.add('gone-right');
+    if (key === 'lena') {
+      if (!savedLena.includes(PRODUCTS_LENA[idx])) savedLena.push(PRODUCTS_LENA[idx]);
+      showToast('Toegevoegd aan Lena\'s lijstje ❤');
+    } else if (key === 'mark') {
+      showToast('Toegevoegd aan Mark\'s lijstje ❤');
+    } else if (key === 'self') {
+      if (!myWishlist.includes(PRODUCTS_SELF[idx])) myWishlist.push(PRODUCTS_SELF[idx]);
+      showToast('Toegevoegd aan mijn wensen ⭐');
+    } else if (key === 'friend') {
+      claimedSet.add(idx);
+      showToast('Geclaimd! Doorklik naar webshop →');
+    }
+  } else {
+    card.classList.add('gone-left');
+  }
+  deckState[key]++;
+  const productSets = { lena: PRODUCTS_LENA, mark: PRODUCTS_MARK, self: PRODUCTS_SELF, friend: myWishlist };
+  updateProgress(key, productSets[key].length);
+  if (deckState[key] >= productSets[key].length) {
+    setTimeout(() => {
+      if (key === 'lena') buildDeck('lena', PRODUCTS_LENA);
+      else if (key === 'mark') buildDeck('mark', PRODUCTS_MARK);
+      else if (key === 'self') buildDeck('self', PRODUCTS_SELF);
+      else if (key === 'friend') buildFriendDeck();
+    }, 600);
+  }
+}
+
+function updateProgress(key, total) {
+  const fill = document.getElementById('progress-fill-' + key);
+  const label = document.getElementById('progress-label-' + key);
+  if (!fill) return;
+  const pct = (deckState[key] / total) * 100;
+  fill.style.width = pct + '%';
+  label.textContent = `${deckState[key]}/${total}`;
+}
+
+// ============================================================
+// WISHLISTS
+// ============================================================
+function renderLenaWishlist() {
+  const grid = document.getElementById('wishlist-grid-lena');
+  grid.innerHTML = '';
+  document.getElementById('wish-count-lena').textContent = savedLena.length;
+  savedLena.forEach(p => {
+    grid.appendChild(buildWishItem(p, false));
+  });
+}
+
+function renderMyWishlist() {
+  const grid = document.getElementById('my-wishlist-grid');
+  grid.innerHTML = '';
+  document.getElementById('my-wish-count').textContent = myWishlist.length;
+  document.getElementById('my-claim-count').textContent = claimedSet.size;
+  myWishlist.forEach((p, i) => {
+    const isClaimed = claimedSet.has(i);
+    grid.appendChild(buildWishItem(p, isClaimed));
+  });
+}
+
+function buildWishItem(p, claimed) {
+  const item = document.createElement('div');
+  item.className = 'wish-item' + (claimed ? ' claimed' : '');
+  item.innerHTML = `
+    <img src="${p.img}" alt="">
+    <div class="body">
+      <div class="price-row">
+        <div class="price">${p.price}</div>
+        <div class="heart">❤</div>
+      </div>
+      <div class="name">${p.title}</div>
+      <div class="brand">${(p.tags || []).slice(0,2).join(' · ')}</div>
+    </div>
+  `;
+  return item;
+}
+
+// ============================================================
+// SHARE OWN
+// ============================================================
+function renderOwnShare() {
+  const stack = document.getElementById('own-stack-images');
+  const count = document.getElementById('own-share-count');
+  stack.innerHTML = '';
+  myWishlist.slice(0, 4).forEach(p => {
+    const img = document.createElement('img');
+    img.src = p.img;
+    stack.appendChild(img);
+  });
+  count.textContent = `${myWishlist.length} cadeaus, €25 – €350`;
+}
+
+// ============================================================
+// SAMEN GEVEN
+// ============================================================
+function openSamen() {
+  // Pick the top card of the friend deck (the expensive Filson tag, or default to first)
+  const idx = myWishlist.findIndex(p => parseInt(p.price.replace(/[^0-9]/g, '')) > 150);
+  currentSamenProduct = myWishlist[idx >= 0 ? idx : 0];
+  openSamenForProduct(idx >= 0 ? idx : 0);
+}
+
+function openSamenForProduct(idx) {
+  currentSamenProduct = myWishlist[idx];
+  document.getElementById('samen-img').src = currentSamenProduct.img;
+  document.getElementById('samen-title').textContent = currentSamenProduct.title;
+  document.getElementById('samen-price').textContent = currentSamenProduct.price;
+  samenCount = 4;
+  updateSamenCalc();
+  goTo('samen-geven');
+}
+
+function changeSamen(delta) {
+  samenCount = Math.max(2, Math.min(10, samenCount + delta));
+  document.getElementById('samen-count').textContent = samenCount;
+  updateSamenCalc();
+}
+
+function updateSamenCalc() {
+  if (!currentSamenProduct) return;
+  const price = parseInt(currentSamenProduct.price.replace(/[^0-9]/g, ''));
+  const perHead = Math.ceil(price / samenCount);
+  document.getElementById('samen-perhead').textContent = '€' + perHead;
+  document.getElementById('samen-count').textContent = samenCount;
+}
+
+function confirmSamen() {
+  showToast('Uitnodiging gedeeld in WhatsApp');
+  setTimeout(() => goTo('friend'), 800);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  buildDeck('lena', PRODUCTS_LENA);
+  buildDeck('mark', PRODUCTS_MARK);
+  buildDeck('self', PRODUCTS_SELF);
+  buildFriendDeck();
+  renderLenaWishlist();
+  renderMyWishlist();
+  renderOwnShare();
+  goTo('welcome');
+});
+</script>
+
+</body>
+</html>
