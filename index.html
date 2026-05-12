@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GiftSwipe — Demo v4</title>
+<title>GiftSwipe — Demo v5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -481,6 +481,162 @@
   }
   .intake-text-hint strong { color: var(--info); font-weight: 600; }
 
+  /* ============ WELCOME v5: rustig met carrousel + USPs ============ */
+  .welcome-v5 {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .welcome-v5::-webkit-scrollbar { display: none; }
+  .welcome-v5-hero {
+    padding: 16px 24px 12px;
+  }
+  .welcome-v5-hero .brand-strip {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .welcome-v5-hero .brand-strip .mark {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--primary), #FF8A5C);
+    display: grid; place-items: center;
+    font-size: 16px;
+    color: white;
+    font-weight: 800;
+    box-shadow: 0 6px 16px rgba(230,63,87,0.3);
+  }
+  .welcome-v5-hero .brand-strip .name {
+    font-size: 16px; font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .welcome-v5-hero h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 4px;
+  }
+  .welcome-v5-hero .sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .usecase-carousel {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 6px 24px 10px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+  .usecase-carousel::-webkit-scrollbar { display: none; }
+  .usecase-card-h {
+    flex: 0 0 240px;
+    height: 165px;
+    scroll-snap-align: start;
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--text);
+    transition: transform 0.2s ease;
+  }
+  .usecase-card-h:hover { transform: translateY(-2px); }
+  .usecase-card-h img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .usecase-card-h:hover img { transform: scale(1.06); }
+  .usecase-card-h::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.78) 100%);
+  }
+  .usecase-card-h .label-block {
+    position: absolute;
+    bottom: 12px; left: 14px; right: 14px;
+    z-index: 2;
+  }
+  .usecase-card-h .uc-label {
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+  .usecase-card-h .uc-sub {
+    color: rgba(255,255,255,0.85);
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  .usecase-dots {
+    display: flex; justify-content: center; gap: 6px;
+    padding: 4px 0 12px;
+    flex-shrink: 0;
+  }
+  .usecase-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+  .usecase-dot.active {
+    width: 18px;
+    background: var(--primary);
+    border-radius: 3px;
+  }
+  .usp-section {
+    padding: 6px 24px 8px;
+    flex-shrink: 0;
+  }
+  .usp-section h3 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .usp-list {
+    display: grid;
+    gap: 0;
+  }
+  .usp-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .usp-item:last-child { border-bottom: none; }
+  .usp-icon {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    display: grid; place-items: center;
+    font-size: 17px;
+    flex-shrink: 0;
+    background: var(--primary-bg);
+  }
+  .usp-text { flex: 1; min-width: 0; }
+  .usp-title { font-size: 12px; font-weight: 700; color: var(--text); }
+  .usp-desc { font-size: 10.5px; color: var(--text-muted); margin-top: 1px; line-height: 1.35; }
+  .welcome-v5-cta {
+    padding: 8px 24px 18px;
+    flex-shrink: 0;
+  }
+  .welcome-v5-cta .link {
+    color: var(--text-muted);
+    font-size: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
   /* ============ WELCOME v4: use-case picker ============ */
   .welcome-v4 {
     flex: 1;
@@ -675,6 +831,363 @@
   }
   .intake-hint strong { color: var(--info); }
 
+  /* ============ V5: PURCHASE FLOW — Redirect + Bol page + Confirmation ============ */
+  /* Redirect transition screen */
+  #view-redirect {
+    background: linear-gradient(180deg, var(--primary-bg) 0%, var(--background) 60%);
+  }
+  .redirect-wrap {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .redirect-logo {
+    width: 80px; height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary), #FF8A5C);
+    display: grid; place-items: center;
+    font-size: 38px;
+    color: white;
+    margin-bottom: 16px;
+    box-shadow: 0 16px 36px rgba(230,63,87,0.35);
+    animation: pulseBox 1.4s ease-in-out infinite;
+  }
+  @keyframes pulseBox {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .redirect-h1 {
+    font-size: 22px; font-weight: 800;
+    color: var(--text); margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+  .redirect-sub {
+    font-size: 13px; color: var(--text-muted);
+    line-height: 1.5; max-width: 280px;
+    margin-bottom: 20px;
+  }
+  .redirect-spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--primary-bg);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 20px;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .redirect-info {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    text-align: left;
+    max-width: 320px;
+    margin-top: 6px;
+  }
+  .redirect-info .row {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-bottom: 8px;
+  }
+  .redirect-info .row:last-child { margin-bottom: 0; }
+  .redirect-info .check {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--success); color: white;
+    display: grid; place-items: center;
+    font-size: 10px; font-weight: 700;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .redirect-info .info-text {
+    font-size: 11px; color: var(--text); line-height: 1.4;
+  }
+
+  /* Simulated Bol.com page */
+  #view-bol-page {
+    background: white;
+  }
+  .bol-demo-badge {
+    position: absolute;
+    top: 50px; left: 50%; transform: translateX(-50%);
+    background: rgba(230, 63, 87, 0.95);
+    color: white;
+    font-size: 10px; font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 0 0 8px 8px;
+    z-index: 30;
+    backdrop-filter: blur(8px);
+  }
+  .bol-url-bar {
+    background: #F0F0F0;
+    padding: 8px 14px;
+    margin: 4px 12px;
+    border-radius: 16px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 10px;
+    font-family: 'SF Mono', Menlo, monospace;
+    color: #555;
+    border: 1px solid #DDD;
+  }
+  .bol-url-bar .lock { font-size: 11px; }
+  .bol-url-bar .url-text { flex: 1; }
+  .bol-url-bar .affiliate-tag {
+    color: var(--primary);
+    font-weight: 700;
+    background: rgba(230, 63, 87, 0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  .bol-header {
+    background: #0000A4;
+    color: white;
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .bol-header .back {
+    color: white; font-size: 18px; font-weight: 700;
+    cursor: pointer;
+  }
+  .bol-logo {
+    font-size: 28px; font-weight: 900;
+    color: white;
+    font-family: 'Arial Black', sans-serif;
+    letter-spacing: -1px;
+  }
+  .bol-logo::after {
+    content: '.';
+    color: #FFCC00;
+  }
+  .bol-header .icons {
+    margin-left: auto;
+    display: flex; gap: 14px;
+    color: white; font-size: 16px;
+  }
+
+  .bol-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 100px;
+  }
+  .bol-content::-webkit-scrollbar { display: none; }
+
+  .bol-product-image {
+    width: 100%; height: 240px;
+    background: white;
+    display: grid; place-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #EEE;
+  }
+  .bol-product-image img {
+    max-width: 100%; max-height: 100%;
+    object-fit: contain;
+  }
+
+  .bol-product-info {
+    padding: 16px;
+  }
+  .bol-product-info .brand-line {
+    font-size: 11px;
+    color: #0000A4;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+  .bol-product-info .title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1A1A1A;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+  .bol-rating {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 12px;
+  }
+  .bol-rating .stars { color: #FFCC00; font-size: 14px; }
+  .bol-rating .count { font-size: 11px; color: #666; }
+  .bol-price-row {
+    margin-bottom: 8px;
+  }
+  .bol-price {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1A1A1A;
+    letter-spacing: -0.02em;
+  }
+  .bol-price .cents { font-size: 16px; vertical-align: top; }
+  .bol-delivery {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: #2CB67D;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .bol-stock {
+    font-size: 11px; color: #666;
+    margin-bottom: 16px;
+  }
+
+  .bol-actions {
+    padding: 0 16px;
+    display: grid; gap: 8px;
+  }
+  .bol-btn-primary {
+    width: 100%;
+    background: #FFCC00;
+    color: #1A1A1A;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 204, 0, 0.3);
+  }
+  .bol-btn-secondary {
+    width: 100%;
+    background: white;
+    color: #0000A4;
+    border: 2px solid #0000A4;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .bol-affiliate-note {
+    position: absolute;
+    bottom: 14px; left: 16px; right: 16px;
+    background: var(--primary-bg);
+    border: 1px solid rgba(230,63,87,0.3);
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex; align-items: flex-start; gap: 10px;
+    z-index: 5;
+  }
+  .bol-affiliate-note .icon {
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .bol-affiliate-note .text {
+    font-size: 10px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .bol-affiliate-note .text strong { color: var(--primary); }
+
+  /* Confirmation screen */
+  #view-purchase-confirm {
+    background: linear-gradient(180deg, #E8F8F0 0%, var(--background) 50%);
+  }
+  .confirm-wrap {
+    flex: 1;
+    display: flex; flex-direction: column;
+    padding: 24px;
+    overflow-y: auto;
+  }
+  .confirm-check {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--success);
+    display: grid; place-items: center;
+    font-size: 38px;
+    color: white;
+    margin: 16px auto 16px;
+    box-shadow: 0 16px 36px rgba(44,182,125,0.35);
+    animation: pop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  @keyframes pop {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+  }
+  .confirm-h1 {
+    font-size: 22px; font-weight: 800;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .confirm-sub {
+    font-size: 13px; color: var(--text-muted);
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+  .confirm-product {
+    background: white;
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    display: flex; gap: 12px;
+  }
+  .confirm-product img {
+    width: 56px; height: 56px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+  .confirm-product .info { flex: 1; min-width: 0; }
+  .confirm-product .name { font-size: 13px; font-weight: 600; line-height: 1.3; }
+  .confirm-product .meta { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .confirm-product .price { font-size: 14px; font-weight: 700; color: var(--text); margin-top: 4px; }
+
+  .confirm-breakdown {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+  .confirm-breakdown h3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .breakdown-row {
+    display: flex; justify-content: space-between;
+    padding: 6px 0;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .breakdown-row.divider {
+    border-top: 1px solid var(--border);
+    margin-top: 4px; padding-top: 10px;
+    font-weight: 700;
+  }
+  .breakdown-row .val { font-weight: 600; font-feature-settings: 'tnum'; }
+  .breakdown-row.commission .val {
+    color: var(--primary);
+    font-weight: 800;
+  }
+
+  .confirm-explainer {
+    background: var(--primary-bg);
+    border-radius: 14px;
+    padding: 14px;
+    border: 1px solid rgba(230,63,87,0.25);
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .confirm-explainer strong { color: var(--primary); }
+
+  /* "Bestel" CTA on wishlist screens */
+  .order-cta-row {
+    display: flex; gap: 8px;
+  }
+  .order-cta-row .btn-secondary { flex: 0 0 auto; }
+  .order-cta-row .btn-primary { flex: 1; }
+
   /* ============ VIEW: SWIPE DECK ============ */
   .swipe-view { background: var(--background); }
   .deck-top {
@@ -799,6 +1312,163 @@
   .wishlist-header .meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
   .wishlist-stats { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
   .wishlist-stats span { color: var(--text); font-weight: 600; }
+
+  /* Wish-detail sheet (v5.2 — selectie vóór bestellen) */
+  #view-wish-detail { background: rgba(0,0,0,0.55); justify-content: flex-end; }
+  .wish-detail-sheet {
+    background: var(--surface);
+    border-radius: 24px 24px 0 0;
+    max-height: 90%;
+    display: flex; flex-direction: column;
+    animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow: hidden;
+  }
+  .wish-detail-img {
+    width: 100%; height: 240px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .wish-detail-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px 16px;
+  }
+  .wish-detail-content::-webkit-scrollbar { display: none; }
+  .wish-detail-content .title {
+    font-size: 20px; font-weight: 800;
+    color: var(--text); line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+  }
+  .wish-detail-content .price-row {
+    display: flex; align-items: baseline; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .wish-detail-content .price {
+    font-size: 28px; font-weight: 800;
+    color: var(--primary);
+  }
+  .wish-detail-content .sub {
+    font-size: 12px; color: var(--success);
+    font-weight: 600;
+  }
+  .wish-detail-tags {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .wish-detail-tag {
+    background: var(--primary-bg);
+    color: var(--primary);
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .wish-detail-match {
+    background: var(--background);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+  }
+  .wish-detail-match h4 {
+    font-size: 10px; font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .wish-detail-match ul { list-style: none; }
+  .wish-detail-match li {
+    font-size: 12px; color: var(--text);
+    line-height: 1.5;
+    padding-left: 18px;
+    position: relative;
+  }
+  .wish-detail-match li::before {
+    content: '✓';
+    position: absolute; left: 0; top: 0;
+    color: var(--success);
+    font-weight: 700;
+  }
+  .wish-detail-actions {
+    padding: 0 24px 20px;
+    display: grid;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .wish-detail-close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    position: absolute;
+    top: 16px; right: 16px;
+    font-size: 16px;
+    cursor: pointer;
+    display: grid; place-items: center;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+  }
+
+  /* Ordered-status badge on wishlist cards */
+  .wish-item.ordered {
+    position: relative;
+  }
+  .wish-item.ordered::before {
+    content: '✓ Besteld';
+    position: absolute;
+    top: 8px; right: 8px;
+    background: var(--success);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    z-index: 2;
+  }
+  .wish-item.ordered img { filter: brightness(0.92); }
+  .wish-item.ordered .price { color: var(--success) !important; }
+
+  /* Cleaner wishlist header (v5.1) */
+  .wishlist-header-clean {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .wishlist-header-clean .info { flex: 1; min-width: 0; }
+  .wishlist-header-clean h2 {
+    font-size: 17px; font-weight: 700; line-height: 1.2;
+    color: var(--text);
+  }
+  .wishlist-header-clean .meta {
+    font-size: 12px; color: var(--text-muted);
+    margin-top: 3px; line-height: 1.4;
+  }
+  .wishlist-header-clean .meta span {
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .wishlist-header-clean .header-action {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: var(--text-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .wishlist-header-clean .header-action:hover {
+    background: var(--background);
+  }
+  .wishlist-grid-clean {
+    padding: 14px 20px 130px !important;
+    gap: 14px !important;
+  }
+  .wishlist-grid-clean .wish-item img { height: 130px; }
+  .wishlist-grid-clean .wish-item .body { padding: 10px 12px 12px; }
+  .wishlist-grid-clean .wish-item .name { font-size: 12px; line-height: 1.35; }
 
   .wishlist-tabs {
     display: flex; gap: 8px;
@@ -1376,17 +2046,17 @@
         <div class="brand-tagline">Tinder voor cadeaus</div>
       </div>
     </div>
-    <div class="version-pill">VERSIE 4.0 · DEMO</div>
-    <h1>Begin bij je situatie, niet bij de app.</h1>
-    <p class="lead">Nieuw welkomstscherm vraagt direct waarvoor je komt — geen abstracte demo meer. Plus vrije tekstvelden in beide intakes voor context die niet in chips past.</p>
+    <div class="version-pill">VERSIE 5.0 · DEMO</div>
+    <h1>De complete bestelreis — zichtbaar gemaakt.</h1>
+    <p class="lead">Nieuw: de overgang van GiftSwipe naar de webshop is nu visueel zichtbaar. Zie hoe het affiliate-model werkt vanuit het gebruikers-perspectief.</p>
 
     <div class="changelog">
-      <div class="changelog-title">Nieuw in v4</div>
+      <div class="changelog-title">Nieuw in v5</div>
       <ul>
-        <li>Welkom = 6 situatie-tegels (use-case kiezer)</li>
-        <li>Vrij tekstveld in Mark-intake voor context</li>
-        <li>Vrij tekstveld in Wens-intake voor wat er speelt</li>
-        <li>Snellere route: 1 tap = juiste flow</li>
+        <li>Redirect-scherm met uitleg "we sturen je door"</li>
+        <li>Gesimuleerde webshop-pagina met affiliate-link</li>
+        <li>Bevestigings-scherm met commissie-uitleg</li>
+        <li>"Bestel"-flow toegankelijk vanuit wishlist en vriend-view</li>
       </ul>
     </div>
   </div>
@@ -1396,57 +2066,59 @@
     <div class="phone">
       <div class="screen">
 
-        <!-- ====== VIEW: WELCOME v4 (use-case picker) ====== -->
+        <!-- ====== VIEW: WELCOME v5 (rustige carrousel + USPs) ====== -->
         <div class="view active" id="view-welcome">
           <div class="status-bar">
             <span>9:41</span>
             <span class="right">●●●● 5G · 100%</span>
           </div>
-          <div class="welcome-v4">
-            <div class="brand-strip">
-              <div class="mark">🎁</div>
-              <div class="name">GiftSwipe</div>
+          <div class="welcome-v5">
+            <div class="welcome-v5-hero">
+              <div class="brand-strip">
+                <div class="mark">G</div>
+                <div class="name">GiftSwipe</div>
+              </div>
+              <h1>Wat speelt er bij jou?</h1>
+              <div class="sub">Tap of swipe — we brengen je direct naar de juiste flow.</div>
             </div>
-            <h1>Wat speelt er bij jou?</h1>
-            <p class="lead">Tap wat past — we brengen je direct naar de juiste flow. Geen onboarding-tutorial, geen omweg.</p>
 
-            <div class="usecase-grid">
-              <div class="usecase-tile" onclick="goTo('mark-intake')">
+            <div class="usecase-carousel" id="usecase-carousel">
+              <div class="usecase-card-h" onclick="goTo('mark-intake')">
                 <img src="https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=500&q=80" alt="">
                 <div class="label-block">
                   <div class="uc-label">Vriend wordt jarig</div>
                   <div class="uc-sub">Snel een passend cadeau</div>
                 </div>
               </div>
-              <div class="usecase-tile" onclick="goTo('wens-intake')">
+              <div class="usecase-card-h" onclick="goTo('wens-intake')">
                 <img src="https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80" alt="">
                 <div class="label-block">
                   <div class="uc-label">Mijn verjaardag komt</div>
                   <div class="uc-sub">Eigen wensenlijst maken</div>
                 </div>
               </div>
-              <div class="usecase-tile" onclick="goTo('geven')">
+              <div class="usecase-card-h" onclick="goTo('geven')">
                 <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?w=500&q=80" alt="">
                 <div class="label-block">
                   <div class="uc-label">Cadeau voor mama</div>
                   <div class="uc-sub">Iets persoonlijks geven</div>
                 </div>
               </div>
-              <div class="usecase-tile" onclick="goTo('recipient')">
+              <div class="usecase-card-h" onclick="goTo('recipient')">
                 <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?w=500&q=80" alt="">
                 <div class="label-block">
                   <div class="uc-label">Vriendin krijgt baby</div>
                   <div class="uc-sub">Babyborrel-cadeau</div>
                 </div>
               </div>
-              <div class="usecase-tile" onclick="goTo('recipient')">
+              <div class="usecase-card-h" onclick="goTo('recipient')">
                 <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=500&q=80" alt="">
                 <div class="label-block">
                   <div class="uc-label">Collega afscheid</div>
                   <div class="uc-sub">Bedankje van het team</div>
                 </div>
               </div>
-              <div class="usecase-tile" onclick="goTo('geven')">
+              <div class="usecase-card-h" onclick="goTo('geven')">
                 <img src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=500&q=80" alt="">
                 <div class="label-block">
                   <div class="uc-label">Nog geen idee</div>
@@ -1455,8 +2127,52 @@
               </div>
             </div>
 
-            <div class="welcome-footer">
-              <a onclick="goTo('profiel')">Al een account? Inloggen →</a>
+            <div class="usecase-dots" id="usecase-dots">
+              <div class="usecase-dot active"></div>
+              <div class="usecase-dot"></div>
+              <div class="usecase-dot"></div>
+              <div class="usecase-dot"></div>
+              <div class="usecase-dot"></div>
+              <div class="usecase-dot"></div>
+            </div>
+
+            <div class="usp-section">
+              <h3>Waarom GiftSwipe</h3>
+              <div class="usp-list">
+                <div class="usp-item">
+                  <div class="usp-icon">⚡</div>
+                  <div class="usp-text">
+                    <div class="usp-title">Swipen in plaats van zoeken</div>
+                    <div class="usp-desc">5 minuten in plaats van 45. Geen 50.000 zoekresultaten meer.</div>
+                  </div>
+                </div>
+                <div class="usp-item">
+                  <div class="usp-icon">🎯</div>
+                  <div class="usp-text">
+                    <div class="usp-title">Persoonlijk per ontvanger</div>
+                    <div class="usp-desc">Suggesties op leeftijd, interesses en budget — niet generiek.</div>
+                  </div>
+                </div>
+                <div class="usp-item">
+                  <div class="usp-icon">🙌</div>
+                  <div class="usp-text">
+                    <div class="usp-title">Vrienden claimen anoniem</div>
+                    <div class="usp-desc">Geen dubbele cadeaus, geen sociale druk — gewoon makkelijk.</div>
+                  </div>
+                </div>
+                <div class="usp-item">
+                  <div class="usp-icon">🎂</div>
+                  <div class="usp-text">
+                    <div class="usp-title">Nooit meer cadeaustress</div>
+                    <div class="usp-desc">Koppel je agenda en krijg een herinnering vóór je het zelf vergeet.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="welcome-v5-cta">
+              <button class="btn-primary" onclick="goTo('mark-intake')">Beginnen →</button>
+              <a class="link" onclick="goTo('profiel')">Al een account? Inloggen</a>
             </div>
           </div>
         </div>
@@ -1834,25 +2550,17 @@
             <div class="title">Voor Lena</div>
             <div class="menu">⋯</div>
           </div>
-          <div class="wishlist-header">
-            <div class="row">
-              <div class="avatar lg">👩</div>
-              <div>
-                <h2>Lena, 28</h2>
-                <div class="meta">🎂 over 6 dagen · €25 – €100</div>
-              </div>
+          <div class="wishlist-header-clean">
+            <div class="avatar md">👩</div>
+            <div class="info">
+              <h2>Lena's lijstje</h2>
+              <div class="meta"><span id="wish-progress-lena">0 van 5 besteld</span> · 🎂 over 6 dagen</div>
             </div>
-            <div class="wishlist-stats">
-              <span id="wish-count-lena">5</span> cadeaus bewaard ·
-              <span>32</span> doorgeswiped
-            </div>
+            <button class="header-action" onclick="showToast('Lena\'s profiel bewerken')">⋯</button>
           </div>
-          <div style="background: var(--primary-bg); padding: 10px 16px; margin: 12px 20px 4px; border-radius: 12px; font-size: 12px; color: var(--text); line-height: 1.4;">
-            💡 <strong>Dit is jouw selectie</strong> — alles wat jij hebt geliket tijdens het swipen voor Lena. Alleen voor jou zichtbaar.
-          </div>
-          <div class="wishlist-grid" id="wishlist-grid-lena"></div>
+          <div class="wishlist-grid wishlist-grid-clean" id="wishlist-grid-lena"></div>
           <div class="sticky-cta">
-            <button class="btn-primary" onclick="showToast('Voor anderen: alleen voor jou zichtbaar')">Bestel zelf →</button>
+            <button class="btn-primary" onclick="goTo('swipe')">+ Voeg meer cadeau-ideeën toe</button>
           </div>
           <div class="bottom-nav">
             <div class="nav-tab active" onclick="goTo('geven')">
@@ -2249,6 +2957,158 @@
           </div>
         </div>
 
+        <!-- ====== VIEW: WISH DETAIL (v5.2 — kies cadeau om te bestellen) ====== -->
+        <div class="view" id="view-wish-detail">
+          <div class="wish-detail-sheet">
+            <img class="wish-detail-img" id="wish-detail-img" src="" alt="">
+            <button class="wish-detail-close" onclick="goTo('lena-wishlist')">✕</button>
+            <div class="wish-detail-content">
+              <div class="title" id="wish-detail-title">Productnaam</div>
+              <div class="price-row">
+                <span class="price" id="wish-detail-price">€0</span>
+                <span class="sub" id="wish-detail-sub">Op voorraad</span>
+              </div>
+              <div class="wish-detail-tags" id="wish-detail-tags"></div>
+              <div class="wish-detail-match">
+                <h4>Waarom dit past bij Lena</h4>
+                <ul>
+                  <li>Sluit aan bij haar interesses (tech, muziek, wonen)</li>
+                  <li>Binnen het budget van €25 – €100</li>
+                  <li>Past bij de gelegenheid: verjaardag</li>
+                </ul>
+              </div>
+            </div>
+            <div class="wish-detail-actions">
+              <button class="btn-primary" onclick="purchaseSelectedWish()">Bestel dit cadeau bij webshop →</button>
+              <button class="btn-secondary" onclick="goTo('lena-wishlist')">Bekijk eerst andere opties</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: REDIRECT (v5 new — transition naar webshop) ====== -->
+        <div class="view" id="view-redirect">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="redirect-wrap">
+            <div class="redirect-logo">🛒</div>
+            <div class="redirect-h1">We brengen je naar de webshop</div>
+            <div class="redirect-sub">Daar reken je gewoon af zoals je gewend bent — met iDEAL of je bestaande account.</div>
+            <div class="redirect-spinner"></div>
+            <div class="redirect-info">
+              <div class="row">
+                <div class="check">✓</div>
+                <div class="info-text"><strong>Affiliate-link actief</strong> — wij ontvangen een kleine vergoeding bij aankoop</div>
+              </div>
+              <div class="row">
+                <div class="check">✓</div>
+                <div class="info-text"><strong>Geen extra kosten voor jou</strong> — de prijs blijft hetzelfde</div>
+              </div>
+              <div class="row">
+                <div class="check">✓</div>
+                <div class="info-text"><strong>Veilig betalen</strong> — bestelling en levering via de webshop zelf</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: BOL PAGE (v5 new — gesimuleerde webshop) ====== -->
+        <div class="view" id="view-bol-page">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="bol-demo-badge">DEMO — IN ECHTE APP LAND JE OP DE WEBSHOP</div>
+          <div class="bol-url-bar" style="margin-top: 28px;">
+            <span class="lock">🔒</span>
+            <span class="url-text">bol.com/p/<span id="bol-url-slug">sony-wh-1000xm5</span>?<span class="affiliate-tag">af=giftswipe-21</span></span>
+          </div>
+          <div class="bol-header">
+            <div class="back" onclick="goTo('friend')">←</div>
+            <div class="bol-logo">bol</div>
+            <div class="icons">🔍 ❤ 🛒</div>
+          </div>
+          <div class="bol-content">
+            <div class="bol-product-image">
+              <img id="bol-product-img" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80" alt="">
+            </div>
+            <div class="bol-product-info">
+              <div class="brand-line">Bol.com</div>
+              <div class="title" id="bol-product-title">Sony WH-1000XM5 Draadloze Koptelefoon</div>
+              <div class="bol-rating">
+                <span class="stars">★★★★★</span>
+                <span class="count">4.6 · 1.247 reviews</span>
+              </div>
+              <div class="bol-price-row">
+                <span class="bol-price" id="bol-product-price">€ 89<span class="cents">,00</span></span>
+              </div>
+              <div class="bol-delivery">
+                📦 Vandaag besteld, morgen in huis
+              </div>
+              <div class="bol-stock">
+                Op voorraad · Gratis bezorging vanaf €20
+              </div>
+            </div>
+            <div class="bol-actions">
+              <button class="bol-btn-primary" onclick="goTo('purchase-confirm')">In winkelwagen</button>
+              <button class="bol-btn-secondary" onclick="goTo('purchase-confirm')">Direct bestellen</button>
+            </div>
+          </div>
+          <div class="bol-affiliate-note">
+            <div class="icon">💡</div>
+            <div class="text">Je komt via <strong>GiftSwipe</strong> — wij ontvangen een kleine commissie bij aankoop. Geen extra kosten voor jou.</div>
+          </div>
+        </div>
+
+        <!-- ====== VIEW: PURCHASE CONFIRMATION (v5 new — bevestiging + commissie) ====== -->
+        <div class="view" id="view-purchase-confirm">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="right">●●●● 5G · 100%</span>
+          </div>
+          <div class="confirm-wrap">
+            <div class="confirm-check">✓</div>
+            <div class="confirm-h1">Bestelling geplaatst!</div>
+            <div class="confirm-sub">De webshop verwerkt nu je bestelling. Je krijgt de bevestiging per e-mail.</div>
+
+            <div class="confirm-product">
+              <img id="confirm-img" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80" alt="">
+              <div class="info">
+                <div class="name" id="confirm-name">Sony WH-1000XM5 Draadloze Koptelefoon</div>
+                <div class="meta">Besteld bij Bol.com · Morgen in huis</div>
+                <div class="price" id="confirm-price">€ 89,00</div>
+              </div>
+            </div>
+
+            <div class="confirm-breakdown">
+              <h3>Wat gebeurt er nu</h3>
+              <div class="breakdown-row">
+                <span>Bol.com pakt de bestelling in</span>
+                <span class="val">vandaag</span>
+              </div>
+              <div class="breakdown-row">
+                <span>PostNL bezorgt het cadeau</span>
+                <span class="val">morgen</span>
+              </div>
+              <div class="breakdown-row">
+                <span>Klantenservice loopt via Bol.com</span>
+                <span class="val">altijd</span>
+              </div>
+              <div class="breakdown-row divider commission">
+                <span>GiftSwipe-commissie bij deze aankoop</span>
+                <span class="val" id="confirm-commission">€ 4,45</span>
+              </div>
+            </div>
+
+            <div class="confirm-explainer">
+              💡 <strong>Zo werkt GiftSwipe:</strong> wij koppelen je door naar de webshop, jij koopt daar zoals je gewend bent, en de webshop betaalt ons een kleine vergoeding voor de doorverwijzing. Daarmee houden we GiftSwipe gratis voor jou.
+            </div>
+
+            <button class="btn-primary" onclick="completePurchaseReturn()">Terug naar GiftSwipe →</button>
+          </div>
+        </div>
+
         <!-- ====== VIEW: PROFIEL ====== -->
         <div class="view" id="view-profiel">
           <div class="status-bar">
@@ -2514,10 +3374,37 @@
     </div>
 
     <div class="flow-group">
+      <div class="flow-title">🛒 Bestelreis (nieuw)</div>
+      <div class="step-list">
+        <div class="step" data-target="redirect" onclick="startPurchase(myWishlist[0])">
+          <div class="step-num">12</div>
+          <div class="step-body">
+            <div class="step-title">Doorklik naar webshop</div>
+            <div class="step-desc">Redirect-scherm met uitleg over affiliate</div>
+          </div>
+        </div>
+        <div class="step" data-target="bol-page" onclick="startPurchase(myWishlist[0]); setTimeout(() => goTo('bol-page'), 100)">
+          <div class="step-num">13</div>
+          <div class="step-body">
+            <div class="step-title">Bol.com productpagina</div>
+            <div class="step-desc">Klant betaalt en bestelt bij de webshop</div>
+          </div>
+        </div>
+        <div class="step" data-target="purchase-confirm" onclick="startPurchase(myWishlist[0]); setTimeout(() => goTo('purchase-confirm'), 100)">
+          <div class="step-num">14</div>
+          <div class="step-body">
+            <div class="step-title">Commissie-bevestiging</div>
+            <div class="step-desc">Wat verdient GiftSwipe aan deze aankoop?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
       <div class="flow-title">👤 Profiel</div>
       <div class="step-list">
         <div class="step" data-target="profiel" onclick="goTo('profiel')">
-          <div class="step-num">12</div>
+          <div class="step-num">15</div>
           <div class="step-body">
             <div class="step-title">Profiel + agenda</div>
             <div class="step-desc">Geboortedatum, agenda-koppeling, snelkoppelingen</div>
@@ -2539,34 +3426,36 @@
 // ============================================================
 // DATA
 // ============================================================
+// Diverse productcategorieën — niet alleen Bol/Amazon
 const PRODUCTS_LENA = [
-  { brand: "Bol.com",  title: "Sony WH-1000XM5 Koptelefoon", price: "€89",  sub: "Vandaag besteld, morgen in huis",   tags: ["tech", "muziek"], img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80" },
-  { brand: "Bol.com",  title: "Smeg Theekist 9 Soorten",     price: "€34",  sub: "Verzending vandaag",                tags: ["wonen"],          img: "https://images.unsplash.com/photo-1597481499750-3e6b22637e12?w=600&q=80" },
-  { brand: "Amazon",   title: "Polaroid Now Camera",         price: "€119", sub: "Op voorraad",                       tags: ["tech"],           img: "https://images.unsplash.com/photo-1606293459339-aa5d34a7b0e1?w=600&q=80" },
-  { brand: "Coolblue", title: "JBL Flip 6 Speaker",          price: "€99",  sub: "Vandaag besteld, morgen in huis",   tags: ["tech", "muziek"], img: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&q=80" },
-  { brand: "Bol.com",  title: "Mr. Boho Zonnebril",          price: "€69",  sub: "Verzending binnen 2 dagen",         tags: ["mode"],           img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&q=80" },
-  { brand: "Amazon",   title: "Lego Botanical Bonsai",       price: "€49",  sub: "Op voorraad",                       tags: ["wonen"],          img: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600&q=80" },
-  { brand: "Bol.com",  title: "Diptyque Geurkaars Baies",    price: "€78",  sub: "Vandaag besteld, morgen in huis",   tags: ["wonen"],          img: "https://images.unsplash.com/photo-1602874801006-e26c4e8b9f9a?w=600&q=80" },
-  { brand: "Coolblue", title: "Kindle Paperwhite",           price: "€159", sub: "Op voorraad",                       tags: ["boeken", "tech"], img: "https://images.unsplash.com/photo-1603162525937-92a92d8a82ff?w=600&q=80" },
+  { brand: "Hunkemöller",      title: "Lingerie cadeaubon",                  price: "€75",  sub: "Per e-mail of fysiek",        tags: ["lingerie", "mode"],    img: "https://images.unsplash.com/photo-1571513722275-4b41940f54b8?w=600&q=80" },
+  { brand: "Bongo",            title: "Wellness-arrangement voor 2",         price: "€89",  sub: "Geldig 2 jaar bij 200+ locaties", tags: ["wellness", "experience"], img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&q=80" },
+  { brand: "Pathé",            title: "Bioscoop-cadeaubon",                  price: "€25",  sub: "Geldig in heel NL",           tags: ["experience", "uitje"], img: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&q=80" },
+  { brand: "Tony's Chocolonely", title: "Chocolade-Tonyfest box",            price: "€34",  sub: "Limited edition · 12 repen",  tags: ["food", "luxe"],        img: "https://images.unsplash.com/photo-1623656376586-1ab9c2c6d4f1?w=600&q=80" },
+  { brand: "YourSurprise",     title: "Gepersonaliseerd fotoboek",           price: "€42",  sub: "Premium hardcover, eigen foto's", tags: ["persoonlijk", "wonen"], img: "https://images.unsplash.com/photo-1564540583246-934409427776?w=600&q=80" },
+  { brand: "Diner Cadeau",     title: "Restaurant-bon Amsterdam",            price: "€65",  sub: "Geldig bij 1.500+ restaurants", tags: ["experience", "food"], img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80" },
+  { brand: "Greetz",           title: "Verjaardags-bloemenboeket XL",        price: "€39",  sub: "Morgen bezorgd, briefje erbij", tags: ["bloemen", "persoonlijk"], img: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=600&q=80" },
+  { brand: "Bol.com",          title: "Diptyque Geurkaars Baies",            price: "€78",  sub: "Morgen in huis",              tags: ["wellness", "wonen"],   img: "https://images.unsplash.com/photo-1602874801006-e26c4e8b9f9a?w=600&q=80" },
 ];
 
 const PRODUCTS_MARK = [
-  { brand: "Coolblue", title: "GoPro Hero 12 Black",         price: "€399", sub: "Op voorraad", tags: ["tech", "outdoor"],   img: "https://images.unsplash.com/photo-1526406915894-7bcd65f60845?w=600&q=80" },
-  { brand: "Bol.com",  title: "Whisky-tasting set",          price: "€85",  sub: "Vandaag besteld, morgen in huis", tags: ["food"], img: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=600&q=80" },
-  { brand: "Amazon",   title: "Marshall Acton III Speaker",  price: "€279", sub: "Op voorraad", tags: ["tech", "muziek"], img: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=600&q=80" },
-  { brand: "Bol.com",  title: "Le Creuset Gietijzeren Pan",  price: "€189", sub: "Verzending vandaag", tags: ["koken"], img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80" },
+  { brand: "Ticketmaster",     title: "2× Eredivisie-tickets — samen naar de wedstrijd", price: "€170", sub: "Voor Mark + plus-one",       tags: ["sport", "samen"],      img: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600&q=80" },
+  { brand: "Ajax officieel",   title: "Ajax thuisshirt seizoen 2026",        price: "€95",  sub: "Met naam en nummer",          tags: ["sport", "mode"],       img: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80" },
+  { brand: "HelloFresh",       title: "Maaltijdbox 6 weken voor 2",          price: "€120", sub: "1 box per week, vrij te kiezen", tags: ["food", "koken"],   img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80" },
+  { brand: "Wijnvoordeel",     title: "Wijnpakket 6 flessen Italië",         price: "€68",  sub: "Selectie van sommelier",      tags: ["food", "wijn"],        img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=80" },
+  { brand: "Bever",            title: "Outdoor-thermos Stanley",             price: "€42",  sub: "Op voorraad",                 tags: ["outdoor", "sport"],    img: "https://images.unsplash.com/photo-1502472379793-a9d5f7ba0fa5?w=600&q=80" },
 ];
 
-// Sam's own wishes (different products, framed as what Sam wants)
+// Sam's eigen wensen — gevarieerd over categorieën
 const PRODUCTS_SELF = [
-  { brand: "Bol.com",  title: "Lonely Planet Japan Reisgids",    price: "€34",  sub: "Op voorraad",        tags: ["reizen"],          img: "https://images.unsplash.com/photo-1480796927426-f609979314bd?w=600&q=80" },
-  { brand: "Coolblue", title: "De'Longhi Espresso Machine",      price: "€229", sub: "Op voorraad",        tags: ["koken"],          img: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=600&q=80" },
-  { brand: "Amazon",   title: "Marcato Atlas 150 Pastamachine",  price: "€85",  sub: "Op voorraad",        tags: ["koken"],          img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80" },
-  { brand: "Bol.com",  title: "Ottolenghi Simple Kookboek",       price: "€29",  sub: "Verzending vandaag", tags: ["koken", "boeken"], img: "https://images.unsplash.com/photo-1543353071-873f17a7a088?w=600&q=80" },
-  { brand: "Amazon",   title: "Fujifilm Instax Mini 12",          price: "€79",  sub: "Op voorraad",        tags: ["tech", "reizen"],  img: "https://images.unsplash.com/photo-1606293459339-aa5d34a7b0e1?w=600&q=80" },
-  { brand: "Coolblue", title: "Apple AirPods Pro 2",              price: "€279", sub: "Op voorraad",        tags: ["tech", "muziek"],  img: "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=600&q=80" },
-  { brand: "Bol.com",  title: "Filson Original Briefcase Tas",    price: "€349", sub: "Op voorraad",        tags: ["mode", "reizen"],  img: "https://images.unsplash.com/photo-1547949003-9792a18a2601?w=600&q=80" },
-  { brand: "Bol.com",  title: "Riedel Wijnkaraf Decanter",        price: "€69",  sub: "Verzending vandaag", tags: ["wonen"],          img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=80" },
+  { brand: "Ticketmaster",     title: "2× Concerttickets Coldplay 2026",     price: "€220", sub: "Johan Cruijff Arena · samen beleven", tags: ["muziek", "samen"], img: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600&q=80" },
+  { brand: "HelloFresh",       title: "Maaltijdbox abonnement 8 weken",      price: "€199", sub: "Wekelijks vers",              tags: ["food", "koken"],      img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80" },
+  { brand: "Bongo",            title: "Hotelovernachting voor 2",            price: "€159", sub: "Boutique-hotels in NL/BE",    tags: ["reizen", "experience"], img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80" },
+  { brand: "Plantsome",        title: "Grote Monstera kamerplant",           price: "€55",  sub: "Inclusief sierpot",           tags: ["wonen", "groen"],     img: "https://images.unsplash.com/photo-1545241047-6083a3684587?w=600&q=80" },
+  { brand: "Coolblue",         title: "Sonos Era 100 speaker",               price: "€279", sub: "Op voorraad",                 tags: ["tech", "muziek"],     img: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=600&q=80" },
+  { brand: "Spotify",          title: "Premium 12 maanden",                  price: "€119", sub: "Direct geactiveerd",          tags: ["muziek", "digitaal"], img: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=600&q=80" },
+  { brand: "Otrium",           title: "Premium leren jas",                   price: "€189", sub: "Outlet-prijs · diverse maten", tags: ["mode", "premium"],   img: "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=600&q=80" },
+  { brand: "Bever",            title: "Hike-rugzak voor weekendtocht",       price: "€95",  sub: "Waterdicht · 28L",            tags: ["outdoor", "reizen"],  img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80" },
 ];
 
 // Initial state
@@ -2774,7 +3663,10 @@ function finishSwipe(card, key, direction) {
       showToast('Toegevoegd aan mijn wensen ⭐');
     } else if (key === 'friend') {
       claimedSet.add(idx);
-      showToast('Geclaimd! Doorklik naar webshop →');
+      showToast('Geclaimd ✓  →  bestelreis start...');
+      // After claim: auto-trigger the purchase flow
+      setTimeout(() => startPurchase(myWishlist[idx]), 900);
+      return;  // skip the deck-rebuild logic when we transition away
     }
   } else {
     card.classList.add('gone-left');
@@ -2792,6 +3684,51 @@ function finishSwipe(card, key, direction) {
   }
 }
 
+// ============================================================
+// PURCHASE FLOW (v5)
+// ============================================================
+let currentPurchaseProduct = null;
+let purchaseReturnContext = 'friend'; // where to go back after confirmation
+let purchaseCompleteCallback = null;  // optional callback after confirmation
+
+function startPurchase(product, onComplete) {
+  if (!product) product = myWishlist[0];
+  currentPurchaseProduct = product;
+  purchaseCompleteCallback = onComplete || null;
+  // Detect context based on which screen called us
+  if (selectedWishProduct && selectedWishProduct.product === product) {
+    purchaseReturnContext = 'lena-wishlist';
+  } else if (savedLena.includes(product)) {
+    purchaseReturnContext = 'lena-wishlist';
+  } else {
+    purchaseReturnContext = 'friend';
+  }
+  // Pre-populate the bol page and confirmation with this product
+  document.getElementById('bol-product-img').src = product.img;
+  document.getElementById('bol-product-title').textContent = product.title;
+  const priceStr = product.price.replace('€', '').trim();
+  const priceNum = parseInt(priceStr.replace(/[^0-9]/g, ''));
+  document.getElementById('bol-product-price').innerHTML = '€ ' + priceNum + '<span class="cents">,00</span>';
+  document.getElementById('bol-url-slug').textContent =
+    product.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30);
+
+  document.getElementById('confirm-img').src = product.img;
+  document.getElementById('confirm-name').textContent = product.title;
+  document.getElementById('confirm-price').textContent = '€ ' + priceNum + ',00';
+  // Calculate commission (5% as average)
+  const commission = (priceNum * 0.05).toFixed(2).replace('.', ',');
+  document.getElementById('confirm-commission').textContent = '€ ' + commission;
+
+  // Show redirect screen first, then auto-advance
+  goTo('redirect');
+  setTimeout(() => {
+    // Only advance if still on redirect screen (user didn't navigate away)
+    if (document.getElementById('view-redirect').classList.contains('active')) {
+      goTo('bol-page');
+    }
+  }, 2200);
+}
+
 function updateProgress(key, total) {
   const fill = document.getElementById('progress-fill-' + key);
   const label = document.getElementById('progress-label-' + key);
@@ -2804,13 +3741,65 @@ function updateProgress(key, total) {
 // ============================================================
 // WISHLISTS
 // ============================================================
+// Track which wishlist items have been ordered (Lena context)
+let orderedLenaSet = new Set();
+let selectedWishProduct = null;
+
 function renderLenaWishlist() {
   const grid = document.getElementById('wishlist-grid-lena');
   grid.innerHTML = '';
-  document.getElementById('wish-count-lena').textContent = savedLena.length;
-  savedLena.forEach(p => {
-    grid.appendChild(buildWishItem(p, false));
+  const total = savedLena.length;
+  const ordered = orderedLenaSet.size;
+  const progressEl = document.getElementById('wish-progress-lena');
+  if (progressEl) {
+    progressEl.textContent = ordered === 0
+      ? `${total} cadeaus in lijst`
+      : `${ordered} van ${total} besteld`;
+  }
+  savedLena.forEach((p, idx) => {
+    const item = buildWishItem(p, false);
+    if (orderedLenaSet.has(idx)) item.classList.add('ordered');
+    item.onclick = () => openWishDetail(p, idx);
+    item.style.cursor = 'pointer';
+    grid.appendChild(item);
   });
+}
+
+function openWishDetail(product, idx) {
+  selectedWishProduct = { product, idx };
+  document.getElementById('wish-detail-img').src = product.img;
+  document.getElementById('wish-detail-title').textContent = product.title;
+  const priceNum = parseInt(product.price.replace(/[^0-9]/g, ''));
+  document.getElementById('wish-detail-price').textContent = '€ ' + priceNum + ',00';
+  document.getElementById('wish-detail-sub').textContent = product.sub || 'Op voorraad';
+  const tagsEl = document.getElementById('wish-detail-tags');
+  tagsEl.innerHTML = '';
+  (product.tags || []).forEach(t => {
+    const tag = document.createElement('span');
+    tag.className = 'wish-detail-tag';
+    tag.textContent = t;
+    tagsEl.appendChild(tag);
+  });
+  goTo('wish-detail');
+}
+
+function purchaseSelectedWish() {
+  if (!selectedWishProduct) return;
+  // Mark as ordered after the flow completes
+  startPurchase(selectedWishProduct.product, () => {
+    orderedLenaSet.add(selectedWishProduct.idx);
+    renderLenaWishlist();
+  });
+}
+
+function completePurchaseReturn() {
+  // Fire the callback (e.g., mark as ordered)
+  if (purchaseCompleteCallback) {
+    purchaseCompleteCallback();
+    purchaseCompleteCallback = null;
+  }
+  // Navigate back to whichever screen made sense
+  goTo(purchaseReturnContext || 'friend');
 }
 
 function renderMyWishlist() {
@@ -2898,6 +3887,19 @@ function confirmSamen() {
 // ============================================================
 // INIT
 // ============================================================
+// Carousel dots sync (v5 welcome)
+function setupCarouselDots() {
+  const carousel = document.getElementById('usecase-carousel');
+  const dots = document.querySelectorAll('#usecase-dots .usecase-dot');
+  if (!carousel || dots.length === 0) return;
+  carousel.addEventListener('scroll', () => {
+    const cardWidth = 240 + 10; // card flex-basis + gap
+    const idx = Math.round(carousel.scrollLeft / cardWidth);
+    const clampedIdx = Math.max(0, Math.min(dots.length - 1, idx));
+    dots.forEach((d, i) => d.classList.toggle('active', i === clampedIdx));
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   buildDeck('lena', PRODUCTS_LENA);
   buildDeck('mark', PRODUCTS_MARK);
@@ -2906,6 +3908,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderLenaWishlist();
   renderMyWishlist();
   renderOwnShare();
+  setupCarouselDots();
   goTo('welcome');
 });
 </script>
