@@ -1205,6 +1205,310 @@
   }
 
   /* =====================================================
+     WENSEN FLOW (eigen wenslijst maken)
+  ===================================================== */
+  /* Lege staat */
+  .wens-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 32px 24px;
+    min-height: 360px;
+  }
+  .wens-empty-icon {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--purple-50);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    margin-bottom: 18px;
+  }
+  .wens-empty h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .wens-empty p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    max-width: 260px;
+    margin: 0 0 18px;
+  }
+  .wens-empty-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--purple-50);
+    color: var(--purple-700);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .wens-empty-hint-fab {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--coral-500);
+    color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  /* Mijn-wensen lijst (na opslaan) */
+  .my-wishes-summary {
+    padding: 8px 22px 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .my-wishes-summary .count { font-size: 13px; color: var(--text-secondary); }
+  .my-wishes-summary .count strong { color: var(--text-primary); font-weight: 600; }
+  .my-wishes-list { padding: 4px 22px 16px; }
+  .my-wish-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--white);
+    border: 0.5px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  .my-wish-emoji {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    background: var(--surface-alt);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .my-wish-info { flex: 1; min-width: 0; }
+  .my-wish-name { font-size: 14px; font-weight: 600; }
+  .my-wish-meta { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+  .my-wish-price { font-size: 13px; font-weight: 600; color: var(--purple-700); flex-shrink: 0; }
+  .my-wish-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+  .my-wish-remove:hover { color: var(--error); background: #FCE9E9; }
+
+  /* Wens-flow detail-screen */
+  .wens-flow-step {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: center;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+  .wens-flow-body {
+    flex: 1;
+    padding: 12px 24px 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .wens-flow-body h2 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 8px 0 6px;
+    line-height: 1.2;
+  }
+  .wens-flow-body .lead {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0 0 18px;
+  }
+  .wens-flow-actions {
+    margin-top: auto;
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Dubbele range slider */
+  .range-wrap { padding: 36px 8px 8px; position: relative; }
+  .range-track {
+    position: relative;
+    height: 6px;
+    background: var(--surface-alt);
+    border-radius: 999px;
+  }
+  .range-fill {
+    position: absolute;
+    top: 0; bottom: 0;
+    background: var(--purple-500);
+    border-radius: 999px;
+  }
+  .range-inputs {
+    position: absolute;
+    top: 28px;
+    left: 8px; right: 8px;
+    height: 6px;
+    pointer-events: none;
+  }
+  .range-inputs input[type="range"] {
+    position: absolute;
+    top: -10px;
+    width: 100%;
+    height: 28px;
+    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    pointer-events: none;
+    margin: 0;
+  }
+  .range-inputs input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    pointer-events: auto;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 2px solid var(--purple-500);
+    box-shadow: 0 2px 6px rgba(31,22,64,0.18);
+    cursor: grab;
+  }
+  .range-inputs input[type="range"]::-moz-range-thumb {
+    pointer-events: auto;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 2px solid var(--purple-500);
+    box-shadow: 0 2px 6px rgba(31,22,64,0.18);
+    cursor: grab;
+  }
+  .range-inputs input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; }
+  .range-values {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 28px;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--purple-900);
+  }
+  .range-bounds {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Hobby chips */
+  .hobby-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 4px 0 12px;
+  }
+  .hobby-chip {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .hobby-chip:hover { background: var(--surface-alt); }
+  .hobby-chip.selected {
+    background: var(--purple-50);
+    border-color: var(--purple-500);
+  }
+  .hobby-chip-emoji { font-size: 24px; line-height: 1; }
+  .hobby-chip-label { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .hobby-chip.selected .hobby-chip-label { color: var(--purple-700); }
+
+  /* Sub-hobby groups */
+  .sub-hobby-section { margin-bottom: 16px; }
+  .sub-hobby-title {
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--text-secondary);
+    letter-spacing: 0.04em;
+  }
+  .sub-hobby-title .emoji { margin-right: 4px; }
+  .sub-hobby-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .sub-chip {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--white);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .sub-chip:hover { background: var(--surface-alt); }
+  .sub-chip.selected {
+    background: var(--purple-100);
+    border-color: var(--purple-500);
+    color: var(--purple-700);
+  }
+
+  /* Share screen */
+  .share-options { padding: 8px 22px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .share-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--white);
+    border: 0.5px solid var(--border-light);
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .share-option:hover { background: var(--surface-alt); }
+  .share-option-icon {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--white);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .share-option-icon.copy { background: var(--purple-500); }
+  .share-option-icon.whatsapp { background: #25D366; }
+  .share-option-icon.sms { background: var(--info); }
+  .share-option-text { flex: 1; }
+  .share-option-sub { font-size: 12px; color: var(--text-secondary); font-weight: 400; margin-top: 2px; }
+  .share-link-preview {
+    background: var(--surface-alt);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--purple-700);
+    margin: 0 22px 14px;
+    word-break: break-all;
+  }
+
+  /* =====================================================
      PURCHASE / STATUS / WHATSAPP / NOTIFICATION
   ===================================================== */
   /* Wishlist-count label onder person-hero */
@@ -2065,57 +2369,27 @@
                 <h2 class="screen-title">Mijn wensen</h2>
                 <p class="screen-subtitle" style="margin-top:2px;">Wat staat er op jouw lijst?</p>
               </div>
-              <button class="share-btn" id="share-list-btn">Deel lijst</button>
+              <button class="share-btn" id="share-list-btn" style="display:none;" onclick="openWensShare()">Deel lijst</button>
             </div>
 
-            <div class="filter-row">
-              <button class="filter-pill active">Alles</button>
-              <button class="filter-pill">Verjaardag</button>
-              <button class="filter-pill">Sinterklaas</button>
-              <button class="filter-pill">Geen aanleiding</button>
+            <!-- Empty state (default) -->
+            <div class="wens-empty" id="wens-empty">
+              <div class="wens-empty-icon">🎁</div>
+              <h3>Nog geen wensen</h3>
+              <p>Maak jouw eigen wenslijstje aan. We helpen je suggesties te vinden op basis van je interesses.</p>
+              <div class="wens-empty-hint">
+                <span class="wens-empty-hint-fab">+</span>
+                Tik onderaan om te beginnen
+              </div>
             </div>
 
-            <div class="wish-list">
-              <button class="wish-item">
-                <div class="wish-thumb">📚</div>
-                <div class="wish-info">
-                  <div class="wish-name">Eikenhouten boekenkast</div>
-                  <div class="wish-meta">IKEA · 80×180 cm</div>
-                </div>
-                <div class="wish-price">€89</div>
-              </button>
-              <button class="wish-item">
-                <div class="wish-thumb">🎵</div>
-                <div class="wish-info">
-                  <div class="wish-name">Bon Iver — 22, A Million (vinyl)</div>
-                  <div class="wish-meta">Marktplaats · tweedehands</div>
-                </div>
-                <div class="wish-price">€28</div>
-              </button>
-              <button class="wish-item">
-                <div class="wish-thumb">📷</div>
-                <div class="wish-info">
-                  <div class="wish-name">Polaroid SX-70 camera</div>
-                  <div class="wish-meta">Vintage, jaren 70</div>
-                </div>
-                <div class="wish-price">€60</div>
-              </button>
-              <button class="wish-item">
-                <div class="wish-thumb">🌿</div>
-                <div class="wish-info">
-                  <div class="wish-name">Handgeweven wandkleed</div>
-                  <div class="wish-meta">Etsy · natuurlijke kleuren</div>
-                </div>
-                <div class="wish-price">€145</div>
-              </button>
-              <button class="wish-item">
-                <div class="wish-thumb">☕</div>
-                <div class="wish-info">
-                  <div class="wish-name">Espresso-koffieabonnement</div>
-                  <div class="wish-meta">Bocca · 6 maanden</div>
-                </div>
-                <div class="wish-price">€72</div>
-              </button>
+            <!-- Opgeslagen wensen (verschijnt na flow) -->
+            <div id="my-wishes-container" style="display:none;">
+              <div class="my-wishes-summary">
+                <span class="count"><strong id="my-wishes-count">0</strong> wensen opgeslagen</span>
+                <button class="flow-text-link" style="width:auto; padding:6px 10px; color:var(--purple-700);" onclick="openWensFlow()">+ Nog een toevoegen</button>
+              </div>
+              <div class="my-wishes-list" id="my-wishes-list"></div>
             </div>
 
             <div style="height: 24px;"></div>
@@ -2287,6 +2561,136 @@
 
             <button class="form-submit" type="submit">Opslaan</button>
           </form>
+        </div>
+
+        <!-- DETAIL: Wens-flow (eigen wenslijst maken) -->
+        <div class="detail-screen" id="detail-wens-flow">
+
+          <!-- Stap 1: Prijsrange + Gelegenheid -->
+          <div class="shop-view view-wens-prefs active">
+            <div class="detail-header">
+              <button class="back-btn" onclick="closeWensFlow()" aria-label="Sluit">✕</button>
+              <div class="detail-title">Wenslijst maken</div>
+            </div>
+            <div class="wens-flow-body">
+              <div class="wens-flow-step">Stap 1 van 3</div>
+              <h2>Wat zoek je ongeveer?</h2>
+              <p class="lead">Geef ons je prijsrange en de gelegenheid — daar baseren we onze voorstellen op.</p>
+
+              <div style="margin-bottom: 22px;">
+                <p style="font-size:12px; color:var(--text-secondary); font-weight:500; margin:0 0 6px;">Prijsrange</p>
+                <div class="range-wrap">
+                  <div class="range-track">
+                    <div class="range-fill" id="range-fill"></div>
+                  </div>
+                  <div class="range-inputs">
+                    <input type="range" min="0" max="500" step="5" value="20" id="range-min">
+                    <input type="range" min="0" max="500" step="5" value="100" id="range-max">
+                  </div>
+                  <div class="range-values">
+                    <span>€<span id="range-min-val">20</span></span>
+                    <span>€<span id="range-max-val">100</span></span>
+                  </div>
+                  <div class="range-bounds"><span>€0</span><span>€500</span></div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-size:12px; color:var(--text-secondary); font-weight:500; margin:0 0 8px;">Gelegenheid</p>
+                <div class="sub-hobby-chips" id="gelegenheid-chips">
+                  <button class="sub-chip selected" data-gel="Verjaardag">Verjaardag</button>
+                  <button class="sub-chip" data-gel="Sinterklaas">Sinterklaas</button>
+                  <button class="sub-chip" data-gel="Kerst">Kerst</button>
+                  <button class="sub-chip" data-gel="Bedankje">Bedankje</button>
+                  <button class="sub-chip" data-gel="Geen">Geen aanleiding</button>
+                </div>
+              </div>
+
+              <div class="wens-flow-actions">
+                <button class="btn-primary-flow" onclick="wensFlowGoTo('hobbies1')">Doorgaan</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stap 2: Hobby's hoofdcategorieën -->
+          <div class="shop-view view-wens-hobbies1">
+            <div class="detail-header">
+              <button class="back-btn" onclick="wensFlowBack()" aria-label="Terug">←</button>
+              <div class="detail-title">Wenslijst maken</div>
+            </div>
+            <div class="wens-flow-body">
+              <div class="wens-flow-step">Stap 2 van 3</div>
+              <h2>Wat zijn je interesses?</h2>
+              <p class="lead">Kies alles wat bij je past. Op basis hiervan tonen we straks ideeën.</p>
+              <div class="hobby-grid" id="hobby-grid"></div>
+              <div class="wens-flow-actions">
+                <button class="btn-primary-flow" id="hobbies1-next" onclick="wensFlowGoTo('hobbies2')" disabled>Kies minstens 1</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stap 3: Sub-categorieën -->
+          <div class="shop-view view-wens-hobbies2">
+            <div class="detail-header">
+              <button class="back-btn" onclick="wensFlowBack()" aria-label="Terug">←</button>
+              <div class="detail-title">Wenslijst maken</div>
+            </div>
+            <div class="wens-flow-body">
+              <div class="wens-flow-step">Stap 3 van 3</div>
+              <h2>Verfijn nog wat</h2>
+              <p class="lead">Waar gaat het precies om binnen je interesses?</p>
+              <div id="sub-hobbies-container"></div>
+              <div class="wens-flow-actions">
+                <button class="btn-primary-flow" id="hobbies2-next" onclick="startWensSwipe()" disabled>Toon mijn ideeën</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stap 4: Swipe door voorstellen -->
+          <div class="shop-view view-wens-swipe">
+            <div class="detail-header">
+              <button class="back-btn" onclick="wensFlowBack()" aria-label="Terug">←</button>
+              <div class="detail-title">Voorstellen <span id="wens-swipe-counter" style="font-weight:400; color:var(--text-secondary);">1/6</span></div>
+            </div>
+            <p class="swipe-instructions">Veeg naar rechts om op te slaan, naar links om over te slaan</p>
+            <div class="swipe-stack" id="wens-swipe-stack"></div>
+            <div class="swipe-actions">
+              <button class="swipe-action-btn skip" onclick="wensSwipeBtn('left')" aria-label="Overslaan">✕</button>
+              <button class="swipe-action-btn like" onclick="wensSwipeBtn('right')" aria-label="Opslaan">♥</button>
+            </div>
+          </div>
+
+          <!-- Stap 5: Klaar + delen -->
+          <div class="shop-view view-wens-done">
+            <div class="detail-header">
+              <button class="back-btn" onclick="closeWensFlow()" aria-label="Sluit">✕</button>
+              <div class="detail-title">Klaar</div>
+            </div>
+            <div class="flow-content centered">
+              <div class="success-check-big">✓</div>
+              <h1>Je wenslijst staat klaar</h1>
+              <p style="color:var(--text-secondary); max-width:280px;"><strong id="wens-done-count">3</strong> wensen opgeslagen. Deel je lijst zodat anderen weten wat ze je kunnen geven.</p>
+            </div>
+            <div class="share-link-preview">https://cadeau.app/w/walter-2026</div>
+            <div class="share-options">
+              <button class="share-option" onclick="shareWensCopy()">
+                <span class="share-option-icon copy">⌘</span>
+                <span class="share-option-text">
+                  Kopieer link
+                  <span class="share-option-sub">Plak in een chat of e-mail</span>
+                </span>
+              </button>
+              <button class="share-option" onclick="shareWensWhatsapp()">
+                <span class="share-option-icon whatsapp">w</span>
+                <span class="share-option-text">
+                  Deel via WhatsApp
+                  <span class="share-option-sub">Open WhatsApp met een uitnodiging</span>
+                </span>
+              </button>
+              <button class="flow-text-link" onclick="closeWensFlow()">Sluiten</button>
+            </div>
+          </div>
+
         </div>
 
         <!-- DETAIL: Shop (swipe → favorieten → cadeau → samen geven) -->
@@ -2601,8 +3005,15 @@
     el.addEventListener('click', () => openPersonDetail(el.dataset.person));
   });
 
-  // FAB
-  document.getElementById('fab').addEventListener('click', openAddGift);
+  // FAB — context-aware: Wensen → eigen wenslijst, Geven → cadeau voor iemand
+  document.getElementById('fab').addEventListener('click', () => {
+    const active = document.querySelector('.screen.active');
+    if (active && active.id === 'screen-wensen') {
+      openWensFlow();
+    } else {
+      openAddGift();
+    }
+  });
 
   // Detail-back-buttons
   document.querySelectorAll('[data-close-detail]').forEach(btn => {
@@ -2626,15 +3037,9 @@
     });
   });
 
-  // Share-knop op Wensen
-  document.getElementById('share-list-btn').addEventListener('click', () => {
-    showToast('Deel-link gekopieerd ✓');
-  });
-
-  // Wens-item (alleen toast — geen detail-screen)
-  document.querySelectorAll('.wish-item').forEach(w => {
-    w.addEventListener('click', () => showToast('Detail-scherm voor wens — coming soon'));
-  });
+  // (Oude wish-item en share-list-btn handlers verwijderd — Wensen-tab is nu
+  // empty-state + opgeslagen wensen via wensFlow, eigen share-knop heeft
+  // inline onclick.)
 
   // Idea-cards
   document.querySelectorAll('.idea-card').forEach(c => {
@@ -3250,6 +3655,479 @@
     }
     shopGoTo('confirm');
   }
+
+  // =========================================================
+  // WENSEN-FLOW — Eigen wenslijst maken (prefs → hobbies → swipe → delen)
+  // =========================================================
+  const wensFlowState = {
+    view: 'wens-prefs',
+    history: [],
+    priceMin: 20,
+    priceMax: 100,
+    gelegenheid: 'Verjaardag',
+    hobbies1: [],
+    hobbies2: [],
+    swipeIndex: 0,
+    suggestions: [],
+    saved: []
+  };
+
+  // Wenslijst die globaal wordt bijgehouden (na voltooiing zichtbaar op Wensen-tab)
+  const myWishes = [];
+
+  const hobbyData = [
+    { id: 'koken',    label: 'Koken',     emoji: '🍳', subs: ['Bakken', 'Stoven', 'BBQ', 'Aziatisch', 'Italiaans', 'Veggie'] },
+    { id: 'reizen',   label: 'Reizen',    emoji: '✈️', subs: ['Stedentrips', 'Verre reizen', 'Camping', 'Wellness'] },
+    { id: 'sporten',  label: 'Sporten',   emoji: '🏃', subs: ['Hardlopen', 'Yoga', 'Wielrennen', 'Fitness', 'Tennis'] },
+    { id: 'lezen',    label: 'Lezen',     emoji: '📚', subs: ['Fictie', 'Non-fictie', 'Biografie', 'Reisverhalen'] },
+    { id: 'wonen',    label: 'Wonen',     emoji: '🏡', subs: ['Decoratie', 'Keramiek', 'Textiel', 'Verlichting'] },
+    { id: 'muziek',   label: 'Muziek',    emoji: '🎵', subs: ['Vinyl', 'Concerten', 'Instrumenten'] },
+    { id: 'mode',     label: 'Mode',      emoji: '👗', subs: ['Sieraden', 'Tassen', 'Vintage', 'Schoenen'] },
+    { id: 'tuinieren',label: 'Tuinieren', emoji: '🪴', subs: ['Kamerplanten', 'Moestuin', 'Bloemen'] }
+  ];
+
+  // Statische voorbeeld-suggesties per sub-categorie (voor demo)
+  const wensSuggestionPool = {
+    'Bakken':       [{ name: 'KitchenAid stand-mixer', meta: 'KitchenAid · keuken', price: 489, emoji: '🥣' }, { name: 'Marmeren bakplaat', meta: 'Voor brood en pizza', price: 65, emoji: '🥖' }],
+    'Stoven':       [{ name: 'Le Creuset stoofpan', meta: 'Gietijzer · 24cm', price: 175, emoji: '🍲' }, { name: 'Slowcooker', meta: 'Crock-Pot · 5L', price: 89, emoji: '🥘' }],
+    'BBQ':          [{ name: 'Houtskool-grill set', meta: 'Met thermometer', price: 145, emoji: '🔥' }, { name: 'Premium BBQ-tang', meta: 'RVS · ergonomisch', price: 32, emoji: '🍖' }],
+    'Aziatisch':    [{ name: 'Wokpan met deksel', meta: 'Koolstofstaal · 32cm', price: 58, emoji: '🥢' }, { name: 'Sushi-set voor thuis', meta: 'Bamboe matjes + mes', price: 42, emoji: '🍣' }],
+    'Italiaans':    [{ name: 'Pasta-maker', meta: 'Handmatig · Marcato', price: 75, emoji: '🍝' }, { name: 'Pizza-oven', meta: 'Ooni · gas', price: 349, emoji: '🍕' }],
+    'Veggie':       [{ name: 'Plenty kookboek', meta: 'Ottolenghi · vegetarisch', price: 28, emoji: '📖' }, { name: 'Spiralizer', meta: 'Voor groente-pasta', price: 25, emoji: '🥒' }],
+    'Stedentrips':  [{ name: 'Lonely Planet Europa', meta: 'Reisgids · 2026', price: 35, emoji: '📕' }, { name: 'Polaroid Now camera', meta: 'Direct ontwikkelen', price: 119, emoji: '📷' }],
+    'Verre reizen': [{ name: 'Anti-jetlag tabletten', meta: 'Natuurlijk · vegan', price: 18, emoji: '💊' }, { name: 'Compacte reistas', meta: 'Patagonia · 35L', price: 145, emoji: '🎒' }],
+    'Camping':      [{ name: 'Tent voor 2 personen', meta: 'Lichtgewicht · 2.5kg', price: 195, emoji: '⛺' }, { name: 'Campingstoel inklap', meta: 'Helinox · compact', price: 89, emoji: '🪑' }],
+    'Wellness':     [{ name: 'Spa-voucher', meta: 'Een dag · regio NL', price: 95, emoji: '🧖' }, { name: 'Etherische olie-set', meta: '6 essenties', price: 38, emoji: '🌸' }],
+    'Hardlopen':    [{ name: 'Hardloopschoenen', meta: 'Asics Gel-Nimbus', price: 165, emoji: '👟' }, { name: 'Hardloop-vest', meta: 'Reflecterend · ademend', price: 48, emoji: '🦺' }],
+    'Yoga':         [{ name: 'Yoga-matje premium', meta: 'Manduka · natuurrubber', price: 95, emoji: '🧘' }, { name: 'Yoga-blok set', meta: 'Kurk · 2 stuks', price: 28, emoji: '🟫' }],
+    'Wielrennen':   [{ name: 'Fietsbril', meta: 'Oakley · sport', price: 145, emoji: '🕶️' }, { name: 'Bidonhouder duo', meta: 'Carbon · lichtgewicht', price: 38, emoji: '🚴' }],
+    'Fitness':      [{ name: 'Verstelbare halterset', meta: 'PowerBlock · 2-24kg', price: 285, emoji: '🏋️' }, { name: 'Resistance bands', meta: 'Set van 5', price: 22, emoji: '💪' }],
+    'Tennis':       [{ name: 'Tennisracket', meta: 'Wilson · intermediate', price: 119, emoji: '🎾' }, { name: 'Tennisballen tube', meta: 'Wilson · 3 stuks', price: 8, emoji: '🟢' }],
+    'Fictie':       [{ name: 'The Bee Sting', meta: 'Paul Murray · 2023', price: 22, emoji: '📕' }, { name: 'Boekenmand', meta: 'Voor leesplaats', price: 35, emoji: '🧺' }],
+    'Non-fictie':   [{ name: 'Atomic Habits', meta: 'James Clear', price: 18, emoji: '📘' }, { name: 'Een korte geschiedenis van bijna alles', meta: 'Bryson', price: 24, emoji: '📗' }],
+    'Biografie':    [{ name: 'Born a Crime', meta: 'Trevor Noah', price: 16, emoji: '📓' }, { name: 'Open', meta: 'Andre Agassi · autobiografie', price: 19, emoji: '📔' }],
+    'Reisverhalen': [{ name: 'Into the Wild', meta: 'Jon Krakauer', price: 14, emoji: '🗺️' }, { name: 'Reisdagboek met leer', meta: 'Voor onderweg', price: 32, emoji: '📒' }],
+    'Decoratie':    [{ name: 'Handgemaakte vaas', meta: 'Aardewerk · uniek', price: 55, emoji: '🏺' }, { name: 'Wandkleed handgeweven', meta: 'Etsy · natuurlijk', price: 145, emoji: '🌿' }],
+    'Keramiek':     [{ name: 'Theeset', meta: 'Japans porselein · 4-delig', price: 78, emoji: '🍵' }, { name: 'Keramieken kopje set', meta: 'Studio Pieper · 4 stuks', price: 65, emoji: '☕' }],
+    'Textiel':      [{ name: 'Linnen plaid', meta: 'Naturel · 130×170', price: 89, emoji: '🛌' }, { name: 'Wol kussenhoezen', meta: 'Set van 2', price: 58, emoji: '🛋️' }],
+    'Verlichting':  [{ name: 'Tafellamp van papier', meta: 'Hay · scandinavisch', price: 75, emoji: '💡' }, { name: 'Hue-startset', meta: 'Philips · 3 lampen', price: 159, emoji: '🌈' }],
+    'Vinyl':        [{ name: 'Bon Iver — 22, A Million', meta: 'Vinyl · 2016', price: 28, emoji: '🎵' }, { name: 'Platenspeler', meta: 'Audio-Technica · belt-drive', price: 295, emoji: '🎚️' }],
+    'Concerten':    [{ name: 'Concertkaart-voucher', meta: '€50 cadeau · TicketSwap', price: 50, emoji: '🎫' }, { name: 'Festivalpaspoort', meta: '1-daags · willekeurig', price: 75, emoji: '🎪' }],
+    'Instrumenten': [{ name: 'Ukulele soprano', meta: 'Kala · beginner', price: 65, emoji: '🎸' }, { name: 'Mondharmonica', meta: 'Hohner · klassiek', price: 38, emoji: '🎼' }],
+    'Sieraden':     [{ name: 'Zilveren ketting', meta: 'Pernille · minimalistisch', price: 78, emoji: '📿' }, { name: 'Gouden oorbellen', meta: 'Maria Black', price: 145, emoji: '💎' }],
+    'Tassen':       [{ name: 'Leren weekendtas', meta: 'Pinatex · vegan leer', price: 195, emoji: '👜' }, { name: 'Linnen tote bag', meta: 'Ambachtelijk', price: 38, emoji: '🎒' }],
+    'Vintage':      [{ name: 'Vintage zonnebril', meta: 'Jaren 70 · Marktplaats', price: 45, emoji: '🕶️' }, { name: 'Vintage horloge', meta: 'Seiko · jaren 80', price: 165, emoji: '⌚' }],
+    'Schoenen':     [{ name: 'Veterboots', meta: 'Blundstone · leer', price: 195, emoji: '👢' }, { name: 'Sneakers Veja', meta: 'Wit · duurzaam', price: 135, emoji: '👟' }],
+    'Kamerplanten': [{ name: 'Monstera deliciosa', meta: 'Met pot · 60cm', price: 38, emoji: '🪴' }, { name: 'Set kruidenplanten', meta: '6 stuks · bio', price: 32, emoji: '🌱' }],
+    'Moestuin':     [{ name: 'Moestuin-set', meta: 'Zaden voor 12 groenten', price: 28, emoji: '🌽' }, { name: 'Houseplants for All', meta: 'Plantenboek', price: 24, emoji: '📖' }],
+    'Bloemen':      [{ name: 'Bloemenabonnement', meta: '3 maanden · Bloomon', price: 89, emoji: '💐' }, { name: 'Vaas met droogbloemen', meta: 'Voorgemaakt', price: 45, emoji: '🌾' }]
+  };
+
+  function openWensFlow() {
+    // Reset state
+    wensFlowState.view = 'wens-prefs';
+    wensFlowState.history = [];
+    wensFlowState.priceMin = 20;
+    wensFlowState.priceMax = 100;
+    wensFlowState.gelegenheid = 'Verjaardag';
+    wensFlowState.hobbies1 = [];
+    wensFlowState.hobbies2 = [];
+    wensFlowState.swipeIndex = 0;
+    wensFlowState.suggestions = [];
+    wensFlowState.saved = [];
+
+    // Reset DOM
+    document.getElementById('range-min').value = 20;
+    document.getElementById('range-max').value = 100;
+    updateRangeFill();
+    document.querySelectorAll('#gelegenheid-chips .sub-chip').forEach(c => {
+      c.classList.toggle('selected', c.dataset.gel === 'Verjaardag');
+    });
+    renderHobbyGrid();
+    document.querySelectorAll('#detail-wens-flow .shop-view').forEach(v => v.classList.remove('active'));
+    document.querySelector('.view-wens-prefs').classList.add('active');
+    document.getElementById('detail-wens-flow').classList.add('open');
+  }
+
+  function closeWensFlow() {
+    document.getElementById('detail-wens-flow').classList.remove('open');
+  }
+
+  function wensFlowGoTo(target) {
+    wensFlowState.history.push(wensFlowState.view);
+    wensFlowState.view = target;
+    document.querySelectorAll('#detail-wens-flow .shop-view').forEach(v => v.classList.remove('active'));
+    document.querySelector('.view-wens-' + target).classList.add('active');
+    if (target === 'hobbies1') renderHobbyGrid();
+    if (target === 'hobbies2') renderSubHobbies();
+  }
+
+  function wensFlowBack() {
+    if (!wensFlowState.history.length) {
+      closeWensFlow();
+      return;
+    }
+    const prev = wensFlowState.history.pop();
+    wensFlowState.view = prev;
+    document.querySelectorAll('#detail-wens-flow .shop-view').forEach(v => v.classList.remove('active'));
+    document.querySelector('.view-wens-' + prev).classList.add('active');
+  }
+
+  // ----- Range slider (dubbele handle) -----
+  function updateRangeFill() {
+    const minInput = document.getElementById('range-min');
+    const maxInput = document.getElementById('range-max');
+    if (!minInput || !maxInput) return;
+    let minV = parseInt(minInput.value, 10);
+    let maxV = parseInt(maxInput.value, 10);
+    // Voorkom dat ze elkaar passeren (met min-gap van 5)
+    if (minV > maxV - 5) {
+      if (document.activeElement === minInput) {
+        maxV = Math.min(500, minV + 5);
+        maxInput.value = maxV;
+      } else {
+        minV = Math.max(0, maxV - 5);
+        minInput.value = minV;
+      }
+    }
+    wensFlowState.priceMin = minV;
+    wensFlowState.priceMax = maxV;
+    const pctMin = (minV / 500) * 100;
+    const pctMax = (maxV / 500) * 100;
+    const fill = document.getElementById('range-fill');
+    if (fill) {
+      fill.style.left = pctMin + '%';
+      fill.style.right = (100 - pctMax) + '%';
+    }
+    document.getElementById('range-min-val').textContent = minV;
+    document.getElementById('range-max-val').textContent = maxV;
+  }
+
+  // Init range listeners (one-time)
+  setTimeout(() => {
+    const minIn = document.getElementById('range-min');
+    const maxIn = document.getElementById('range-max');
+    if (minIn && maxIn) {
+      ['input','change'].forEach(ev => {
+        minIn.addEventListener(ev, updateRangeFill);
+        maxIn.addEventListener(ev, updateRangeFill);
+      });
+      updateRangeFill();
+    }
+    // Gelegenheid-chips
+    document.querySelectorAll('#gelegenheid-chips .sub-chip').forEach(c => {
+      c.addEventListener('click', () => {
+        document.querySelectorAll('#gelegenheid-chips .sub-chip').forEach(x => x.classList.remove('selected'));
+        c.classList.add('selected');
+        wensFlowState.gelegenheid = c.dataset.gel;
+      });
+    });
+  }, 0);
+
+  // ----- Hobby Q1 (hoofdcategorieën) -----
+  function renderHobbyGrid() {
+    const grid = document.getElementById('hobby-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    hobbyData.forEach(h => {
+      const btn = document.createElement('button');
+      btn.className = 'hobby-chip' + (wensFlowState.hobbies1.includes(h.id) ? ' selected' : '');
+      btn.dataset.id = h.id;
+      btn.innerHTML = `<span class="hobby-chip-emoji">${h.emoji}</span><span class="hobby-chip-label">${h.label}</span>`;
+      btn.onclick = () => toggleHobby(h.id);
+      grid.appendChild(btn);
+    });
+    updateHobby1Next();
+  }
+  function toggleHobby(id) {
+    const idx = wensFlowState.hobbies1.indexOf(id);
+    if (idx >= 0) {
+      wensFlowState.hobbies1.splice(idx, 1);
+      // Verwijder sub-keuzes uit deze categorie
+      const subs = hobbyData.find(h => h.id === id)?.subs || [];
+      wensFlowState.hobbies2 = wensFlowState.hobbies2.filter(s => !subs.includes(s));
+    } else {
+      wensFlowState.hobbies1.push(id);
+    }
+    document.querySelectorAll('.hobby-chip').forEach(c => {
+      c.classList.toggle('selected', wensFlowState.hobbies1.includes(c.dataset.id));
+    });
+    updateHobby1Next();
+  }
+  function updateHobby1Next() {
+    const btn = document.getElementById('hobbies1-next');
+    if (!btn) return;
+    if (wensFlowState.hobbies1.length === 0) {
+      btn.disabled = true;
+      btn.textContent = 'Kies minstens 1';
+    } else {
+      btn.disabled = false;
+      btn.textContent = `Doorgaan met ${wensFlowState.hobbies1.length} ${wensFlowState.hobbies1.length === 1 ? 'interesse' : 'interesses'}`;
+    }
+  }
+
+  // ----- Hobby Q2 (sub-categorieën, cascading) -----
+  function renderSubHobbies() {
+    const container = document.getElementById('sub-hobbies-container');
+    if (!container) return;
+    container.innerHTML = '';
+    wensFlowState.hobbies1.forEach(id => {
+      const cat = hobbyData.find(h => h.id === id);
+      if (!cat) return;
+      const sec = document.createElement('div');
+      sec.className = 'sub-hobby-section';
+      sec.innerHTML = `<p class="sub-hobby-title"><span class="emoji">${cat.emoji}</span>${cat.label}</p>`;
+      const chipsDiv = document.createElement('div');
+      chipsDiv.className = 'sub-hobby-chips';
+      cat.subs.forEach(sub => {
+        const c = document.createElement('button');
+        c.className = 'sub-chip' + (wensFlowState.hobbies2.includes(sub) ? ' selected' : '');
+        c.textContent = sub;
+        c.onclick = () => toggleSubHobby(sub);
+        chipsDiv.appendChild(c);
+      });
+      sec.appendChild(chipsDiv);
+      container.appendChild(sec);
+    });
+    updateHobby2Next();
+  }
+  function toggleSubHobby(sub) {
+    const idx = wensFlowState.hobbies2.indexOf(sub);
+    if (idx >= 0) wensFlowState.hobbies2.splice(idx, 1);
+    else wensFlowState.hobbies2.push(sub);
+    document.querySelectorAll('#sub-hobbies-container .sub-chip').forEach(c => {
+      c.classList.toggle('selected', wensFlowState.hobbies2.includes(c.textContent));
+    });
+    updateHobby2Next();
+  }
+  function updateHobby2Next() {
+    const btn = document.getElementById('hobbies2-next');
+    if (!btn) return;
+    btn.disabled = wensFlowState.hobbies2.length === 0;
+    btn.textContent = wensFlowState.hobbies2.length === 0 ? 'Kies minstens 1' : 'Toon mijn ideeën';
+  }
+
+  // ----- Stap 4: Swipe door voorstellen -----
+  function startWensSwipe() {
+    // Bouw suggestion-pool uit gekozen sub-hobbies, gefilterd op prijs
+    let pool = [];
+    wensFlowState.hobbies2.forEach(sub => {
+      const items = wensSuggestionPool[sub] || [];
+      items.forEach(it => {
+        if (it.price >= wensFlowState.priceMin && it.price <= wensFlowState.priceMax) {
+          // Voorkom duplicates op naam
+          if (!pool.find(p => p.name === it.name)) pool.push({ ...it });
+        }
+      });
+    });
+    // Als niets matcht, neem alle items maar dan zonder prijs-filter
+    if (pool.length === 0) {
+      wensFlowState.hobbies2.forEach(sub => {
+        (wensSuggestionPool[sub] || []).forEach(it => {
+          if (!pool.find(p => p.name === it.name)) pool.push({ ...it });
+        });
+      });
+    }
+    // Beperk tot 8 items voor demo
+    wensFlowState.suggestions = pool.slice(0, 8);
+    wensFlowState.swipeIndex = 0;
+    wensFlowState.saved = [];
+    wensFlowGoTo('swipe');
+    renderWensSwipe();
+    updateWensSwipeCounter();
+  }
+
+  function renderWensSwipe() {
+    const stack = document.getElementById('wens-swipe-stack');
+    if (!stack) return;
+    stack.innerHTML = '';
+    if (wensFlowState.swipeIndex >= wensFlowState.suggestions.length) {
+      // Klaar → naar done-scherm
+      stack.innerHTML = '<div class="swipe-empty">Klaar — je lijst staat klaar.</div>';
+      setTimeout(() => {
+        // Sla saved op in myWishes
+        wensFlowState.saved.forEach(item => {
+          if (!myWishes.find(m => m.name === item.name)) myWishes.push(item);
+        });
+        renderMyWishes();
+        document.getElementById('wens-done-count').textContent = String(wensFlowState.saved.length);
+        wensFlowState.history.push('swipe');
+        wensFlowState.view = 'done';
+        document.querySelectorAll('#detail-wens-flow .shop-view').forEach(v => v.classList.remove('active'));
+        document.querySelector('.view-wens-done').classList.add('active');
+      }, 250);
+      return;
+    }
+    for (let i = wensFlowState.swipeIndex; i < Math.min(wensFlowState.swipeIndex + 3, wensFlowState.suggestions.length); i++) {
+      const item = wensFlowState.suggestions[i];
+      const offset = i - wensFlowState.swipeIndex;
+      const card = document.createElement('div');
+      card.className = 'swipe-card';
+      card.style.zIndex = String(100 - offset);
+      card.style.transform = `scale(${1 - offset * 0.04}) translateY(${offset * 8}px)`;
+      card.style.opacity = offset === 0 ? '1' : String(0.95 - offset * 0.1);
+      card.innerHTML = `
+        <div class="swipe-indicator swipe-indicator-like">OPGESLAGEN</div>
+        <div class="swipe-indicator swipe-indicator-skip">OVERSLAAN</div>
+        <div class="swipe-emoji">${item.emoji}</div>
+        <h3 class="swipe-name">${item.name}</h3>
+        <p class="swipe-meta">${item.meta}</p>
+        <div class="swipe-price">€${item.price}</div>
+      `;
+      if (offset === 0) {
+        card.classList.add('interactive');
+        card.dataset.id = String(i);
+        addWensSwipeListeners(card);
+      }
+      stack.appendChild(card);
+    }
+  }
+
+  function updateWensSwipeCounter() {
+    const el = document.getElementById('wens-swipe-counter');
+    if (!el) return;
+    const n = Math.min(wensFlowState.swipeIndex + 1, wensFlowState.suggestions.length);
+    el.textContent = `${n}/${wensFlowState.suggestions.length}`;
+  }
+
+  let wensSwipeDrag = { active: false, startX: 0, deltaX: 0, card: null };
+
+  function addWensSwipeListeners(card) {
+    card.addEventListener('pointerdown', (e) => {
+      wensSwipeDrag.active = true;
+      wensSwipeDrag.startX = e.clientX;
+      wensSwipeDrag.deltaX = 0;
+      wensSwipeDrag.card = card;
+      card.style.transition = 'none';
+      try { card.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    card.addEventListener('pointermove', (e) => {
+      if (!wensSwipeDrag.active || wensSwipeDrag.card !== card) return;
+      wensSwipeDrag.deltaX = e.clientX - wensSwipeDrag.startX;
+      const rot = wensSwipeDrag.deltaX * 0.06;
+      card.style.transform = `translateX(${wensSwipeDrag.deltaX}px) rotate(${rot}deg)`;
+      const like = card.querySelector('.swipe-indicator-like');
+      const skip = card.querySelector('.swipe-indicator-skip');
+      if (like) like.style.opacity = String(Math.max(0, Math.min(1, wensSwipeDrag.deltaX / 100)));
+      if (skip) skip.style.opacity = String(Math.max(0, Math.min(1, -wensSwipeDrag.deltaX / 100)));
+    });
+    const endH = (e) => {
+      if (!wensSwipeDrag.active || wensSwipeDrag.card !== card) return;
+      wensSwipeDrag.active = false;
+      try { card.releasePointerCapture(e.pointerId); } catch (err) {}
+      card.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s';
+      if (wensSwipeDrag.deltaX > 80) wensSwipeCardOut(card, 'right');
+      else if (wensSwipeDrag.deltaX < -80) wensSwipeCardOut(card, 'left');
+      else {
+        card.style.transform = '';
+        const like = card.querySelector('.swipe-indicator-like');
+        const skip = card.querySelector('.swipe-indicator-skip');
+        if (like) like.style.opacity = '0';
+        if (skip) skip.style.opacity = '0';
+      }
+      wensSwipeDrag.deltaX = 0;
+      wensSwipeDrag.card = null;
+    };
+    card.addEventListener('pointerup', endH);
+    card.addEventListener('pointercancel', endH);
+  }
+
+  function wensSwipeCardOut(card, direction) {
+    const flyX = direction === 'right' ? 600 : -600;
+    const rot = direction === 'right' ? 25 : -25;
+    card.style.transition = 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s';
+    card.style.transform = `translateX(${flyX}px) rotate(${rot}deg)`;
+    card.style.opacity = '0';
+    const idx = parseInt(card.dataset.id, 10);
+    const item = wensFlowState.suggestions[idx];
+    if (direction === 'right' && item) {
+      wensFlowState.saved.push(item);
+    }
+    wensFlowState.swipeIndex++;
+    setTimeout(() => {
+      updateWensSwipeCounter();
+      renderWensSwipe();
+    }, 320);
+  }
+
+  function wensSwipeBtn(direction) {
+    const top = document.querySelector('#wens-swipe-stack .swipe-card.interactive');
+    if (!top) return;
+    wensSwipeCardOut(top, direction);
+  }
+
+  // ----- Mijn wensen renderen op Wensen-tab -----
+  function renderMyWishes() {
+    const empty = document.getElementById('wens-empty');
+    const container = document.getElementById('my-wishes-container');
+    const shareBtn = document.getElementById('share-list-btn');
+    const countEl = document.getElementById('my-wishes-count');
+    const list = document.getElementById('my-wishes-list');
+    if (myWishes.length === 0) {
+      if (empty) empty.style.display = 'flex';
+      if (container) container.style.display = 'none';
+      if (shareBtn) shareBtn.style.display = 'none';
+      return;
+    }
+    if (empty) empty.style.display = 'none';
+    if (container) container.style.display = 'block';
+    if (shareBtn) shareBtn.style.display = 'inline-flex';
+    if (countEl) countEl.textContent = String(myWishes.length);
+    if (list) {
+      list.innerHTML = '';
+      myWishes.forEach((w, idx) => {
+        const row = document.createElement('div');
+        row.className = 'my-wish-row';
+        row.innerHTML = `
+          <div class="my-wish-emoji">${w.emoji}</div>
+          <div class="my-wish-info">
+            <div class="my-wish-name">${w.name}</div>
+            <div class="my-wish-meta">${w.meta}</div>
+          </div>
+          <div class="my-wish-price">€${w.price}</div>
+          <button class="my-wish-remove" data-idx="${idx}" aria-label="Verwijder">✕</button>
+        `;
+        list.appendChild(row);
+      });
+      list.querySelectorAll('.my-wish-remove').forEach(b => {
+        b.addEventListener('click', (e) => {
+          const i = parseInt(b.dataset.idx, 10);
+          myWishes.splice(i, 1);
+          renderMyWishes();
+        });
+      });
+    }
+  }
+
+  // ----- Delen -----
+  function openWensShare() {
+    // Open done-view (heeft al deel-opties) onafhankelijk van flow
+    wensFlowState.history = [];
+    wensFlowState.view = 'done';
+    document.getElementById('wens-done-count').textContent = String(myWishes.length);
+    document.querySelectorAll('#detail-wens-flow .shop-view').forEach(v => v.classList.remove('active'));
+    document.querySelector('.view-wens-done').classList.add('active');
+    document.getElementById('detail-wens-flow').classList.add('open');
+  }
+
+  function shareWensCopy() {
+    const link = 'https://cadeau.app/w/walter-2026';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(() => showToast('Link gekopieerd ✓'));
+    } else {
+      showToast('Link gekopieerd ✓');
+    }
+  }
+
+  function shareWensWhatsapp() {
+    const text = `Hé! Ik heb een wenslijstje gemaakt — als je benieuwd bent: https://cadeau.app/w/walter-2026`;
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    try { window.open(url, '_blank'); } catch (e) {}
+    showToast('WhatsApp geopend ✓');
+  }
+
+  // Init: render lege Wensen-staat bij laden
+  renderMyWishes();
 
   // =========================================================
   // FLOW — Onboarding (Scenario 1) en Login (Scenario 2)
