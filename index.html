@@ -1,0 +1,3078 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadeau App — Volledige demo</title>
+<style>
+  :root {
+    --purple-50: #F5F2FF;
+    --purple-100: #E8E1FF;
+    --purple-500: #6D4AFF;
+    --purple-600: #5A3AE0;
+    --purple-700: #4729B8;
+    --purple-900: #1F1640;
+    --coral-100: #FFE0DC;
+    --coral-500: #FF6B5C;
+    --coral-600: #E85546;
+    --coral-700: #C73D30;
+    --white: #FFFFFF;
+    --bg: #FAF8FF;
+    --surface-alt: #F4F1FB;
+    --border-light: #ECE7F5;
+    --border: #D8D2EA;
+    --text-muted: #A39FB5;
+    --text-secondary: #7B7493;
+    --text-primary: #1F1640;
+    --success: #14B89E;
+    --success-light: #E1F5F0;
+    --success-dark: #0A6E5C;
+    --warning: #FFB13D;
+    --error: #E04848;
+    --wa-green: #25D366;
+    --wa-bg-light: #EFEAE2;
+    --wa-text: #111B21;
+    --wa-secondary: #667781;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, sans-serif; background: var(--bg); color: var(--text-primary); margin: 0; line-height: 1.55; font-size: 16px; }
+  button, input, select, textarea { font-family: inherit; }
+
+  .landing { max-width: 1280px; margin: 0 auto; padding: 48px 24px 120px; }
+  .intro { text-align: center; max-width: 640px; margin: 0 auto 36px; }
+  .intro .kicker { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--purple-500); margin: 0 0 12px; }
+  .intro h1 { font-size: 42px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 14px; line-height: 1.1; }
+  .intro p { font-size: 16px; color: var(--text-secondary); margin: 0; line-height: 1.55; }
+
+  /* Stage with side tips */
+  .stage { display: flex; align-items: flex-start; justify-content: center; gap: 28px; margin-bottom: 40px; }
+  .tip-side { width: 240px; flex-shrink: 0; background: var(--white); border: 0.5px solid var(--border-light); border-radius: 16px; padding: 20px 20px 18px; position: sticky; top: 24px; transition: opacity 0.3s; }
+  .tip-side.hidden { display: none; }
+  .tip-side .label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .tip-side.left .label { color: var(--purple-700); }
+  .tip-side.right .label { color: var(--coral-700); }
+  .tip-side .label .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .tip-side.left .label .dot { background: var(--purple-500); }
+  .tip-side.right .label .dot { background: var(--coral-500); }
+  .tip-side .body { font-size: 13.5px; color: var(--text-primary); line-height: 1.55; }
+  .tip-side .body strong { color: var(--purple-700); font-weight: 600; }
+  .tip-side.right .body strong { color: var(--coral-700); }
+  .tip-progress { margin-top: 16px; padding-top: 12px; border-top: 0.5px solid var(--border-light); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+  .tip-skip { background: none; border: none; color: var(--text-muted); font-size: 11px; cursor: pointer; padding: 0; text-decoration: underline; }
+  .tip-skip:hover { color: var(--text-primary); }
+  .tip-restore { text-align: center; margin: -28px 0 28px; }
+  .tip-restore.show { display: block; }
+  .tip-restore button { background: var(--purple-50); border: 1px solid var(--purple-100); color: var(--purple-700); font-size: 12px; font-weight: 500; cursor: pointer; padding: 8px 16px; border-radius: 999px; }
+
+  /* Phone */
+  .phone { width: 380px; height: 780px; background: #0E0D14; border-radius: 44px; padding: 10px; box-shadow: 0 30px 80px -20px rgba(31,22,64,0.35), 0 0 0 1px rgba(255,255,255,0.06) inset; position: relative; flex-shrink: 0; }
+  .phone-screen { width: 100%; height: 100%; background: var(--bg); border-radius: 34px; overflow: hidden; position: relative; }
+  .phone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 110px; height: 28px; background: #0E0D14; border-radius: 999px; z-index: 30; }
+  .status-bar { position: absolute; top: 0; left: 0; right: 0; height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 14px 26px 0 28px; font-size: 13px; font-weight: 600; color: var(--text-primary); z-index: 20; }
+  .status-bar.dark { color: var(--white); }
+
+  .screen { position: absolute; top: 44px; left: 0; right: 0; bottom: 0; overflow-y: auto; overflow-x: hidden; display: none; flex-direction: column; background: var(--bg); }
+  .screen.active { display: flex; }
+  .screen::-webkit-scrollbar { width: 0; }
+
+  /* Common header */
+  .scr-header { display: flex; align-items: center; padding: 14px 16px 0; min-height: 50px; gap: 8px; }
+  .back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--white); border: 0.5px solid var(--border-light); color: var(--text-primary); display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+  .back-btn:active { background: var(--surface-alt); }
+  .scr-title { font-size: 15px; font-weight: 600; flex: 1; text-align: center; padding-right: 36px; }
+
+  /* WhatsApp inbox */
+  .wa-screen { background: var(--white); }
+  .wa-header-large { padding: 8px 16px 6px; display: flex; align-items: center; justify-content: space-between; background: var(--white); }
+  .wa-header-large h1 { font-size: 28px; font-weight: 700; margin: 0; color: var(--wa-text); letter-spacing: -0.01em; }
+  .wa-header-icons { display: flex; gap: 16px; color: var(--wa-green); font-size: 18px; }
+  .wa-search { margin: 4px 12px 8px; background: #F0F2F5; border-radius: 10px; padding: 8px 12px; font-size: 13px; color: var(--wa-secondary); display: flex; align-items: center; gap: 8px; }
+  .wa-chat-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--white); border: none; width: 100%; text-align: left; border-bottom: 0.5px solid #F0F0F0; cursor: pointer; }
+  .wa-chat-item:hover { background: #F8F8F8; }
+  .wa-chat-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 17px; font-weight: 600; flex-shrink: 0; }
+  .wa-chat-content { flex: 1; min-width: 0; }
+  .wa-chat-line { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .wa-chat-name { font-size: 14px; font-weight: 600; color: var(--wa-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wa-chat-time { font-size: 11px; color: var(--wa-secondary); flex-shrink: 0; }
+  .wa-chat-time.unread { color: var(--wa-green); font-weight: 600; }
+  .wa-chat-preview { font-size: 13px; color: var(--wa-secondary); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .wa-unread-badge { margin-left: auto; background: var(--wa-green); color: var(--white); font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 999px; flex-shrink: 0; }
+
+  /* WhatsApp chat */
+  .wa-chat-header-bar { display: flex; align-items: center; padding: 8px 12px; background: #F7F7F7; border-bottom: 0.5px solid #E0E0E0; gap: 8px; }
+  .wa-back { color: var(--wa-green); font-size: 22px; cursor: pointer; padding: 0 4px; }
+  .wa-avatar-sm { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .wa-name-sm { font-size: 14px; font-weight: 500; }
+  .wa-status-sm { font-size: 11px; color: var(--wa-secondary); }
+  .wa-messages { flex: 1; background: var(--wa-bg-light); padding: 12px 12px 16px; overflow-y: auto; }
+  .wa-bubble { background: var(--white); padding: 7px 9px 5px; border-radius: 8px; max-width: 85%; margin-bottom: 4px; font-size: 13.5px; line-height: 1.4; color: var(--wa-text); box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
+  .wa-bubble .wa-time { font-size: 10px; color: var(--wa-secondary); margin-left: 6px; float: right; margin-top: 4px; }
+  .wa-link-bubble { background: var(--white); border-radius: 8px; margin-bottom: 4px; overflow: hidden; max-width: 85%; cursor: pointer; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
+  .wa-link-card { background: #F0F0F0; padding: 9px; display: flex; gap: 9px; align-items: flex-start; border-left: 4px solid var(--purple-500); }
+  .wa-link-icon { width: 44px; height: 44px; background: var(--purple-500); color: var(--white); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .wa-link-text { flex: 1; min-width: 0; }
+  .wa-link-title { font-size: 12px; font-weight: 600; color: var(--wa-text); }
+  .wa-link-desc { font-size: 11px; color: var(--wa-secondary); margin-top: 2px; line-height: 1.3; }
+  .wa-link-domain { font-size: 10px; color: var(--wa-secondary); margin-top: 3px; }
+  .wa-link-url { padding: 6px 9px 4px; font-size: 12px; color: var(--purple-500); word-break: break-all; }
+  .wa-input-bar { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #F7F7F7; border-top: 0.5px solid #E0E0E0; }
+  .wa-input { flex: 1; background: var(--white); border-radius: 20px; padding: 7px 12px; font-size: 13px; color: var(--wa-secondary); border: 0.5px solid #E0E0E0; }
+  .wa-mic { width: 32px; height: 32px; background: var(--wa-green); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+  /* Cadeau pages: common */
+  .scr-content { flex: 1; padding: 14px 22px 20px; display: flex; flex-direction: column; }
+  .scr-content.centered { align-items: center; text-align: center; }
+  .scr-content h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin: 6px 0 6px; line-height: 1.2; }
+  .scr-content > p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; margin: 0 0 16px; max-width: 320px; }
+  .scr-actions { margin-top: auto; padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+
+  .btn-primary { width: 100%; padding: 13px; background: var(--purple-500); color: var(--white); border: none; border-radius: 12px; font-size: 14.5px; font-weight: 500; cursor: pointer; }
+  .btn-primary:hover { background: var(--purple-600); }
+  .btn-primary:disabled { background: var(--border); color: var(--white); cursor: not-allowed; }
+  .btn-secondary { width: 100%; padding: 13px; background: var(--white); color: var(--purple-900); border: 1.5px solid var(--purple-900); border-radius: 12px; font-size: 14.5px; font-weight: 500; cursor: pointer; }
+  .btn-secondary:hover { background: var(--purple-50); }
+  .btn-accent { width: 100%; padding: 13px; background: var(--coral-500); color: var(--white); border: none; border-radius: 12px; font-size: 14.5px; font-weight: 500; cursor: pointer; }
+  .btn-accent:hover { background: var(--coral-600); }
+  .btn-text { background: none; border: none; color: var(--text-secondary); font-size: 13px; padding: 8px; text-align: center; width: 100%; cursor: pointer; }
+  .btn-text:hover { color: var(--purple-700); }
+
+  /* Invitation landing */
+  .cadeau-brand { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 22px; font-size: 16px; font-weight: 600; color: var(--purple-900); }
+  .cadeau-brand-icon { width: 28px; height: 28px; border-radius: 8px; background: var(--purple-500); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .inv-avatar { width: 84px; height: 84px; border-radius: 50%; background: var(--purple-500); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 600; margin: 4px auto 14px; }
+  .inv-sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 18px; }
+  .inv-card { background: var(--white); border: 0.5px solid var(--border-light); border-radius: 14px; padding: 14px 16px; margin-bottom: 18px; text-align: left; }
+  .inv-card h3 { font-size: 13px; font-weight: 600; margin: 0 0 8px; }
+  .inv-card ul { list-style: none; padding: 0; margin: 0; font-size: 12.5px; color: var(--text-primary); }
+  .inv-card ul li { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+  .check-sm { width: 16px; height: 16px; border-radius: 50%; background: var(--success); color: var(--white); font-size: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; }
+
+  /* Form */
+  .form-label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; }
+  .form-input { width: 100%; padding: 11px 13px; border-radius: 10px; border: 1px solid var(--border); background: var(--white); font-size: 14px; color: var(--text-primary); outline: none; margin-bottom: 12px; transition: border-color 0.15s, box-shadow 0.15s; }
+  .form-input:focus { border-color: var(--purple-500); box-shadow: 0 0 0 3px rgba(109,74,255,0.16); }
+
+  /* PIN */
+  .pin-dots { display: flex; justify-content: center; gap: 16px; margin: 4px 0 16px; }
+  .pin-dots span { width: 13px; height: 13px; border-radius: 50%; background: var(--border); transition: background 0.15s, transform 0.15s; }
+  .pin-dots span.filled { background: var(--purple-500); transform: scale(1.15); }
+  .pin-dots.error span { background: var(--error); animation: shake 0.4s ease; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .pin-error { color: var(--error); font-size: 12px; margin: -8px 0 6px; min-height: 14px; text-align: center; }
+  .pin-pad { display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; margin: 0 auto 8px; justify-content: center; }
+  .pin-key { background: var(--white); border: 0.5px solid var(--border-light); border-radius: 12px; width: 60px; height: 48px; font-size: 19px; font-weight: 500; color: var(--text-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.1s, background 0.1s; }
+  .pin-key:active { background: var(--surface-alt); transform: scale(0.95); }
+  .pin-key.empty { background: transparent; border: none; pointer-events: none; }
+  .pin-key.action { font-size: 16px; color: var(--text-secondary); }
+
+  /* Agenda + meldingen */
+  .step-label { font-size: 11px; color: var(--text-secondary); text-align: center; margin: 0 0 4px; font-weight: 500; letter-spacing: 0.04em; }
+  .icon-circle { width: 56px; height: 56px; border-radius: 14px; background: var(--purple-50); display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 0 12px; }
+  .bullet-list { list-style: none; padding: 12px 14px; margin: 0 0 14px; background: var(--white); border: 0.5px solid var(--border-light); border-radius: 12px; }
+  .bullet-list li { font-size: 12.5px; display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; line-height: 1.5; }
+  .cal-label-text { font-size: 12px; color: var(--text-secondary); text-align: center; margin: 6px 0 6px; font-weight: 500; letter-spacing: 0.04em; }
+  .btn-cal { width: 100%; padding: 12px; background: var(--white); color: var(--text-primary); border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+  .btn-cal:hover { border-color: var(--purple-500); background: var(--purple-50); }
+  .cal-ico { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 700; font-size: 11px; flex-shrink: 0; }
+  .cal-ico.google { background: #4285F4; }
+  .cal-ico.apple { background: #000; }
+
+  .acct-done-icon { width: 72px; height: 72px; border-radius: 50%; background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 700; margin: 20px auto 14px; }
+
+  /* Wishlist intro */
+  .wi-avatar { width: 84px; height: 84px; border-radius: 50%; background: var(--purple-500); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 600; margin: 4px auto 12px; }
+  .wi-tags { display: flex; justify-content: center; gap: 6px; margin: 6px 0; flex-wrap: wrap; }
+  .wi-tag { background: var(--surface-alt); color: var(--text-secondary); padding: 4px 9px; border-radius: 999px; font-size: 10px; font-weight: 500; }
+  .wi-countdown { display: inline-flex; align-items: center; gap: 6px; background: var(--coral-100); color: var(--coral-700); padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; margin: 6px 0 4px; }
+  .wi-count { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+  .wi-card { background: var(--white); border: 0.5px solid var(--border-light); border-radius: 12px; padding: 14px 16px; margin: 8px 0 14px; text-align: left; }
+  .wi-card h4 { font-size: 13px; font-weight: 600; margin: 0 0 6px; }
+  .wi-card p { font-size: 12.5px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+
+  /* Swipe */
+  .swipe-instructions { text-align: center; font-size: 11px; color: var(--text-muted); padding: 4px 22px 8px; }
+  .swipe-stack { position: relative; height: 380px; margin: 4px 22px 8px; display: flex; align-items: center; justify-content: center; }
+  .swipe-card { position: absolute; width: 100%; max-width: 270px; background: var(--white); border: 0.5px solid var(--border-light); border-radius: 16px; padding: 22px; box-shadow: 0 8px 24px -8px rgba(31,22,64,0.12); text-align: center; user-select: none; -webkit-user-select: none; }
+  .swipe-card:not(.interactive) { pointer-events: none; }
+  .swipe-card.interactive { cursor: grab; touch-action: none; }
+  .swipe-emoji { font-size: 52px; margin: 0 0 6px; line-height: 1; }
+  .swipe-name { font-size: 16px; font-weight: 600; margin: 4px 0 4px; line-height: 1.2; }
+  .swipe-meta { font-size: 11.5px; color: var(--text-secondary); margin: 0 0 8px; }
+  .swipe-price { font-size: 20px; font-weight: 600; color: var(--purple-700); margin: 4px 0 8px; }
+  .swipe-desc { font-size: 12px; color: var(--text-primary); line-height: 1.4; margin: 0; }
+  .swipe-indicator { position: absolute; top: 14px; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; opacity: 0; transition: opacity 0.1s; pointer-events: none; }
+  .swipe-indicator-like { right: 14px; background: var(--success); color: var(--white); transform: rotate(12deg); }
+  .swipe-indicator-skip { left: 14px; background: var(--text-secondary); color: var(--white); transform: rotate(-12deg); }
+  .swipe-empty { text-align: center; color: var(--text-secondary); padding: 60px 22px; font-size: 13px; }
+  .swipe-actions { display: flex; justify-content: center; gap: 24px; margin: 4px 0 14px; }
+  .swipe-action-btn { width: 52px; height: 52px; border-radius: 50%; border: none; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px -2px rgba(31,22,64,0.15); }
+  .swipe-action-btn.skip { background: var(--white); color: var(--text-secondary); border: 1px solid var(--border); }
+  .swipe-action-btn.like { background: var(--coral-500); color: var(--white); }
+  .swipe-action-btn:active { transform: scale(0.92); }
+
+  /* Favorites */
+  .fav-intro { padding: 14px 22px 6px; text-align: center; }
+  .fav-intro h2 { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .fav-intro h2 strong { color: var(--purple-700); }
+  .fav-intro p { font-size: 12px; color: var(--text-secondary); margin: 0; }
+  .fav-list { padding: 10px 22px 6px; }
+  .fav-item { background: var(--white); border: 0.5px solid var(--border-light); border-radius: 12px; padding: 11px; display: flex; gap: 11px; align-items: center; margin-bottom: 7px; text-align: left; width: 100%; cursor: pointer; }
+  .fav-thumb { width: 44px; height: 44px; border-radius: 9px; background: var(--surface-alt); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .fav-info { flex: 1; min-width: 0; }
+  .fav-name { font-size: 13px; font-weight: 600; margin-bottom: 1px; }
+  .fav-meta { font-size: 11px; color: var(--text-secondary); }
+  .fav-price { font-size: 12.5px; font-weight: 600; color: var(--purple-700); }
+  .fav-footer { padding: 6px 22px 16px; text-align: center; }
+
+  /* Gift detail */
+  #screen-gift { padding-bottom: 130px; }
+  .gift-hero { display: flex; justify-content: center; padding: 6px 22px; }
+  .gift-emoji-big { width: 110px; height: 110px; border-radius: 22px; background: var(--surface-alt); display: flex; align-items: center; justify-content: center; font-size: 52px; }
+  .gift-info { padding: 6px 22px 14px; }
+  .gift-name { font-size: 20px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; line-height: 1.2; }
+  .gift-meta { font-size: 12px; color: var(--text-secondary); margin: 0 0 8px; }
+  .gift-price-big { font-size: 26px; font-weight: 600; color: var(--purple-700); margin: 0 0 12px; }
+  .gift-desc { font-size: 13px; color: var(--text-primary); line-height: 1.5; margin: 0 0 12px; }
+  .gift-wishlist-note { background: var(--purple-50); color: var(--purple-700); padding: 9px 11px; border-radius: 10px; font-size: 11.5px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .dot-purple { width: 7px; height: 7px; border-radius: 50%; background: var(--purple-500); flex-shrink: 0; }
+  .gift-actions { position: absolute; bottom: 0; left: 0; right: 0; padding: 11px 22px 18px; background: var(--bg); border-top: 0.5px solid var(--border-light); display: flex; flex-direction: column; gap: 8px; }
+
+  /* Purchase */
+  #screen-purchase { padding-bottom: 96px; background: var(--bg); }
+  .purchase-header-bar { position: absolute; top: 0; left: 0; right: 0; padding: 6px 14px; z-index: 2; }
+  .purchase-header-bar .back-btn { background: rgba(255,255,255,0.95); }
+  .purchase-header { background: var(--success); color: var(--white); padding: 46px 22px 22px; text-align: center; }
+  .purchase-check { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 4px auto 10px; font-weight: 700; }
+  .purchase-header h2 { font-size: 19px; font-weight: 600; margin: 0 0 4px; }
+  .purchase-header > p { font-size: 12px; opacity: 0.92; margin: 0; }
+  .retailer-badge { display: inline-block; background: rgba(255,255,255,0.18); padding: 3px 9px; border-radius: 999px; font-size: 10px; margin-top: 8px; }
+  .purchase-body { padding: 12px 22px 0; }
+  .purchase-section { background: var(--white); border: 0.5px solid var(--border-light); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+  .purchase-section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); margin: 0 0 6px; }
+  .purchase-item { display: flex; gap: 11px; align-items: center; }
+  .pi-emoji { width: 40px; height: 40px; border-radius: 9px; background: var(--surface-alt); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .pi-info { flex: 1; min-width: 0; }
+  .pi-name { font-size: 13px; font-weight: 600; }
+  .pi-meta { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+  .pi-price { font-size: 13px; font-weight: 600; color: var(--purple-700); }
+  .purchase-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px; }
+  .purchase-row .label { color: var(--text-secondary); }
+  .purchase-row .val { color: var(--text-primary); font-weight: 500; }
+  .purchase-actions { position: absolute; bottom: 0; left: 0; right: 0; padding: 11px 22px 18px; background: var(--bg); border-top: 0.5px solid var(--border-light); display: flex; flex-direction: column; gap: 8px; }
+
+  /* Group setup */
+  #screen-group { padding-bottom: 94px; }
+  .group-body { padding: 12px 22px; flex: 1; }
+  .group-summary { display: flex; gap: 11px; align-items: center; background: var(--white); border: 0.5px solid var(--border-light); border-radius: 12px; padding: 11px; margin: 0 0 16px; }
+  .gs-emoji { width: 44px; height: 44px; border-radius: 9px; background: var(--surface-alt); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .gs-info { flex: 1; min-width: 0; }
+  .gs-name { font-size: 13px; font-weight: 600; }
+  .gs-price { font-size: 12px; color: var(--purple-700); font-weight: 600; margin-top: 2px; }
+  .group-section-title { font-size: 13px; font-weight: 600; margin: 10px 0 8px; }
+  .contact-list { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+  .contact-pill { display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px 4px 4px; background: var(--white); border: 1px solid var(--border); border-radius: 999px; font-size: 12px; cursor: pointer; color: var(--text-primary); }
+  .contact-pill.selected { background: var(--purple-100); border-color: var(--purple-500); color: var(--purple-700); font-weight: 500; }
+  .contact-av { width: 24px; height: 24px; border-radius: 50%; color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; }
+  .group-split { background: var(--purple-50); padding: 12px 14px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 12px; color: var(--purple-900); }
+  .split-amount { font-size: 18px; font-weight: 600; color: var(--purple-700); }
+  .group-actions { position: absolute; bottom: 0; left: 0; right: 0; padding: 11px 22px 18px; background: var(--bg); border-top: 0.5px solid var(--border-light); display: flex; flex-direction: column; gap: 6px; }
+  .whatsapp-link { background: none; border: none; color: var(--text-secondary); font-size: 12px; padding: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .wa-ico { width: 14px; height: 14px; border-radius: 50%; background: var(--wa-green); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; }
+
+  /* Group confirm */
+  .gc-content { flex: 1; padding: 20px 22px 18px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .gc-check-big { width: 68px; height: 68px; border-radius: 50%; background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 34px; margin: 18px 0 14px; font-weight: 700; }
+  .gc-content h1 { font-size: 22px; font-weight: 600; margin: 0 0 8px; }
+  .gc-msg { font-size: 13px; color: var(--text-secondary); margin: 0 0 12px; max-width: 280px; line-height: 1.5; }
+  .notif-label { font-size: 10px; color: var(--text-muted); letter-spacing: 0.07em; text-transform: uppercase; margin: 8px 0 6px; font-weight: 500; }
+  .notif-preview { background: rgba(31, 22, 64, 0.04); border: 0.5px solid rgba(31, 22, 64, 0.08); border-radius: 12px; padding: 10px 11px; max-width: 280px; width: 100%; text-align: left; margin-bottom: 14px; }
+  .push-header { display: flex; align-items: center; gap: 6px; font-size: 9px; color: var(--text-secondary); margin-bottom: 3px; }
+  .push-app-icon { width: 14px; height: 14px; border-radius: 4px; background: var(--purple-500); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 8px; }
+  .push-app-name { font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.04em; }
+  .push-time { margin-left: auto; }
+  .push-body { font-size: 11.5px; }
+  .push-title { font-weight: 600; color: var(--text-primary); margin-bottom: 1px; }
+  .push-text { color: var(--text-secondary); line-height: 1.4; }
+  .gc-actions { margin-top: auto; padding-top: 12px; width: 100%; display: flex; flex-direction: column; gap: 8px; }
+
+  /* Main app: bottom nav + FAB */
+  .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 0.5px solid var(--border-light); display: none; justify-content: space-around; padding: 9px 0 14px; z-index: 15; }
+  .phone-screen.phase-3 .bottom-nav { display: flex; }
+  .phone-screen.phase-3.hide-nav .bottom-nav { display: none; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; padding: 4px 12px; color: var(--text-muted); font-size: 10px; font-weight: 500; cursor: pointer; }
+  .nav-icon { font-size: 18px; line-height: 1; }
+  .nav-item.active { color: var(--purple-500); }
+  .fab { position: absolute; bottom: 70px; right: 18px; width: 50px; height: 50px; border-radius: 50%; background: var(--coral-500); color: var(--white); border: none; display: none; align-items: center; justify-content: center; font-size: 24px; font-weight: 300; line-height: 1; box-shadow: 0 8px 20px -4px rgba(255,107,92,0.45); z-index: 18; cursor: pointer; }
+  .phone-screen.phase-3 .fab { display: flex; }
+  .phone-screen.phase-3.hide-nav .fab { display: none; }
+  .fab:hover { background: var(--coral-600); }
+
+  /* Geven tab */
+  .ge-content { padding: 0 0 80px; }
+  .ge-title { padding: 12px 18px 0; font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
+  .ge-sub { padding: 0 18px; font-size: 12px; color: var(--text-secondary); }
+  .ge-section { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); padding: 0 18px; margin: 16px 0 7px; }
+  .ge-cards-row { display: flex; gap: 7px; padding: 0 18px; overflow-x: auto; }
+  .ge-cards-row::-webkit-scrollbar { height: 0; }
+  .ge-pcard { flex: 0 0 110px; background: var(--white); border: 0.5px solid var(--border-light); border-radius: 11px; padding: 9px 6px 8px; text-align: center; cursor: pointer; }
+  .ge-pav { width: 32px; height: 32px; border-radius: 50%; margin: 0 auto 4px; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 13px; font-weight: 600; }
+  .ge-pname { font-size: 11px; font-weight: 600; }
+  .ge-pmeta { font-size: 10px; color: var(--text-secondary); margin-top: 1px; }
+  .ge-prel { font-size: 9px; color: var(--text-muted); letter-spacing: 0.04em; margin-top: 3px; font-weight: 500; }
+  .ge-wcard { margin: 0 18px; padding: 10px; background: var(--white); border: 0.5px solid var(--border-light); border-radius: 11px; display: flex; align-items: center; gap: 9px; cursor: pointer; }
+  .ge-wav { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .ge-winfo { flex: 1; min-width: 0; }
+  .ge-whead { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; }
+  .ge-wbadge { background: var(--coral-500); color: var(--white); font-size: 9px; font-weight: 600; padding: 1px 6px; border-radius: 999px; }
+  .ge-wdesc { font-size: 10px; color: var(--text-secondary); margin-top: 1px; }
+
+  /* Wensen tab */
+  .we-content { padding: 0 0 80px; }
+  .we-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 18px 0; }
+  .we-share { background: var(--purple-500); color: var(--white); border: none; padding: 6px 11px; border-radius: 999px; font-size: 10px; font-weight: 500; cursor: pointer; display: none; }
+  .we-share.show { display: inline-block; }
+  .we-empty { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 36px 22px 20px; }
+  .we-empty-icon { width: 56px; height: 56px; border-radius: 50%; background: var(--purple-50); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 12px; }
+  .we-empty h3 { font-size: 15px; font-weight: 600; margin: 0 0 4px; }
+  .we-empty p { font-size: 11.5px; color: var(--text-secondary); line-height: 1.5; max-width: 220px; margin: 0 0 12px; }
+  .we-empty-hint { display: inline-flex; align-items: center; gap: 6px; background: var(--purple-50); color: var(--purple-700); padding: 4px 10px; border-radius: 999px; font-size: 10px; font-weight: 500; }
+  .we-hint-fab { width: 18px; height: 18px; border-radius: 50%; background: var(--coral-500); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 13px; line-height: 1; }
+  .we-list { padding: 6px 18px 12px; }
+  .we-list-summary { padding: 4px 0 6px; display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); }
+  .we-list-summary strong { color: var(--text-primary); font-weight: 600; }
+  .we-item { background: var(--white); border: 0.5px solid var(--border-light); border-radius: 11px; padding: 9px 11px; display: flex; gap: 9px; align-items: center; margin-bottom: 6px; }
+  .we-item-emoji { width: 34px; height: 34px; border-radius: 8px; background: var(--surface-alt); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+  .we-item-info { flex: 1; min-width: 0; }
+  .we-item-name { font-size: 12px; font-weight: 600; }
+  .we-item-meta { font-size: 10.5px; color: var(--text-secondary); margin-top: 1px; }
+  .we-item-price { font-size: 11.5px; font-weight: 600; color: var(--purple-700); }
+  .we-item-remove { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 5px; }
+  .we-item-remove:hover { color: var(--error); background: #FCE9E9; }
+
+  /* Profiel tab */
+  .pr-content { padding: 0 0 80px; }
+  .pr-header { padding: 12px 18px 4px; }
+  .pr-title { font-size: 24px; font-weight: 600; margin: 0; letter-spacing: -0.02em; }
+  .pr-hero { text-align: center; padding: 12px 18px; }
+  .pr-avatar { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; background: var(--purple-500); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 600; }
+  .pr-name { font-size: 16px; font-weight: 600; margin: 0; }
+  .pr-email { font-size: 11px; color: var(--text-secondary); margin: 2px 0 0; }
+  .pr-stats { display: flex; justify-content: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .pr-stat { background: var(--surface-alt); padding: 4px 9px; border-radius: 999px; font-size: 10px; color: var(--text-secondary); }
+  .pr-stat strong { color: var(--text-primary); font-weight: 600; }
+  .pr-menu { background: var(--white); border: 0.5px solid var(--border-light); border-radius: 11px; margin: 6px 18px 8px; overflow: hidden; }
+  .pr-row { padding: 10px 13px; display: flex; align-items: center; gap: 10px; border-bottom: 0.5px solid var(--border-light); background: var(--white); width: 100%; border-left: none; border-right: none; border-top: none; font-size: 12.5px; color: var(--text-primary); cursor: pointer; text-align: left; }
+  .pr-row:last-child { border-bottom: none; }
+  .pr-row-icon { width: 26px; height: 26px; border-radius: 7px; background: var(--purple-50); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+  .pr-row-text { flex: 1; }
+  .pr-row-arrow { color: var(--text-muted); font-size: 14px; }
+  .pr-menu.danger .pr-row-icon { background: #FCE9E9; color: var(--error); }
+  .pr-menu.danger .pr-row-text { color: var(--error); }
+  .pr-status-ok { color: var(--success-dark); font-size: 10px; font-weight: 600; }
+
+  /* Wens-flow */
+  .wf-step { font-size: 11px; color: var(--text-secondary); margin: 0 0 4px; text-align: center; letter-spacing: 0.04em; font-weight: 500; }
+  .range-wrap { padding: 30px 4px 4px; position: relative; }
+  .range-track { position: relative; height: 6px; background: var(--surface-alt); border-radius: 999px; }
+  .range-fill { position: absolute; top: 0; bottom: 0; background: var(--purple-500); border-radius: 999px; }
+  .range-inputs { position: absolute; top: 24px; left: 4px; right: 4px; height: 6px; pointer-events: none; }
+  .range-inputs input[type="range"] { position: absolute; top: -10px; width: 100%; height: 28px; background: transparent; appearance: none; -webkit-appearance: none; pointer-events: none; margin: 0; }
+  .range-inputs input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 22px; height: 22px; border-radius: 50%; background: var(--white); border: 2px solid var(--purple-500); box-shadow: 0 2px 6px rgba(31,22,64,0.18); cursor: grab; }
+  .range-inputs input[type="range"]::-moz-range-thumb { pointer-events: auto; width: 22px; height: 22px; border-radius: 50%; background: var(--white); border: 2px solid var(--purple-500); box-shadow: 0 2px 6px rgba(31,22,64,0.18); cursor: grab; }
+  .range-values { display: flex; justify-content: space-between; margin-top: 22px; font-size: 18px; font-weight: 600; color: var(--purple-900); }
+  .range-bounds { display: flex; justify-content: space-between; margin-top: 4px; font-size: 10px; color: var(--text-muted); }
+  .occ-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .occ-chip { padding: 5px 11px; border: 1px solid var(--border); border-radius: 999px; background: var(--white); font-size: 11.5px; font-weight: 500; color: var(--text-primary); cursor: pointer; }
+  .occ-chip.selected { background: var(--purple-100); border-color: var(--purple-500); color: var(--purple-700); }
+  .hobby-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; padding: 0 0 10px; }
+  .hobby-chip { background: var(--white); border: 1.5px solid var(--border); border-radius: 11px; padding: 11px 7px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+  .hobby-chip.selected { background: var(--purple-50); border-color: var(--purple-500); }
+  .hobby-chip-emoji { font-size: 20px; }
+  .hobby-chip-label { font-size: 11px; font-weight: 500; color: var(--text-primary); }
+  .hobby-chip.selected .hobby-chip-label { color: var(--purple-700); }
+  .sub-section { margin-bottom: 12px; }
+  .sub-title { font-size: 11px; font-weight: 600; color: var(--text-secondary); margin: 0 0 6px; }
+  .sub-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .sub-chip { padding: 5px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--white); font-size: 11px; font-weight: 500; color: var(--text-primary); cursor: pointer; }
+  .sub-chip.selected { background: var(--purple-100); border-color: var(--purple-500); color: var(--purple-700); }
+  .share-link-preview { background: var(--surface-alt); padding: 9px 11px; border-radius: 8px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 11px; color: var(--purple-700); margin: 0 22px 10px; word-break: break-all; text-align: center; }
+  .share-opts { padding: 0 22px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .share-opt { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--white); border: 0.5px solid var(--border-light); border-radius: 11px; cursor: pointer; text-align: left; width: 100%; font-size: 12.5px; font-weight: 500; color: var(--text-primary); }
+  .share-opt:hover { background: var(--surface-alt); }
+  .share-opt-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 700; flex-shrink: 0; font-size: 13px; }
+  .share-opt-icon.copy { background: var(--purple-500); }
+  .share-opt-icon.whatsapp { background: var(--wa-green); }
+  .share-opt-text { flex: 1; }
+  .share-opt-sub { font-size: 10px; color: var(--text-secondary); font-weight: 400; margin-top: 1px; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--purple-900); color: var(--white); padding: 11px 18px; border-radius: 999px; font-size: 13px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 150; box-shadow: 0 8px 24px -4px rgba(31,22,64,0.3); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Feedback */
+  .feedback-cta { text-align: center; max-width: 520px; margin: 0 auto; padding: 28px 22px; background: var(--white); border: 0.5px solid var(--border-light); border-radius: 16px; }
+  .feedback-cta h2 { font-size: 22px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .feedback-cta p { font-size: 14px; color: var(--text-secondary); margin: 0 0 18px; line-height: 1.55; }
+  .feedback-cta-btn { background: var(--purple-500); color: var(--white); border: none; padding: 11px 22px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .feedback-cta-btn:hover { background: var(--purple-600); }
+  .feedback-float { position: fixed; bottom: 22px; right: 22px; background: var(--purple-900); color: var(--white); border: none; padding: 11px 16px; border-radius: 999px; font-size: 13px; font-weight: 500; box-shadow: 0 10px 24px -4px rgba(31,22,64,0.35); z-index: 100; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .feedback-float:hover { background: var(--purple-700); }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(31, 22, 64, 0.55); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 22px; z-index: 200; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: 18px; max-width: 440px; width: 100%; padding: 28px 24px 22px; max-height: 90vh; overflow-y: auto; position: relative; }
+  .modal-close { position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; border-radius: 50%; background: var(--surface-alt); border: none; color: var(--text-secondary); font-size: 17px; cursor: pointer; }
+  .modal h2 { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
+  .modal-sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 18px; line-height: 1.5; }
+  .stars { display: flex; justify-content: center; gap: 6px; margin: 4px 0 16px; }
+  .star-btn { background: none; border: none; font-size: 28px; color: var(--border); padding: 3px; cursor: pointer; }
+  .star-btn.filled { color: var(--warning); }
+  .cat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 14px; }
+  .cat-btn { padding: 9px 11px; border-radius: 9px; background: var(--surface-alt); border: 1.5px solid transparent; font-size: 12.5px; font-weight: 500; color: var(--text-primary); text-align: left; cursor: pointer; }
+  .cat-btn.active { background: var(--purple-50); border-color: var(--purple-500); color: var(--purple-700); }
+  .modal label { display: block; font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; }
+  .modal textarea, .modal input[type="email"] { width: 100%; padding: 10px 12px; border-radius: 9px; border: 1px solid var(--border); background: var(--white); font-size: 13px; color: var(--text-primary); outline: none; margin-bottom: 12px; }
+  .modal textarea { min-height: 84px; resize: vertical; }
+  .modal-submit { width: 100%; padding: 13px; background: var(--purple-500); color: var(--white); border: none; border-radius: 11px; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .modal-success { display: none; text-align: center; padding: 18px 0 6px; }
+  .modal-success.show { display: block; }
+  .ms-check { width: 56px; height: 56px; border-radius: 50%; background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 12px; }
+
+  /* === Inline feedback modal (bottom sheet) === */
+  .fb-modal { position: fixed; inset: 0; background: rgba(31,22,64,0.55); backdrop-filter: blur(4px); display: none; align-items: flex-end; justify-content: center; padding: 0; z-index: 250; }
+  .fb-modal.open { display: flex; }
+  .fb-sheet { background: var(--white); border-radius: 22px 22px 0 0; width: 100%; max-width: 520px; padding: 22px 24px 28px; max-height: 88vh; overflow-y: auto; position: relative; animation: fbSlide 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
+  @keyframes fbSlide { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .fb-handle { width: 36px; height: 4px; background: var(--border); border-radius: 999px; margin: 0 auto 18px; }
+  .fb-skip { position: absolute; top: 16px; right: 18px; background: none; border: none; color: var(--text-muted); font-size: 12px; cursor: pointer; text-decoration: underline; }
+  .fb-skip:hover { color: var(--text-secondary); }
+  .fb-step { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--purple-700); margin: 0 0 6px; }
+  .fb-q { font-size: 19px; font-weight: 600; margin: 0 0 12px; letter-spacing: -0.01em; line-height: 1.25; }
+  .fb-q-sub { font-size: 13px; color: var(--text-secondary); margin: 14px 0 8px; font-weight: 500; }
+
+  /* Slider feedback */
+  .fb-slider { padding: 8px 0 4px; }
+  .fb-slider input[type="range"] { width: 100%; height: 8px; appearance: none; -webkit-appearance: none; background: var(--surface-alt); border-radius: 999px; outline: none; }
+  .fb-slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: var(--purple-500); cursor: grab; border: 3px solid var(--white); box-shadow: 0 2px 8px rgba(31,22,64,0.18); }
+  .fb-slider input[type="range"]::-moz-range-thumb { width: 26px; height: 26px; border-radius: 50%; background: var(--purple-500); cursor: grab; border: 3px solid var(--white); box-shadow: 0 2px 8px rgba(31,22,64,0.18); }
+  .fb-slider-value { display: flex; justify-content: center; align-items: baseline; gap: 8px; margin-top: 12px; }
+  .fb-slider-value .num { font-size: 36px; font-weight: 600; color: var(--purple-700); line-height: 1; }
+  .fb-slider-value .max { font-size: 14px; color: var(--text-muted); }
+  .fb-slider-anchors { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); margin-top: 6px; padding: 0 4px; font-weight: 500; }
+
+  /* Chips feedback */
+  .fb-chips { display: flex; flex-direction: column; gap: 8px; }
+  .fb-chip { padding: 13px 16px; background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; font-size: 14px; font-weight: 500; color: var(--text-primary); cursor: pointer; text-align: left; transition: all 0.15s; }
+  .fb-chip:hover { border-color: var(--purple-300); background: var(--purple-50); }
+  .fb-chip.selected { background: var(--purple-100); border-color: var(--purple-500); color: var(--purple-700); }
+  .fb-chips-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+  .fb-chips-row .fb-chip { padding: 10px 8px; font-size: 12.5px; text-align: center; }
+
+  /* Open text */
+  .fb-textarea { width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit; color: var(--text-primary); outline: none; resize: vertical; min-height: 70px; margin-top: 4px; }
+  .fb-textarea:focus { border-color: var(--purple-500); box-shadow: 0 0 0 3px rgba(109,74,255,0.16); }
+
+  .fb-submit { width: 100%; padding: 14px; background: var(--purple-500); color: var(--white); border: none; border-radius: 12px; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 18px; }
+  .fb-submit:hover { background: var(--purple-600); }
+  .fb-submit:disabled { background: var(--border); cursor: not-allowed; }
+
+  .fb-thanks { text-align: center; padding: 12px 0 6px; }
+  .fb-thanks-check { width: 56px; height: 56px; border-radius: 50%; background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 8px auto 14px; font-weight: 700; }
+  .fb-thanks-extra { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+
+  /* Demo restart button in final */
+  .fb-restart { width: 100%; padding: 12px; background: var(--white); color: var(--purple-700); border: 1.5px solid var(--purple-700); border-radius: 12px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 10px; }
+  .fb-restart:hover { background: var(--purple-50); }
+
+  /* Profiel sub-screens */
+  .pr-sub-content { padding: 0 0 80px; }
+  .pr-list { padding: 8px 18px 4px; }
+  .pr-list-item { background: var(--white); border: 0.5px solid var(--border-light); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 11px; margin-bottom: 6px; }
+  .pr-list-av { width: 36px; height: 36px; border-radius: 50%; color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; flex-shrink: 0; }
+  .pr-list-info { flex: 1; min-width: 0; }
+  .pr-list-name { font-size: 13px; font-weight: 600; }
+  .pr-list-meta { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+  .pr-list-arrow { color: var(--text-muted); }
+  .pr-add-btn { width: calc(100% - 36px); margin: 12px 18px; padding: 13px; background: var(--coral-500); color: var(--white); border: none; border-radius: 12px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .pr-add-btn:hover { background: var(--coral-600); }
+  .pr-add-btn-secondary { background: var(--white); color: var(--purple-900); border: 1.5px solid var(--purple-900); }
+  .pr-add-btn-secondary:hover { background: var(--purple-50); }
+  .pr-search { margin: 8px 18px 6px; padding: 9px 14px; background: var(--surface-alt); border-radius: 10px; font-size: 12.5px; color: var(--text-muted); }
+
+  /* Toggle list (notificaties) */
+  .pr-toggle-list { padding: 6px 18px 4px; }
+  .pr-toggle-item { background: var(--white); border: 0.5px solid var(--border-light); border-radius: 11px; padding: 12px 14px; display: flex; align-items: center; gap: 11px; margin-bottom: 6px; }
+  .pr-toggle-info { flex: 1; min-width: 0; }
+  .pr-toggle-title { font-size: 12.5px; font-weight: 600; }
+  .pr-toggle-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; }
+  .pr-toggle-switch { width: 38px; height: 22px; background: var(--border); border-radius: 999px; position: relative; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
+  .pr-toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: var(--white); border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+  .pr-toggle-switch.on { background: var(--success); }
+  .pr-toggle-switch.on::after { transform: translateX(16px); }
+
+  /* === Betaal-scherm === */
+  .pay-content { padding: 0 0 110px; }
+  .pay-summary { margin: 12px 18px; padding: 12px 14px; background: var(--white); border: 0.5px solid var(--border-light); border-radius: 12px; display: flex; gap: 11px; align-items: center; }
+  .pay-summary-emoji { width: 44px; height: 44px; border-radius: 10px; background: var(--surface-alt); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .pay-summary-info { flex: 1; min-width: 0; }
+  .pay-summary-name { font-size: 13px; font-weight: 600; }
+  .pay-summary-meta { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .pay-summary-price { font-size: 16px; font-weight: 600; color: var(--purple-700); }
+  .pay-section { padding: 0 18px; }
+  .pay-section h3 { font-size: 11px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.04em; text-transform: uppercase; margin: 14px 0 8px; }
+  .pay-method { background: var(--white); border: 1.5px solid var(--border); border-radius: 11px; padding: 11px 13px; display: flex; align-items: center; gap: 11px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; }
+  .pay-method:hover { border-color: var(--purple-300); }
+  .pay-method.selected { background: var(--purple-50); border-color: var(--purple-500); }
+  .pay-logo { width: 36px; height: 26px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--white); flex-shrink: 0; }
+  .pay-logo.ideal { background: #CC0066; }
+  .pay-logo.apple { background: #000; }
+  .pay-logo.card { background: linear-gradient(135deg, #1A1F71 50%, #F79E1B 50%); }
+  .pay-method-name { flex: 1; font-size: 13.5px; font-weight: 600; }
+  .pay-radio { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border); flex-shrink: 0; position: relative; }
+  .pay-method.selected .pay-radio { border-color: var(--purple-500); background: var(--purple-500); }
+  .pay-method.selected .pay-radio::after { content: ''; position: absolute; inset: 4px; background: var(--white); border-radius: 50%; }
+  .pay-banks { display: none; flex-wrap: wrap; gap: 6px; padding: 4px 0 8px; }
+  .pay-banks.show { display: flex; }
+  .pay-bank { padding: 6px 11px; border: 1px solid var(--border); border-radius: 999px; background: var(--white); font-size: 11.5px; font-weight: 500; color: var(--text-primary); cursor: pointer; }
+  .pay-bank.selected { background: var(--purple-100); border-color: var(--purple-500); color: var(--purple-700); }
+  .pay-actions { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 18px 20px; background: var(--bg); border-top: 0.5px solid var(--border-light); }
+
+  /* === Groepscadeau-status === */
+  .gg-content { padding: 0 0 80px; }
+  .gg-intro { padding: 12px 18px 4px; font-size: 12px; color: var(--text-secondary); }
+  .gg-card { margin: 8px 18px 12px; background: var(--white); border: 0.5px solid var(--border-light); border-radius: 12px; padding: 14px 14px 12px; }
+  .gg-card-head { display: flex; gap: 11px; align-items: center; margin-bottom: 12px; }
+  .gg-card-emoji { width: 44px; height: 44px; border-radius: 10px; background: var(--surface-alt); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .gg-card-info { flex: 1; min-width: 0; }
+  .gg-card-name { font-size: 13px; font-weight: 600; }
+  .gg-card-for { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+  .gg-progress { height: 6px; background: var(--surface-alt); border-radius: 999px; overflow: hidden; margin: 10px 0 4px; }
+  .gg-progress-fill { height: 100%; background: var(--success); border-radius: 999px; transition: width 0.4s; }
+  .gg-progress-text { font-size: 11px; color: var(--text-secondary); display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .gg-progress-text strong { color: var(--text-primary); font-weight: 600; }
+  .gg-parts { border-top: 0.5px solid var(--border-light); padding-top: 10px; margin-top: 10px; }
+  .gg-part { display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+  .gg-part-av { width: 26px; height: 26px; border-radius: 50%; color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+  .gg-part-name { flex: 1; font-size: 12px; font-weight: 500; }
+  .gg-part-status { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+  .gg-part-status.accepted { background: var(--success-light); color: var(--success-dark); }
+  .gg-part-status.pending { background: var(--surface-alt); color: var(--text-secondary); }
+  .gg-part-status.declined { background: #FCE9E9; color: var(--error); }
+  .gg-part-status.you { background: var(--purple-100); color: var(--purple-700); }
+  .gg-remind-btn { background: var(--white); border: 1px solid var(--purple-500); color: var(--purple-500); padding: 3px 9px; border-radius: 999px; font-size: 10px; font-weight: 500; cursor: pointer; }
+  .gg-remind-btn:hover { background: var(--purple-50); }
+  .gg-pay-area { margin-top: 12px; padding-top: 10px; border-top: 0.5px solid var(--border-light); }
+  .gg-pay-btn { width: 100%; padding: 11px; background: var(--purple-500); color: var(--white); border: none; border-radius: 10px; font-size: 13.5px; font-weight: 500; cursor: pointer; }
+  .gg-pay-btn:hover { background: var(--purple-600); }
+  .gg-pay-btn:disabled { background: var(--surface-alt); color: var(--text-muted); cursor: not-allowed; }
+  .gg-wait-msg { font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 8px; line-height: 1.4; }
+  .gg-explainer { margin: 8px 18px 4px; background: var(--purple-50); padding: 11px 13px; border-radius: 10px; border-left: 3px solid var(--purple-500); }
+  .gg-explainer p { margin: 0; font-size: 11.5px; color: var(--purple-900); line-height: 1.5; }
+  .gg-explainer strong { color: var(--purple-700); }
+
+  /* Profile thank-you banner (na alle subs verkend) */
+  .profile-thanks { margin: 14px 18px 0; background: linear-gradient(135deg, var(--purple-50), var(--coral-100)); border-radius: 12px; padding: 14px 16px; text-align: center; display: none; }
+  .profile-thanks.show { display: block; }
+  .profile-thanks .head { margin: 0 0 4px; font-size: 13px; color: var(--purple-900); font-weight: 600; }
+  .profile-thanks .sub { margin: 0; font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+
+  /* === Eind-overlay (afsluiting van demo) === */
+  .end-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 22, 64, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 320;
+    overflow: hidden;
+  }
+  .end-overlay.open { display: flex; }
+  .end-confetti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .end-confetti span {
+    position: absolute;
+    top: -40px;
+    font-size: 22px;
+    animation: confettiFall 5s linear infinite;
+    opacity: 0.85;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    8% { opacity: 0.9; }
+    100% { transform: translateY(110vh) rotate(540deg); opacity: 0.4; }
+  }
+  .end-card {
+    background: var(--white);
+    border-radius: 22px;
+    padding: 36px 30px 26px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 30px 80px -20px rgba(31, 22, 64, 0.55);
+    max-height: 92vh;
+    overflow-y: auto;
+    position: relative;
+    z-index: 2;
+    animation: welSlide 0.55s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .end-hero {
+    font-size: 60px;
+    line-height: 1;
+    margin: 0 0 8px;
+    display: inline-block;
+    animation: heroBounce 1.4s ease-in-out infinite;
+  }
+  @keyframes heroBounce {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50% { transform: translateY(-8px) rotate(4deg); }
+  }
+  .end-card h1 {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+    line-height: 1.15;
+  }
+  .end-sub {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin: 0 0 22px;
+    line-height: 1.5;
+  }
+  .end-stats {
+    display: flex;
+    gap: 12px;
+    margin: 0 0 22px;
+  }
+  .end-stat {
+    flex: 1;
+    background: var(--purple-50);
+    border-radius: 12px;
+    padding: 14px 8px;
+  }
+  .end-stat-num {
+    display: block;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--purple-700);
+    line-height: 1;
+  }
+  .end-stat-lab {
+    display: block;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+  .end-personal {
+    background: var(--surface-alt);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 0 0 18px;
+    text-align: left;
+  }
+  .end-personal p {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .end-personal strong { color: var(--purple-700); font-weight: 600; }
+  .end-share-prompt {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0 0 8px;
+    font-weight: 500;
+  }
+  .end-share-btn {
+    width: 100%;
+    padding: 13px;
+    background: #25D366;
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .end-share-btn:hover { background: #20BD5B; }
+  .end-wa-ico {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .end-restart {
+    width: 100%;
+    padding: 11px;
+    background: transparent;
+    color: var(--purple-700);
+    border: 1.5px solid var(--purple-100);
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .end-restart:hover { background: var(--purple-50); }
+
+  /* === Welkom-modal (start van de demo) === */
+  .welcome-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 22, 64, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 300;
+    animation: welFade 0.4s ease;
+  }
+  @keyframes welFade { from { opacity: 0; } to { opacity: 1; } }
+  .welcome-overlay.closed { display: none; }
+  .welcome-card {
+    background: var(--white);
+    border-radius: 22px;
+    padding: 36px 30px 26px;
+    max-width: 440px;
+    width: 100%;
+    text-align: left;
+    box-shadow: 0 30px 80px -20px rgba(31, 22, 64, 0.5);
+    animation: welSlide 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+  @keyframes welSlide { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .welcome-icon {
+    width: 56px; height: 56px;
+    background: var(--purple-500);
+    color: var(--white);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin: 0 0 18px;
+  }
+  .welcome-card h1 {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+    line-height: 1.15;
+  }
+  .welcome-tagline {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0 0 20px;
+  }
+  .welcome-story {
+    background: var(--surface-alt);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin: 0 0 18px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-primary);
+  }
+  .welcome-story p { margin: 0; }
+  .welcome-story p + p { margin-top: 10px; }
+  .welcome-story strong { color: var(--purple-700); font-weight: 600; }
+  .welcome-divider {
+    border: none;
+    border-top: 0.5px solid var(--border-light);
+    margin: 18px 0;
+  }
+  .welcome-meta {
+    display: flex;
+    gap: 14px;
+    margin: 0 0 18px;
+  }
+  .welcome-meta-item {
+    flex: 1;
+    background: var(--purple-50);
+    border-radius: 10px;
+    padding: 11px 12px;
+    text-align: center;
+  }
+  .welcome-meta-item .num {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--purple-700);
+    line-height: 1.1;
+  }
+  .welcome-meta-item .lab {
+    display: block;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .welcome-tip-row {
+    background: var(--coral-100);
+    color: var(--coral-700);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .welcome-tip-icon {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--coral-500);
+    color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .welcome-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--purple-500);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .welcome-btn:hover { background: var(--purple-600); }
+  .welcome-sig {
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 14px 0 0;
+    font-style: italic;
+  }
+
+  /* === Pijl-tips (vervangen zij-panelen) === */
+  .tip-side { display: none !important; }
+  .tip-restore { display: none !important; }
+  .stage { gap: 0; }
+
+  .tip-arrow {
+    position: absolute;
+    z-index: 22;
+    pointer-events: none;
+    animation: tipBounce 1.4s ease-in-out infinite;
+  }
+  @keyframes tipBounce {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  .tip-arrow-label {
+    background: var(--coral-500);
+    color: var(--white);
+    padding: 5px 10px 5px 11px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px -2px rgba(255,107,92,0.5);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1;
+  }
+  .tip-arrow-down .tip-arrow-label::after { content: '↓'; font-size: 13px; font-weight: 700; }
+  .tip-arrow-up .tip-arrow-label::after { content: '↑'; font-size: 13px; font-weight: 700; }
+  .tip-arrow-right .tip-arrow-label::after { content: '→'; font-size: 13px; font-weight: 700; }
+  .tip-arrow-left .tip-arrow-label::before { content: '←'; font-size: 13px; font-weight: 700; }
+  .tip-arrow-left .tip-arrow-label::after { content: ''; }
+
+  /* Geven vs Wensen explainer */
+  .explain-modal {
+    position: absolute;
+    inset: 0;
+    background: rgba(31, 22, 64, 0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+    z-index: 35;
+  }
+  .explain-modal.open { display: flex; }
+  .explain-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 22px 22px 18px;
+    max-width: 280px;
+    width: 100%;
+    text-align: left;
+  }
+  .explain-card h3 {
+    margin: 0 0 14px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: -0.01em;
+  }
+  .explain-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .explain-emoji {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    background: var(--purple-50);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .explain-row strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 2px;
+    color: var(--purple-700);
+  }
+  .explain-row p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+  .explain-card .btn-primary { margin-top: 6px; padding: 11px; }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .stage { flex-direction: column; align-items: center; gap: 20px; }
+  }
+  @media (max-width: 480px) {
+    .landing { padding: 32px 14px 100px; }
+    .intro h1 { font-size: 32px; }
+    .intro p { font-size: 15px; }
+    .phone { width: 100%; max-width: 380px; height: 720px; }
+    .feedback-cta { padding: 22px 16px; }
+    .feedback-float { bottom: 14px; right: 14px; padding: 9px 13px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- EIND-OVERLAY bij afsluiten van de demo -->
+<div class="end-overlay" id="end-overlay">
+  <div class="end-confetti">
+    <span style="left:6%; animation-delay:0s;">🎉</span>
+    <span style="left:14%; animation-delay:0.6s;">🎁</span>
+    <span style="left:22%; animation-delay:1.2s;">🎈</span>
+    <span style="left:30%; animation-delay:0.3s;">🎉</span>
+    <span style="left:40%; animation-delay:1.5s;">💝</span>
+    <span style="left:50%; animation-delay:0.9s;">🎁</span>
+    <span style="left:60%; animation-delay:2.1s;">🎉</span>
+    <span style="left:70%; animation-delay:0.4s;">🎈</span>
+    <span style="left:80%; animation-delay:1.8s;">💝</span>
+    <span style="left:90%; animation-delay:1.0s;">🎁</span>
+  </div>
+  <div class="end-card">
+    <div class="end-hero">🎉</div>
+    <h1>Bedankt voor het meedoen!</h1>
+    <p class="end-sub">Je feedback is verstuurd en is goud waard. Echt waar.</p>
+
+    <div class="end-stats">
+      <div class="end-stat">
+        <span class="end-stat-num">26</span>
+        <span class="end-stat-lab">stappen<br>doorlopen</span>
+      </div>
+      <div class="end-stat">
+        <span class="end-stat-num">5</span>
+        <span class="end-stat-lab">keer<br>feedback</span>
+      </div>
+      <div class="end-stat">
+        <span class="end-stat-num">∞</span>
+        <span class="end-stat-lab">dank<br>verschuldigd</span>
+      </div>
+    </div>
+
+    <div class="end-personal">
+      <p>Hoi — ik ben <strong>Walter</strong>, ik bouw Cadeau naast m'n werk omdat ik geloof dat cadeau geven leuker kan. Jouw mening helpt me hier echt verder mee, vooral als je iets niet goed vond.</p>
+    </div>
+
+    <p class="end-share-prompt">Wil je nog iets doen?</p>
+    <button class="end-share-btn" onclick="shareDemoWhatsapp()">
+      <span class="end-wa-ico">w</span>
+      Deel de demo met een vriend
+    </button>
+    <button class="end-restart" onclick="resetDemoFromEnd()">↺ Doe de demo opnieuw</button>
+  </div>
+</div>
+
+<!-- WELKOM-MODAL bij start van de demo -->
+<div class="welcome-overlay" id="welcome-overlay">
+  <div class="welcome-card">
+    <div class="welcome-icon">🎁</div>
+    <h1>Welkom bij Cadeau</h1>
+    <p class="welcome-tagline">De cadeau-app waarbij de ontvanger zijn wensen deelt, en jij ze makkelijk uitkiest.</p>
+
+    <div class="welcome-story">
+      <p><strong>Het probleem:</strong> je vriendin is over 3 dagen jarig. Je hebt geen idee wat ze wil. Je grijpt iets willekeurigs.</p>
+      <p><strong>Het idee:</strong> wat als zij vooraf even aangeeft wat ze leuk vindt, en jij gewoon door haar lijstje swipet? Alleen geven, of samen met anderen.</p>
+      <p>Dat is Cadeau. En dat ga je nu testen.</p>
+    </div>
+
+    <hr class="welcome-divider">
+
+    <div class="welcome-meta">
+      <div class="welcome-meta-item"><span class="num">26</span><span class="lab">schermen</span></div>
+      <div class="welcome-meta-item"><span class="num">~5</span><span class="lab">minuten</span></div>
+      <div class="welcome-meta-item"><span class="num">5×</span><span class="lab">feedback</span></div>
+    </div>
+
+    <div class="welcome-tip-row">
+      <span class="welcome-tip-icon">↗</span>
+      <span>Coral pijlen wijzen je telkens naar wat je kunt doen.</span>
+    </div>
+
+    <p style="font-size:13px; color:var(--text-secondary); line-height:1.55; margin:0 0 18px;">
+      Onderweg vraag ik vijf keer kort je mening. Wees brutaal — vooral als iets stom is. Jouw feedback bepaalt waar ik de app heen stuur.
+    </p>
+
+    <button class="welcome-btn" onclick="startDemo()">Start de demo →</button>
+
+    <p class="welcome-sig">— Walter, bouwer van Cadeau</p>
+  </div>
+</div>
+
+<div class="landing">
+
+  <div class="intro">
+    <p class="kicker">Demo · Volledige ervaring</p>
+    <h1>Cadeau van begin tot eind</h1>
+    <p>Van WhatsApp-bericht tot wenslijst maken — beleef de hele app in één doorlopende ervaring. Coral pijlen wijzen je naar wat je kunt doen.</p>
+  </div>
+
+  <div class="stage">
+    <!-- PHONE -->
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen" id="phone-screen">
+
+        <div class="status-bar" id="status-bar">
+          <span>14:23</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span style="font-size:11px;">●●●●●</span>
+            <span>5G</span>
+            <span>87%</span>
+          </div>
+        </div>
+
+        <!-- 1. WhatsApp inbox -->
+        <div class="screen wa-screen active" id="screen-wa-inbox">
+          <div class="wa-header-large">
+            <h1>Chats</h1>
+            <div class="wa-header-icons"><span>📷</span><span>✎</span></div>
+          </div>
+          <div class="wa-search">🔍 <span>Zoek</span></div>
+          <div>
+            <button class="wa-chat-item" onclick="goTo('wa-chat')">
+              <div class="wa-chat-avatar" style="background:#6D4AFF;">L</div>
+              <div class="wa-chat-content">
+                <div class="wa-chat-line">
+                  <div class="wa-chat-name">Lena de Vries</div>
+                  <div class="wa-chat-time unread">14:23</div>
+                </div>
+                <div class="wa-chat-preview">🔗 Lena's wenslijst — cadeau.app</div>
+              </div>
+              <div class="wa-unread-badge">1</div>
+            </button>
+            <div class="wa-chat-item" style="cursor:default;">
+              <div class="wa-chat-avatar" style="background:#FF8A7C;">M</div>
+              <div class="wa-chat-content">
+                <div class="wa-chat-line"><div class="wa-chat-name">Mama</div><div class="wa-chat-time">gisteren</div></div>
+                <div class="wa-chat-preview">Zie je vrijdag bij ons eten?</div>
+              </div>
+            </div>
+            <div class="wa-chat-item" style="cursor:default;">
+              <div class="wa-chat-avatar" style="background:#14B89E;">J</div>
+              <div class="wa-chat-content">
+                <div class="wa-chat-line"><div class="wa-chat-name">Jaarclub Da Vinci</div><div class="wa-chat-time">gisteren</div></div>
+                <div class="wa-chat-preview">Thomas: Wie is er morgen…</div>
+              </div>
+            </div>
+            <div class="wa-chat-item" style="cursor:default;">
+              <div class="wa-chat-avatar" style="background:#4A8AE0;">S</div>
+              <div class="wa-chat-content">
+                <div class="wa-chat-line"><div class="wa-chat-name">Sophie</div><div class="wa-chat-time">maandag</div></div>
+                <div class="wa-chat-preview">Was leuk gisteren! 🌸</div>
+              </div>
+            </div>
+            <div class="wa-chat-item" style="cursor:default;">
+              <div class="wa-chat-avatar" style="background:#FFB13D;">P</div>
+              <div class="wa-chat-content">
+                <div class="wa-chat-line"><div class="wa-chat-name">Papa</div><div class="wa-chat-time">23 apr</div></div>
+                <div class="wa-chat-preview">Heb je tijd om te bellen?</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. WhatsApp chat -->
+        <div class="screen wa-screen" id="screen-wa-chat">
+          <div class="wa-chat-header-bar">
+            <span class="wa-back" onclick="goTo('wa-inbox', false)">‹</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="wa-avatar-sm" style="background:#6D4AFF;">L</div>
+              <div>
+                <div class="wa-name-sm">Lena de Vries</div>
+                <div class="wa-status-sm">online</div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-messages">
+            <div class="wa-bubble">Hé Walter! Hoe is het? <span class="wa-time">14:21</span></div>
+            <div class="wa-bubble">Ik heb mijn wenslijstje voor m'n verjaardag gemaakt 😊 <span class="wa-time">14:22</span></div>
+            <div class="wa-bubble">Geen druk hoor — kies wat je leuk vindt <span class="wa-time">14:22</span></div>
+            <div class="wa-link-bubble" onclick="goTo('invitation')">
+              <div class="wa-link-card">
+                <div class="wa-link-icon">🎁</div>
+                <div class="wa-link-text">
+                  <div class="wa-link-title">Lena's wenslijst</div>
+                  <div class="wa-link-desc">5 wensen · jarig 21 mei</div>
+                  <div class="wa-link-domain">cadeau.app</div>
+                </div>
+              </div>
+              <div class="wa-link-url">https://cadeau.app/w/lena-2026</div>
+            </div>
+          </div>
+          <div class="wa-input-bar">
+            <span class="wa-input">Bericht</span>
+            <span class="wa-mic">🎤</span>
+          </div>
+        </div>
+
+        <!-- 3. Invitation -->
+        <div class="screen" id="screen-invitation">
+          <div class="scr-content centered">
+            <div class="cadeau-brand"><div class="cadeau-brand-icon">🎁</div>Cadeau</div>
+            <div class="inv-avatar">L</div>
+            <h2><strong style="color:var(--purple-700);">Lena de Vries</strong> heeft haar wenslijst met je gedeeld</h2>
+            <p class="inv-sub">5 wensen · jarig op 21 mei (over 6 dagen)</p>
+            <div class="inv-card">
+              <h3>Wat je hier kunt doen:</h3>
+              <ul>
+                <li><span class="check-sm">✓</span>Haar wenslijst rustig doorlopen</li>
+                <li><span class="check-sm">✓</span>Favorieten opslaan</li>
+                <li><span class="check-sm">✓</span>Een cadeau kopen of samen met anderen geven</li>
+              </ul>
+            </div>
+            <p style="font-size:11px; color:var(--text-muted); margin:0 0 14px; line-height:1.4;">Geen account nodig om rond te kijken — pas wanneer je een cadeau wilt geven.</p>
+            <div class="scr-actions">
+              <button class="btn-primary" onclick="goTo('wishlist-intro')">Bekijk Lena's wishlist →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Email -->
+        <div class="screen" id="screen-signup-email">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('gift', false)">←</button></div>
+          <div class="scr-content">
+            <h2>Maak een account</h2>
+            <p>Even een e-mailadres, dan zijn we onderweg.</p>
+            <label class="form-label" for="signup-email">E-mailadres</label>
+            <input class="form-input" type="email" id="signup-email" value="test@test.nl" placeholder="jij@voorbeeld.nl">
+            <div class="scr-actions"><button class="btn-primary" onclick="signupEmailNext()">Doorgaan</button></div>
+          </div>
+        </div>
+
+        <!-- Geslacht (voor betere aanbevelingen) -->
+        <div class="screen" id="screen-gender">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('signup-email', false)">←</button></div>
+          <div class="scr-content">
+            <h2>Hoe identificeer je je?</h2>
+            <p>Dit helpt ons betere cadeau-suggesties te geven. Je kunt het later altijd wijzigen.</p>
+            <div class="scr-actions" style="margin-top: 14px;">
+              <button class="btn-secondary" style="text-align:center;" onclick="selectGender('Vrouw')">Vrouw</button>
+              <button class="btn-secondary" style="text-align:center;" onclick="selectGender('Man')">Man</button>
+              <button class="btn-secondary" style="text-align:center;" onclick="selectGender('Non-binair')">Non-binair</button>
+              <button class="btn-text" onclick="selectGender('Liever niet zeggen')">Liever niet zeggen</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Naam -->
+        <div class="screen" id="screen-signup-name">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('gender', false)">←</button></div>
+          <div class="scr-content">
+            <h2>Hoe heet je?</h2>
+            <p>Zo weet Lena straks van wie het cadeau komt.</p>
+            <label class="form-label" for="signup-name">Naam</label>
+            <input class="form-input" type="text" id="signup-name" value="Test" placeholder="Voor- en achternaam">
+            <div class="scr-actions"><button class="btn-primary" onclick="signupNameNext()">Doorgaan</button></div>
+          </div>
+        </div>
+
+        <!-- 6. Pincode aanmaken -->
+        <div class="screen" id="screen-pin-create">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('signup-name', false)">←</button></div>
+          <div class="scr-content centered">
+            <h2>Kies een pincode</h2>
+            <p>4 cijfers voor extra beveiliging.</p>
+            <div class="pin-dots" id="pin-new-dots"><span></span><span></span><span></span><span></span></div>
+            <div class="pin-pad" data-pin-target="new"></div>
+          </div>
+        </div>
+
+        <!-- 7. Pincode bevestigen -->
+        <div class="screen" id="screen-pin-confirm">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('pin-create', false)">←</button></div>
+          <div class="scr-content centered">
+            <h2>Bevestig je pincode</h2>
+            <p>Voer dezelfde 4 cijfers opnieuw in.</p>
+            <div class="pin-dots" id="pin-confirm-dots"><span></span><span></span><span></span><span></span></div>
+            <div class="pin-error" id="pin-error"></div>
+            <div class="pin-pad" data-pin-target="confirm"></div>
+          </div>
+        </div>
+
+        <!-- 8. Agenda koppelen -->
+        <div class="screen" id="screen-agenda">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('pin-confirm', false)">←</button><div class="scr-title">Stap 1 van 2</div></div>
+          <div class="scr-content">
+            <div class="icon-circle">📅</div>
+            <h2>Koppel je agenda</h2>
+            <p>Krijg een melding wanneer vrienden binnenkort jarig zijn — dan kun je hun lijstje rustig bekijken.</p>
+            <ul class="bullet-list">
+              <li><span class="check-sm">✓</span><div><strong>Alleen verjaardagen</strong> — we scannen niets anders</div></li>
+              <li><span class="check-sm">✓</span><div><strong>Privé</strong> — blijft op je telefoon</div></li>
+              <li><span class="check-sm">✓</span><div><strong>Altijd uit te zetten</strong> in instellingen</div></li>
+            </ul>
+            <div class="scr-actions">
+              <p class="cal-label-text">Koppel met</p>
+              <button class="btn-cal" onclick="agendaCouple('google')"><span class="cal-ico google">G</span>Google Calendar</button>
+              <button class="btn-cal" onclick="agendaCouple('apple')"><span class="cal-ico apple"></span>Apple Calendar</button>
+              <button class="btn-text" onclick="agendaSkip()">Sla over — later in instellingen</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 9. Meldingen -->
+        <div class="screen" id="screen-meldingen">
+          <div class="scr-header"><div class="scr-title" style="padding-left:36px;">Stap 2 van 2</div></div>
+          <div class="scr-content">
+            <div class="icon-circle">🔔</div>
+            <h2>Zet meldingen aan</h2>
+            <p>We waarschuwen je op tijd, zodat je rustig een cadeau kunt uitzoeken.</p>
+            <ul class="bullet-list">
+              <li><span class="check-sm">✓</span><div>Maximaal één melding per dag</div></li>
+              <li><span class="check-sm">✓</span><div>Alleen voor mensen in je lijst</div></li>
+              <li><span class="check-sm">✓</span><div>Altijd uit te zetten</div></li>
+            </ul>
+            <div class="scr-actions">
+              <button class="btn-primary" onclick="goTo('account-done')">Meldingen toestaan</button>
+              <button class="btn-text" onclick="goTo('account-done')">Niet nu</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Face ID-inschakelen na pincode -->
+        <div class="screen" id="screen-faceid">
+          <div class="scr-content centered">
+            <div class="icon-circle" style="font-size:30px;">👤</div>
+            <h2>Face ID inschakelen?</h2>
+            <p>Log volgende keer sneller in met je gezicht — zonder pincode te hoeven typen.</p>
+            <ul class="bullet-list" style="margin-top:6px;">
+              <li><span class="check-sm">✓</span><div>Veiliger dan een pincode alleen</div></li>
+              <li><span class="check-sm">✓</span><div>Sneller — geen typen meer</div></li>
+              <li><span class="check-sm">✓</span><div>Altijd uit te zetten in instellingen</div></li>
+            </ul>
+            <div class="scr-actions">
+              <button class="btn-primary" onclick="faceIdEnable()">Face ID inschakelen</button>
+              <button class="btn-text" onclick="goTo('account-done')">Nee, alleen pincode</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 10. Account klaar -->
+        <div class="screen" id="screen-account-done">
+          <div class="scr-content centered">
+            <div class="acct-done-icon">✓</div>
+            <h2>Welkom op Cadeau</h2>
+            <p>Je account staat klaar. Tijd om Lena's wenslijst te bekijken.</p>
+            <div class="scr-actions" style="margin-top:20px;">
+              <button class="btn-primary" onclick="completeAccountGate()">Verder met je cadeau →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 11. Wishlist intro -->
+        <div class="screen" id="screen-wishlist-intro">
+          <div class="scr-header"><button class="back-btn" onclick="showToast('In de echte app ga je hier terug naar je hoofdmenu')">←</button><div class="scr-title">Profiel</div></div>
+          <div class="scr-content centered">
+            <div class="wi-avatar">L</div>
+            <h2 style="margin-top:0;">Lena de Vries</h2>
+            <div class="wi-tags"><span class="wi-tag">Vriendin</span><span class="wi-tag">28 jaar</span><span class="wi-tag">jarig 21 mei</span></div>
+            <div class="wi-countdown">🎂 Over 6 dagen jarig</div>
+            <div class="wi-count">5 items op haar wishlist</div>
+            <div class="wi-card">
+              <h4>Hoe het werkt</h4>
+              <p>Swipe één voor één door Lena's wensen. Wat je leuk vindt sla je op. Daarna kies je er een uit en geef je 'm alleen of samen.</p>
+            </div>
+            <div class="scr-actions"><button class="btn-primary" onclick="goTo('swipe-lena')">Begin met cadeau kiezen</button></div>
+          </div>
+        </div>
+
+        <!-- 12. Swipe Lena's wishlist -->
+        <div class="screen" id="screen-swipe-lena">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('wishlist-intro', false)">←</button><div class="scr-title">Lena's wishlist · <span id="lena-swipe-counter">1/5</span></div></div>
+          <p class="swipe-instructions">Veeg rechts om op te slaan, links om over te slaan</p>
+          <div class="swipe-stack" id="lena-swipe-stack"></div>
+          <div class="swipe-actions">
+            <button class="swipe-action-btn skip" onclick="lenaSwipeBtn('left')">✕</button>
+            <button class="swipe-action-btn like" onclick="lenaSwipeBtn('right')">♥</button>
+          </div>
+        </div>
+
+        <!-- 13. Favorieten -->
+        <div class="screen" id="screen-favorites">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('wishlist-intro', false)">←</button><div class="scr-title">Jouw favorieten</div></div>
+          <div class="fav-intro">
+            <h2>Je hebt <strong id="fav-count">0</strong> <span id="fav-noun">ideeën</span> opgeslagen</h2>
+            <p>Bekijk ze en kies welk cadeau je wilt geven.</p>
+          </div>
+          <div class="fav-list" id="fav-list"></div>
+          <div class="fav-footer"><button class="btn-text" onclick="restartLenaSwipe()">↺ Opnieuw beginnen</button></div>
+        </div>
+
+        <!-- 14. Cadeau detail -->
+        <div class="screen" id="screen-gift">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('favorites', false)">←</button><div class="scr-title">Cadeau-detail</div></div>
+          <div id="gift-content"></div>
+          <div class="gift-actions">
+            <button class="btn-primary" onclick="requireAccountThen('purchase')">Koop zelf <span id="gift-buy-price"></span></button>
+            <button class="btn-accent" onclick="requireAccountThen('group')">Geef samen met anderen</button>
+          </div>
+        </div>
+
+        <!-- 15. Aankoop bevestigd -->
+        <div class="screen" id="screen-purchase">
+          <div class="purchase-header-bar"><button class="back-btn" onclick="goTo('gift', false)">←</button></div>
+          <div id="purchase-content"></div>
+          <div class="purchase-actions">
+            <button class="btn-primary" onclick="afterPurchase()">Verder in Cadeau</button>
+          </div>
+        </div>
+
+        <!-- 16. Samen geven setup -->
+        <div class="screen" id="screen-group">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('gift', false)">←</button><div class="scr-title">Samen geven</div></div>
+          <div class="group-body">
+            <div class="group-summary" id="group-summary"></div>
+            <p class="group-section-title">Met wie wil je dit samen geven?</p>
+            <div class="contact-list" id="contact-list"></div>
+            <div class="group-split"><span>Bijdrage per persoon</span><span class="split-amount" id="split-amount">—</span></div>
+            <p style="font-size:10px; color:var(--text-muted); margin:0;">We sturen elk een uitnodiging via app of WhatsApp.</p>
+          </div>
+          <div class="group-actions">
+            <button class="btn-primary" id="invite-btn" onclick="sendInvites()" disabled>Kies minstens 1 persoon</button>
+            <button class="whatsapp-link" onclick="shareWhatsapp()"><span class="wa-ico">✓</span>Of deel via WhatsApp</button>
+          </div>
+        </div>
+
+        <!-- 17. Groepsuitnodiging verstuurd -->
+        <div class="screen" id="screen-group-confirm">
+          <div class="scr-header"><div class="scr-title" style="padding-left:36px;">Verstuurd</div></div>
+          <div class="gc-content">
+            <div class="gc-check-big">✓</div>
+            <h1>Uitnodigingen verstuurd!</h1>
+            <p class="gc-msg" id="gc-msg">We laten je weten zodra iedereen heeft gereageerd.</p>
+            <div class="notif-label">Zo ziet hun melding eruit</div>
+            <div class="notif-preview">
+              <div class="push-header"><div class="push-app-icon">🎁</div><div class="push-app-name">Cadeau</div><div class="push-time">nu</div></div>
+              <div class="push-body">
+                <div class="push-title">Uitnodiging groepscadeau</div>
+                <div class="push-text" id="push-text">Walter wil samen met je een cadeau geven</div>
+              </div>
+            </div>
+            <div class="gc-actions">
+              <button class="btn-primary" onclick="enterMainAppWithFb('Welkom op Cadeau!')">Verder in Cadeau</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ FASE 3: Main app ============ -->
+
+        <!-- 18. Geven tab -->
+        <div class="screen" id="screen-app-geven">
+          <div class="ge-content">
+            <div class="ge-title">Geven</div>
+            <div class="ge-sub">Cadeaus voor anderen</div>
+            <div class="ge-section">Binnenkort jarig</div>
+            <div class="ge-cards-row">
+              <div class="ge-pcard" onclick="showToast('Persoon-detail — coming soon')">
+                <div class="ge-pav" style="background:#6D4AFF;">L</div>
+                <div class="ge-pname">Lena</div>
+                <div class="ge-pmeta">6 dagen</div>
+                <div class="ge-prel">VRIENDIN</div>
+              </div>
+              <div class="ge-pcard" onclick="showToast('Persoon-detail — coming soon')">
+                <div class="ge-pav" style="background:#1F1640;">M</div>
+                <div class="ge-pname">Mark</div>
+                <div class="ge-pmeta">17 dagen</div>
+                <div class="ge-prel">VRIEND</div>
+              </div>
+              <div class="ge-pcard" onclick="showToast('Persoon-detail — coming soon')">
+                <div class="ge-pav" style="background:#FF6B5C;">S</div>
+                <div class="ge-pname">Sophie</div>
+                <div class="ge-pmeta">25 dagen</div>
+                <div class="ge-prel">COLLEGA</div>
+              </div>
+            </div>
+            <div class="ge-section">Wishlists die met jou zijn gedeeld</div>
+            <div class="ge-wcard" onclick="showToast('Open wishlist — coming soon')">
+              <div class="ge-wav" style="background:#6D4AFF;">L</div>
+              <div class="ge-winfo">
+                <div class="ge-whead">Lena <span class="ge-wbadge">5 cadeaus</span></div>
+                <div class="ge-wdesc">Verjaardag 21 mei · gedeeld via WhatsApp</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 19. Wensen tab -->
+        <div class="screen" id="screen-app-wensen">
+          <div class="we-content">
+            <div class="we-header">
+              <div>
+                <div class="ge-title" style="padding:0;">Mijn wensen</div>
+                <div class="ge-sub" style="padding:0;">Wat staat er op jouw lijst?</div>
+              </div>
+              <button class="we-share" id="we-share-btn" onclick="openWensShare()">Deel lijst</button>
+            </div>
+            <div id="we-empty" class="we-empty">
+              <div class="we-empty-icon">🎁</div>
+              <h3>Nog geen wensen</h3>
+              <p>Maak jouw eigen wenslijstje. We helpen suggesties te vinden op basis van je interesses.</p>
+              <div class="we-empty-hint"><span class="we-hint-fab">+</span>Tik op de + om te beginnen</div>
+            </div>
+            <div id="we-saved" style="display:none;">
+              <div class="we-list">
+                <div class="we-list-summary"><span><strong id="we-count">0</strong> wensen opgeslagen</span></div>
+                <div id="we-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 20. Profiel tab -->
+        <div class="screen" id="screen-app-profiel">
+          <div class="pr-content">
+            <div class="pr-header"><div class="pr-title">Profiel</div></div>
+            <div class="pr-hero">
+              <div class="pr-avatar">W</div>
+              <div class="pr-name" id="pr-name">Walter</div>
+              <div class="pr-email" id="pr-email">walter@voorbeeld.nl</div>
+              <div class="pr-stats">
+                <span class="pr-stat"><strong>0</strong> cadeaus</span>
+                <span class="pr-stat"><strong>0</strong> lijsten</span>
+                <span class="pr-stat">Lid sinds vandaag</span>
+              </div>
+            </div>
+            <div class="pr-menu">
+              <button class="pr-row" onclick="goTo('profile-groupgifts')">
+                <div class="pr-row-icon">🎁</div>
+                <div class="pr-row-text">Mijn groepscadeaus <span style="color:var(--coral-600); font-weight:600;">· 1 wacht op je</span></div>
+                <div class="pr-row-arrow">›</div>
+              </button>
+              <button class="pr-row" onclick="showToast('Agenda is al gekoppeld')">
+                <div class="pr-row-icon">📅</div>
+                <div class="pr-row-text">Mijn agenda <span class="pr-status-ok">· gekoppeld</span></div>
+                <div class="pr-row-arrow">›</div>
+              </button>
+              <button class="pr-row" onclick="goTo('profile-friends')">
+                <div class="pr-row-icon">👥</div>
+                <div class="pr-row-text">Vrienden <span style="color:var(--text-muted); font-weight:400;">· 5</span></div>
+                <div class="pr-row-arrow">›</div>
+              </button>
+              <button class="pr-row" onclick="goTo('profile-groups')">
+                <div class="pr-row-icon">👨‍👩‍👧</div>
+                <div class="pr-row-text">Groepen <span style="color:var(--text-muted); font-weight:400;">· 3</span></div>
+                <div class="pr-row-arrow">›</div>
+              </button>
+              <button class="pr-row" onclick="goTo('profile-notifications')">
+                <div class="pr-row-icon">🔔</div>
+                <div class="pr-row-text">Notificaties</div>
+                <div class="pr-row-arrow">›</div>
+              </button>
+              <button class="pr-row" onclick="showToast('Privacy-instellingen — later')">
+                <div class="pr-row-icon">🔒</div>
+                <div class="pr-row-text">Privacy</div>
+                <div class="pr-row-arrow">›</div>
+              </button>
+            </div>
+            <div class="profile-thanks" id="profile-thanks">
+              <p class="head">Bedankt voor het rondkijken!</p>
+              <p class="sub">Je hebt alles gezien. Tik op Uitloggen voor één laatste vraag.</p>
+            </div>
+
+            <div class="pr-menu danger">
+              <button class="pr-row" id="logout-btn" onclick="finishDemo()">
+                <div class="pr-row-icon">↪</div>
+                <div class="pr-row-text">Uitloggen — sluit de demo af</div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ Wens-flow schermen ============ -->
+
+        <!-- 21. Wens-flow stap 1: prijs + gelegenheid -->
+        <div class="screen" id="screen-wf-prefs">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('app-wensen', false)">←</button><div class="scr-title">Wenslijst maken</div></div>
+          <div class="scr-content">
+            <div class="wf-step">Stap 1 van 3</div>
+            <h2>Wat zoek je ongeveer?</h2>
+            <p>Geef je prijsrange en gelegenheid op, daar maken we voorstellen op.</p>
+            <p style="font-size:11px; color:var(--text-secondary); font-weight:500; margin:0 0 4px;">Prijsrange</p>
+            <div class="range-wrap">
+              <div class="range-track"><div class="range-fill" id="range-fill"></div></div>
+              <div class="range-inputs">
+                <input type="range" min="0" max="500" step="5" value="20" id="range-min">
+                <input type="range" min="0" max="500" step="5" value="100" id="range-max">
+              </div>
+              <div class="range-values"><span>€<span id="range-min-val">20</span></span><span>€<span id="range-max-val">100</span></span></div>
+              <div class="range-bounds"><span>€0</span><span>€500</span></div>
+            </div>
+            <p style="font-size:11px; color:var(--text-secondary); font-weight:500; margin:14px 0 6px;">Gelegenheid</p>
+            <div class="occ-chips" id="occ-chips">
+              <button class="occ-chip selected" data-occ="Verjaardag">Verjaardag</button>
+              <button class="occ-chip" data-occ="Sinterklaas">Sinterklaas</button>
+              <button class="occ-chip" data-occ="Kerst">Kerst</button>
+              <button class="occ-chip" data-occ="Bedankje">Bedankje</button>
+              <button class="occ-chip" data-occ="Geen">Geen aanleiding</button>
+            </div>
+            <div class="scr-actions"><button class="btn-primary" onclick="goTo('wf-hobbies1')">Doorgaan</button></div>
+          </div>
+        </div>
+
+        <!-- 22. Hobby's hoofdcategorieën -->
+        <div class="screen" id="screen-wf-hobbies1">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('wf-prefs', false)">←</button><div class="scr-title">Wenslijst maken</div></div>
+          <div class="scr-content">
+            <div class="wf-step">Stap 2 van 3</div>
+            <h2>Wat zijn je interesses?</h2>
+            <p>Kies alles wat bij je past.</p>
+            <div class="hobby-grid" id="hobby-grid"></div>
+            <div class="scr-actions"><button class="btn-primary" id="h1-next" onclick="goTo('wf-hobbies2')" disabled>Kies minstens 1</button></div>
+          </div>
+        </div>
+
+        <!-- 23. Sub-categorieën -->
+        <div class="screen" id="screen-wf-hobbies2">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('wf-hobbies1', false)">←</button><div class="scr-title">Wenslijst maken</div></div>
+          <div class="scr-content">
+            <div class="wf-step">Stap 3 van 3</div>
+            <h2>Verfijn nog wat</h2>
+            <p>Waar gaat het precies om?</p>
+            <div id="sub-hobbies"></div>
+            <div class="scr-actions"><button class="btn-primary" id="h2-next" onclick="triggerFb('m4', () => startWensSwipe())" disabled>Toon mijn ideeën</button></div>
+          </div>
+        </div>
+
+        <!-- 24. Swipe wens-suggesties -->
+        <div class="screen" id="screen-wf-swipe">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('wf-hobbies2', false)">←</button><div class="scr-title">Voorstellen · <span id="wens-counter">1/5</span></div></div>
+          <p class="swipe-instructions">Veeg rechts om op te slaan</p>
+          <div class="swipe-stack" id="wens-swipe-stack"></div>
+          <div class="swipe-actions">
+            <button class="swipe-action-btn skip" onclick="wensSwipeBtn('left')">✕</button>
+            <button class="swipe-action-btn like" onclick="wensSwipeBtn('right')">♥</button>
+          </div>
+        </div>
+
+        <!-- 25. Wenslijst klaar + delen -->
+        <div class="screen" id="screen-wf-done">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('app-wensen', false)">✕</button><div class="scr-title">Klaar</div></div>
+          <div class="scr-content centered">
+            <div class="acct-done-icon">✓</div>
+            <h2>Je wenslijst staat klaar</h2>
+            <p><strong id="wf-done-count">3</strong> wensen opgeslagen. Deel je lijst zodat anderen weten wat ze je kunnen geven.</p>
+          </div>
+          <div class="share-link-preview">https://cadeau.app/w/walter-2026</div>
+          <div class="share-opts">
+            <button class="share-opt" onclick="shareWensCopyThenProfile()">
+              <span class="share-opt-icon copy">⌘</span>
+              <span class="share-opt-text">Kopieer link<span class="share-opt-sub">Plak in een chat of e-mail</span></span>
+            </button>
+            <button class="share-opt" onclick="shareWensWhatsappThenProfile()">
+              <span class="share-opt-icon whatsapp">w</span>
+              <span class="share-opt-text">Deel via WhatsApp<span class="share-opt-sub">Open WhatsApp met de uitnodiging</span></span>
+            </button>
+            <button class="btn-text" onclick="goToProfileAfterWens()">Sla over — bekijk profiel</button>
+          </div>
+        </div>
+
+        <!-- Betaal-scherm (na Koop zelf óf via groepscadeau-status) -->
+        <div class="screen" id="screen-payment">
+          <div class="scr-header"><button class="back-btn" onclick="paymentBack()">←</button><div class="scr-title">Betalen</div></div>
+          <div class="pay-content">
+            <div class="pay-summary" id="pay-summary"></div>
+            <div class="pay-section">
+              <h3>Hoe wil je betalen?</h3>
+              <div class="pay-method selected" data-pm="ideal" onclick="selectPayMethod('ideal')">
+                <span class="pay-logo ideal">iD</span>
+                <span class="pay-method-name">iDEAL</span>
+                <span class="pay-radio"></span>
+              </div>
+              <div class="pay-banks show" id="pay-banks">
+                <button class="pay-bank selected" data-bank="ING" onclick="selectBank(this, 'ING')">ING</button>
+                <button class="pay-bank" data-bank="ABN" onclick="selectBank(this, 'ABN AMRO')">ABN AMRO</button>
+                <button class="pay-bank" data-bank="Rabo" onclick="selectBank(this, 'Rabobank')">Rabobank</button>
+                <button class="pay-bank" data-bank="Bunq" onclick="selectBank(this, 'bunq')">bunq</button>
+                <button class="pay-bank" data-bank="ASN" onclick="selectBank(this, 'ASN')">ASN</button>
+              </div>
+              <div class="pay-method" data-pm="apple" onclick="selectPayMethod('apple')">
+                <span class="pay-logo apple"></span>
+                <span class="pay-method-name">Apple Pay</span>
+                <span class="pay-radio"></span>
+              </div>
+              <div class="pay-method" data-pm="card" onclick="selectPayMethod('card')">
+                <span class="pay-logo card">VC</span>
+                <span class="pay-method-name">Creditcard</span>
+                <span class="pay-radio"></span>
+              </div>
+            </div>
+          </div>
+          <div class="pay-actions">
+            <button class="btn-primary" id="pay-btn" onclick="confirmPayment()">Betaal €<span id="pay-amount">0</span></button>
+          </div>
+        </div>
+
+        <!-- Groepscadeau-status (in Profiel) -->
+        <div class="screen" id="screen-profile-groupgifts">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('app-profiel', false)">←</button><div class="scr-title">Mijn groepscadeaus</div></div>
+          <div class="gg-content">
+            <p class="gg-intro">Hier zie je hoe vrienden hebben gereageerd op groepscadeau-uitnodigingen.</p>
+            <div class="gg-explainer">
+              <p>💡 <strong>Voor de demo:</strong> dit groepscadeau hebben we voor je klaargezet. Als je in een echte flow had gekozen om "samen te geven", zie je hier de uitnodigingen die je hebt verstuurd en hun status.</p>
+            </div>
+            <div id="gg-list"></div>
+          </div>
+        </div>
+
+        <!-- 26. Profiel · Vrienden -->
+        <div class="screen" id="screen-profile-friends">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('app-profiel', false)">←</button><div class="scr-title">Vrienden</div></div>
+          <div class="pr-sub-content">
+            <div class="pr-search">🔍 Zoek vrienden</div>
+            <div class="pr-list">
+              <div class="pr-list-item">
+                <div class="pr-list-av" style="background:#6D4AFF;">L</div>
+                <div class="pr-list-info"><div class="pr-list-name">Lena de Vries</div><div class="pr-list-meta">Vriendin · jarig 21 mei</div></div>
+                <span class="pr-list-arrow">›</span>
+              </div>
+              <div class="pr-list-item">
+                <div class="pr-list-av" style="background:#1F1640;">M</div>
+                <div class="pr-list-info"><div class="pr-list-name">Mark Janssen</div><div class="pr-list-meta">Vriend · jarig 1 juni</div></div>
+                <span class="pr-list-arrow">›</span>
+              </div>
+              <div class="pr-list-item">
+                <div class="pr-list-av" style="background:#FF6B5C;">S</div>
+                <div class="pr-list-info"><div class="pr-list-name">Sophie van den Berg</div><div class="pr-list-meta">Collega · jarig 9 juni</div></div>
+                <span class="pr-list-arrow">›</span>
+              </div>
+              <div class="pr-list-item">
+                <div class="pr-list-av" style="background:#14B89E;">N</div>
+                <div class="pr-list-info"><div class="pr-list-name">Noor de Wit</div><div class="pr-list-meta">Vriendin · jarig 14 oktober</div></div>
+                <span class="pr-list-arrow">›</span>
+              </div>
+              <div class="pr-list-item">
+                <div class="pr-list-av" style="background:#4A8AE0;">T</div>
+                <div class="pr-list-info"><div class="pr-list-name">Thomas Bakker</div><div class="pr-list-meta">Jaarclub · jarig 28 november</div></div>
+                <span class="pr-list-arrow">›</span>
+              </div>
+            </div>
+            <button class="pr-add-btn" onclick="inviteFriendsWhatsapp()"><span class="wa-ico" style="background:rgba(255,255,255,0.25); color:#FFF;">w</span>Nodig vrienden uit via WhatsApp</button>
+          </div>
+        </div>
+
+        <!-- 27. Profiel · Groepen -->
+        <div class="screen" id="screen-profile-groups">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('app-profiel', false)">←</button><div class="scr-title">Groepen</div></div>
+          <div class="pr-sub-content">
+            <div class="pr-list">
+              <div class="pr-list-item" onclick="showToast('Groep openen — coming soon')">
+                <div class="pr-list-av" style="background:#6D4AFF;">F</div>
+                <div class="pr-list-info"><div class="pr-list-name">Familie</div><div class="pr-list-meta">4 leden · 2 verjaardagen deze maand</div></div>
+                <span class="pr-list-arrow">›</span>
+              </div>
+              <div class="pr-list-item" onclick="showToast('Groep openen — coming soon')">
+                <div class="pr-list-av" style="background:#14B89E;">J</div>
+                <div class="pr-list-info"><div class="pr-list-name">Jaarclub Da Vinci</div><div class="pr-list-meta">8 leden · 1 verjaardag deze maand</div></div>
+                <span class="pr-list-arrow">›</span>
+              </div>
+              <div class="pr-list-item" onclick="showToast('Groep openen — coming soon')">
+                <div class="pr-list-av" style="background:#FFB13D;">W</div>
+                <div class="pr-list-info"><div class="pr-list-name">Werk</div><div class="pr-list-meta">12 leden · geen verjaardagen deze maand</div></div>
+                <span class="pr-list-arrow">›</span>
+              </div>
+            </div>
+            <button class="pr-add-btn" onclick="inviteGroupMembersWhatsapp()"><span class="wa-ico" style="background:rgba(255,255,255,0.25); color:#FFF;">w</span>Nodig leden uit via WhatsApp</button>
+            <button class="pr-add-btn pr-add-btn-secondary" onclick="showToast('Nieuwe groep aanmaken — coming soon')" style="margin-top:0;">+ Nieuwe groep aanmaken</button>
+          </div>
+        </div>
+
+        <!-- 28. Profiel · Notificaties -->
+        <div class="screen" id="screen-profile-notifications">
+          <div class="scr-header"><button class="back-btn" onclick="goTo('app-profiel', false)">←</button><div class="scr-title">Notificaties</div></div>
+          <div class="pr-sub-content">
+            <div class="pr-toggle-list">
+              <div class="pr-toggle-item">
+                <div class="pr-toggle-info"><div class="pr-toggle-title">Verjaardags-herinnering</div><div class="pr-toggle-desc">5 dagen voor de verjaardag van iemand op je lijst</div></div>
+                <div class="pr-toggle-switch on" onclick="this.classList.toggle('on')"></div>
+              </div>
+              <div class="pr-toggle-item">
+                <div class="pr-toggle-info"><div class="pr-toggle-title">Iemand deelt een wenslijst</div><div class="pr-toggle-desc">Direct een melding als een vriend zijn lijst stuurt</div></div>
+                <div class="pr-toggle-switch on" onclick="this.classList.toggle('on')"></div>
+              </div>
+              <div class="pr-toggle-item">
+                <div class="pr-toggle-info"><div class="pr-toggle-title">Reactie op groepscadeau</div><div class="pr-toggle-desc">Als iemand een uitnodiging accepteert of afwijst</div></div>
+                <div class="pr-toggle-switch on" onclick="this.classList.toggle('on')"></div>
+              </div>
+              <div class="pr-toggle-item">
+                <div class="pr-toggle-info"><div class="pr-toggle-title">Wekelijkse digest</div><div class="pr-toggle-desc">Elke maandag: aankomende verjaardagen deze week</div></div>
+                <div class="pr-toggle-switch" onclick="this.classList.toggle('on')"></div>
+              </div>
+              <div class="pr-toggle-item">
+                <div class="pr-toggle-info"><div class="pr-toggle-title">AI-suggesties van vrienden</div><div class="pr-toggle-desc">Tips op basis van wat anderen leuk vonden</div></div>
+                <div class="pr-toggle-switch" onclick="this.classList.toggle('on')"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom nav (fase 3) -->
+        <div class="bottom-nav" id="bottom-nav">
+          <button class="nav-item active" data-tab="geven" onclick="switchTab('geven')"><span class="nav-icon">🎁</span>Geven</button>
+          <button class="nav-item" data-tab="wensen" onclick="switchTab('wensen')"><span class="nav-icon">💝</span>Wensen</button>
+          <button class="nav-item" data-tab="profiel" onclick="switchTab('profiel')"><span class="nav-icon">👤</span>Profiel</button>
+        </div>
+
+        <!-- FAB (fase 3) -->
+        <button class="fab" id="fab" onclick="fabClick()">+</button>
+
+        <!-- Solo-info pop-up: voor wie alleen 'Koop zelf' heeft gedaan, eerste Profiel-bezoek -->
+        <div class="explain-modal" id="solo-modal">
+          <div class="explain-card">
+            <h3>Even ter info</h3>
+            <p style="font-size:13px; color:var(--text-primary); line-height:1.55; margin:0 0 10px;">
+              Je hebt het cadeau zelf gekocht — dus je hebt geen groepscadeau gestart. Toch zie je hieronder <strong style="color:var(--purple-700);">"Mijn groepscadeaus"</strong> staan.
+            </p>
+            <p style="font-size:13px; color:var(--text-primary); line-height:1.55; margin:0 0 14px;">
+              Daar hebben we een <strong style="color:var(--purple-700);">voorbeeld</strong> voor je klaargezet — alsof je had gekozen om samen met anderen te geven. Zo zie je hoe je hun reacties volgt en jouw deel afrondt.
+            </p>
+            <button class="btn-primary" onclick="dismissSoloInfo()">Begrepen</button>
+          </div>
+        </div>
+
+        <!-- Geven vs Wensen uitleg (1x bij eerste keer main app) -->
+        <div class="explain-modal" id="explain-modal">
+          <div class="explain-card">
+            <h3>Even het verschil</h3>
+            <div class="explain-row">
+              <div class="explain-emoji">🎁</div>
+              <div>
+                <strong>Geven</strong>
+                <p>Hier zie je verjaardagen van anderen en gedeelde wishlists. Voor cadeaus áán anderen.</p>
+              </div>
+            </div>
+            <div class="explain-row">
+              <div class="explain-emoji">💝</div>
+              <div>
+                <strong>Wensen</strong>
+                <p>Hier maak je je eigen verlanglijstje, om met vrienden te delen. Voor cadeaus váán anderen.</p>
+              </div>
+            </div>
+            <button class="btn-primary" onclick="dismissExplainer()">Begrepen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="feedback-cta">
+    <h2>Wat denk je van wat je net zag?</h2>
+    <p>Eerlijke reacties helpen ons enorm — design, functies, of de propositie. Het kost je 30 seconden.</p>
+    <button class="feedback-cta-btn" onclick="openFeedback()">Geef feedback</button>
+  </div>
+
+</div>
+
+<button class="feedback-float" onclick="openFeedback()"><span>💬</span><span>Feedback</span></button>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeFeedback()">✕</button>
+    <div id="fb-form">
+      <h2>Help ons de app beter te maken</h2>
+      <p class="modal-sub">Je feedback gaat anoniem, tenzij je je e-mailadres invult.</p>
+      <label>Hoe goed past dit bij wat je zoekt?</label>
+      <div class="stars">
+        <button class="star-btn" data-rating="1">★</button>
+        <button class="star-btn" data-rating="2">★</button>
+        <button class="star-btn" data-rating="3">★</button>
+        <button class="star-btn" data-rating="4">★</button>
+        <button class="star-btn" data-rating="5">★</button>
+      </div>
+      <label>Waar gaat het over?</label>
+      <div class="cat-row">
+        <button class="cat-btn" data-category="design">Design</button>
+        <button class="cat-btn" data-category="functie">Functionaliteit</button>
+        <button class="cat-btn" data-category="propositie">Propositie</button>
+        <button class="cat-btn" data-category="anders">Anders</button>
+      </div>
+      <label for="fb-comment">Wat valt je op?</label>
+      <textarea id="fb-comment" placeholder="Schrijf vrij…"></textarea>
+      <label for="fb-email">E-mail (optioneel)</label>
+      <input id="fb-email" type="email" placeholder="jij@voorbeeld.nl">
+      <button class="modal-submit" id="fb-submit" onclick="submitFeedback()">Verstuur</button>
+    </div>
+    <div class="modal-success" id="fb-success">
+      <div class="ms-check">✓</div>
+      <h2 style="text-align:center;">Dankjewel!</h2>
+      <p style="text-align:center; color:var(--text-secondary); font-size:13px;">Je feedback is verstuurd.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Inline feedback modal (bottom sheet) ===== -->
+<div class="fb-modal" id="fb-inline">
+  <div class="fb-sheet" id="fb-sheet">
+    <div class="fb-handle"></div>
+    <button class="fb-skip" onclick="closeInlineFb(true)">Later</button>
+    <div id="fb-step-label" class="fb-step">Moment 1 van 5</div>
+    <h2 class="fb-q" id="fb-q-text">Vraag…</h2>
+    <div id="fb-q-body"></div>
+    <textarea class="fb-textarea" id="fb-open-text" placeholder="Vertel er meer over (optioneel)" style="display:none;"></textarea>
+    <button class="fb-submit" id="fb-submit-btn" onclick="submitInlineFb()" disabled>Verstuur</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FORMSPREE_ID = 'mbdbrdpk';
+
+// ===== Tips =====
+const screenOrder = ['wa-inbox','wa-chat','invitation','wishlist-intro','swipe-lena','favorites','gift','signup-email','gender','signup-name','pin-create','pin-confirm','faceid','account-done','payment','purchase','group','group-confirm','app-geven','app-wensen','wf-prefs','wf-hobbies1','wf-hobbies2','wf-swipe','wf-done','app-profiel','profile-groupgifts','profile-friends','profile-groups','profile-notifications'];
+
+const tips = {
+  'wa-inbox':       { c: 'Dit is je WhatsApp-inbox. Bovenaan staat een nieuwe chat van Lena met een gele "1"-badge.', a: 'Tik op <strong>Lena\'s chat</strong> om haar bericht te openen.' },
+  'wa-chat':        { c: 'Je leest Lena\'s berichten. Onderaan stuurt ze een link-kaart van Cadeau.', a: 'Tik op de <strong>paarse link-kaart</strong> om de uitnodiging te openen.' },
+  'invitation':     { c: 'Lena heeft haar wishlist gedeeld. Je kunt direct rondkijken — geen account nodig om te beginnen.', a: 'Tik op <strong>"Bekijk Lena\'s wishlist →"</strong>.' },
+  'signup-email':   { c: 'Je hebt een cadeau gekozen. Nu vragen we een account om de actie te voltooien.', a: 'Vul een (test-)e-mailadres in en tik op <strong>Doorgaan</strong>.' },
+  'gender':         { c: 'Voor betere cadeau-suggesties vragen we je geslacht. Optioneel — kan altijd later.', a: 'Tik op <strong>één van de opties</strong>.' },
+  'signup-name':    { c: 'Hoe heet je? Zo weet Lena straks van wie het cadeau komt.', a: 'Vul je naam in en tik op <strong>Doorgaan</strong>.' },
+  'pin-create':     { c: 'Beveiliging: kies een pincode van 4 cijfers.', a: 'Tik 4 cijfers in op het <strong>toetsenpad</strong>.' },
+  'pin-confirm':    { c: 'Bevestig dezelfde pincode.', a: 'Voer <strong>dezelfde 4 cijfers</strong> opnieuw in.' },
+  'faceid':         { c: 'Wil je naast je pincode ook met je gezicht kunnen inloggen?', a: 'Tik op <strong>"Face ID inschakelen"</strong> of "Nee, alleen pincode".' },
+  'account-done':   { c: 'Je account staat klaar. Tijd om je cadeau-actie af te ronden.', a: 'Tik op <strong>"Verder met je cadeau →"</strong>.' },
+  'payment':        { c: 'Kies hoe je wilt betalen. iDEAL is in NL standaard, met je bank erbij.', a: 'Kies een bank en tik op <strong>"Betaal"</strong> onderaan.' },
+  'profile-groupgifts': { c: 'Status van groepscadeaus waarvoor je vrienden hebt uitgenodigd. Zodra iedereen akkoord is kun je je deel betalen.', a: 'Tik op <strong>"Stuur herinnering"</strong> of <strong>"Voltooi je betaling"</strong>.' },
+  'wishlist-intro': { c: 'Lena\'s profielpagina. Je ziet haar info en hoe het werkt.', a: 'Tik op <strong>"Begin met cadeau kiezen"</strong> om door haar wensen te swipen.' },
+  'swipe-lena':     { c: 'Swipe-stack van Lena\'s 5 wensen. Je swipet één voor één.', a: 'Sleep <strong>rechts</strong> om op te slaan, <strong>links</strong> om over te slaan. Of gebruik de knoppen.' },
+  'favorites':      { c: 'Hier staan de cadeaus die je hebt opgeslagen.', a: 'Tik op een <strong>cadeau</strong> om de details te zien.' },
+  'gift':           { c: 'Cadeau-detail. Je hebt twee keuzes: alleen geven of samen.', a: 'Kies <strong>"Koop zelf"</strong> of <strong>"Geef samen"</strong>.' },
+  'purchase':       { c: 'Je bent doorverwezen naar bol.com. Gesimuleerd in de demo.', a: 'Tik op <strong>"Verder in Cadeau"</strong> om door te gaan naar de app.' },
+  'group':          { c: 'Kies vrienden waarmee je het cadeau samen wilt geven.', a: 'Tik op <strong>1 of meer contacten</strong>, dan op "Verstuur uitnodigingen".' },
+  'group-confirm':  { c: 'Uitnodigingen zijn verstuurd. Je ziet hieronder hoe hun melding eruit ziet.', a: 'Tik op <strong>"Verder in Cadeau"</strong> om verder te verkennen.' },
+  'app-geven':      { c: 'Je bent nu in de hoofdapp. Op <strong>Geven</strong>-tab zie je verjaardagen die eraan komen en gedeelde wishlists.', a: 'Klik op de <strong>Wensen</strong>-tab onderaan om je eigen lijstje te maken.' },
+  'app-wensen':     { c: 'Hier maak je je eigen wenslijst, om met anderen te delen. Nu nog leeg.', a: 'Tik op de <strong>coral + knop</strong> rechtsonder om te beginnen.' },
+  'wf-prefs':       { c: 'Wenslijst-flow stap 1: je prijsrange en gelegenheid.', a: 'Sleep de twee balletjes voor je <strong>prijsrange</strong>. Standaard "Verjaardag".' },
+  'wf-hobbies1':    { c: 'Stap 2: je interesses. Selecteer alles wat bij je past.', a: 'Tik op <strong>2-4 hobby\'s</strong> die je leuk vindt.' },
+  'wf-hobbies2':    { c: 'Stap 3: per hobby zie je sub-opties. Verfijn je voorkeuren.', a: 'Tik op een paar <strong>sub-categorieën</strong>, dan op "Toon mijn ideeën".' },
+  'wf-swipe':       { c: 'Cadeau gebaseerd op je interesses. Sla op wat je leuk vindt.', a: 'Swipe net als bij Lena: <strong>rechts</strong> = opslaan, <strong>links</strong> = overslaan.' },
+  'wf-done':        { c: 'Je wenslijst staat klaar. Deel \'m zodat anderen weten wat je leuk vindt.', a: 'Kies <strong>"Kopieer link"</strong> of <strong>"Deel via WhatsApp"</strong>.' },
+  'app-profiel':    { c: 'Profiel-tab: je gegevens, vrienden, groepen, notificaties.', a: 'Tik op een rij om <strong>Vrienden</strong>, <strong>Groepen</strong> of <strong>Notificaties</strong> te verkennen.' },
+  'profile-friends':{ c: 'Je vriendenlijst in Cadeau. Hier zie je wie er al meedoet en kun je nieuwe mensen uitnodigen.', a: 'Tik op de <strong>coral knop onderaan</strong> om vrienden uit te nodigen via WhatsApp.' },
+  'profile-groups': { c: 'Groepen helpen je cadeaus te organiseren per kring (familie, jaarclub, werk).', a: 'Bekijk de bestaande groepen of <strong>maak een nieuwe groep aan</strong>.' },
+  'profile-notifications': { c: 'Stel in welke meldingen je krijgt en wanneer.', a: 'Tik op de <strong>schakelaars</strong> om meldingen aan of uit te zetten.' }
+};
+
+function updateTip(screen) {
+  const t = tips[screen];
+  if (!t) return;
+  const cEl = document.getElementById('tip-context');
+  const aEl = document.getElementById('tip-action');
+  const sEl = document.getElementById('tip-step');
+  const tEl = document.getElementById('tip-total');
+  if (cEl) cEl.innerHTML = t.c;
+  if (aEl) aEl.innerHTML = t.a;
+  if (sEl) sEl.textContent = String((screenOrder.indexOf(screen) + 1) || '?');
+  if (tEl) tEl.textContent = String(screenOrder.length);
+}
+
+function dismissTips() {
+  document.getElementById('tip-left').classList.add('hidden');
+  document.getElementById('tip-right').classList.add('hidden');
+  document.getElementById('tip-restore').style.display = 'block';
+}
+function restoreTips() {
+  document.getElementById('tip-left').classList.remove('hidden');
+  document.getElementById('tip-right').classList.remove('hidden');
+  document.getElementById('tip-restore').style.display = 'none';
+}
+
+// ===== Navigation =====
+const screenStack = [];
+let currentScreen = 'wa-inbox';
+
+function goTo(screen, pushHistory = true) {
+  if (pushHistory) screenStack.push(currentScreen);
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + screen);
+  if (el) { el.classList.add('active'); el.scrollTop = 0; }
+  currentScreen = screen;
+  if (screen.startsWith('profile-')) profileSubVisits.add(screen);
+  updateTip(screen);
+  renderArrows(screen);
+  // Verberg bottom-nav + FAB tijdens sub-flows (wens-flow, betaling)
+  const phone = document.getElementById('phone-screen');
+  if (screen.startsWith('wf-') || screen === 'payment' || screen === 'purchase' || screen === 'group' || screen === 'group-confirm') phone.classList.add('hide-nav');
+  else phone.classList.remove('hide-nav');
+  // Render hooks
+  if (screen === 'swipe-lena') { initLenaSwipe(); }
+  if (screen === 'favorites') renderFavorites();
+  if (screen === 'gift') renderGiftDetail();
+  if (screen === 'purchase') renderPurchase();
+  if (screen === 'group') renderGroupSetup();
+  if (screen === 'payment') renderPayment();
+  if (screen === 'profile-groupgifts') renderGroupGifts();
+  if (screen === 'wf-hobbies1') renderHobbyGrid();
+  if (screen === 'wf-hobbies2') renderSubHobbies();
+  if (screen === 'wf-swipe') initWensSwipe();
+  if (screen === 'app-wensen') renderMyWishes();
+}
+
+function enterMainApp(message) {
+  document.getElementById('phone-screen').classList.add('phase-3');
+  if (message) showToast(message);
+  setTimeout(() => { switchTab('geven'); maybeShowExplainer(); }, 100);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector(`.nav-item[data-tab="${tab}"]`).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-app-' + tab).classList.add('active');
+  // Bottom-nav weer zichtbaar maken (was verborgen tijdens sub-flow zoals purchase)
+  document.getElementById('phone-screen').classList.remove('hide-nav');
+  currentScreen = 'app-' + tab;
+  updateTip(currentScreen);
+  renderArrows(currentScreen);
+  if (tab === 'wensen') renderMyWishes();
+  if (tab === 'profiel') { updateProfileThanks(); maybeShowSoloInfo(); }
+}
+
+function fabClick() {
+  if (currentScreen === 'app-wensen') {
+    initWensFlow();
+    goTo('wf-prefs');
+  } else {
+    showToast('Op de Wensen-tab opent + de wens-flow');
+  }
+}
+
+function resetDemo() {
+  document.getElementById('phone-screen').classList.remove('phase-3');
+  myWishes.length = 0;
+  swipeState.favorites = [];
+  swipeState.selectedGift = null;
+  swipeState.selectedContacts = [];
+  pinState.new = ''; pinState.confirm = '';
+  document.querySelectorAll('.pin-dots span').forEach(s => s.classList.remove('filled'));
+  document.querySelectorAll('.pin-dots').forEach(d => d.classList.remove('error'));
+  screenStack.length = 0;
+  goTo('wa-inbox', false);
+}
+
+// ===== Toast =====
+let toastTimer;
+function showToast(message) {
+  const t = document.getElementById('toast');
+  t.textContent = message;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ===== Account flow =====
+function signupEmailNext() {
+  const e = document.getElementById('signup-email').value.trim();
+  if (!e || !e.includes('@')) { showToast('Vul een geldig e-mailadres in'); return; }
+  goTo('gender');
+}
+function selectGender(g) {
+  showToast('Gekozen: ' + g);
+  setTimeout(() => goTo('signup-name'), 450);
+}
+function signupNameNext() {
+  const n = document.getElementById('signup-name').value.trim();
+  if (!n) { showToast('Vul je naam in'); return; }
+  document.getElementById('pr-name').textContent = n.split(' ')[0];
+  goTo('pin-create');
+}
+
+// ===== PIN =====
+const pinState = { new: '', confirm: '' };
+function buildPinPad(container) {
+  const target = container.dataset.pinTarget;
+  ['1','2','3','4','5','6','7','8','9','','0','back'].forEach(k => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    if (k === '') { b.className = 'pin-key empty'; }
+    else if (k === 'back') { b.className = 'pin-key action'; b.innerHTML = '⌫'; b.onclick = () => pinBackspace(target); }
+    else { b.className = 'pin-key'; b.textContent = k; b.onclick = () => pinPress(target, k); }
+    container.appendChild(b);
+  });
+}
+function pinPress(t, d) {
+  if (pinState[t].length >= 4) return;
+  pinState[t] += d;
+  updatePinDots(t);
+  if (pinState[t].length === 4) setTimeout(() => pinComplete(t), 220);
+}
+function pinBackspace(t) { pinState[t] = pinState[t].slice(0,-1); updatePinDots(t); }
+function updatePinDots(t) {
+  const el = document.getElementById('pin-' + t + '-dots');
+  if (!el) return;
+  el.querySelectorAll('span').forEach((d,i) => d.classList.toggle('filled', i < pinState[t].length));
+}
+function pinComplete(t) {
+  if (t === 'new') goTo('pin-confirm');
+  else if (t === 'confirm') {
+    if (pinState.confirm === pinState.new) goTo('faceid');
+    else {
+      const d = document.getElementById('pin-confirm-dots');
+      d.classList.add('error');
+      document.getElementById('pin-error').textContent = 'Pincodes komen niet overeen';
+      setTimeout(() => { pinState.confirm = ''; updatePinDots('confirm'); d.classList.remove('error'); document.getElementById('pin-error').textContent = ''; }, 1200);
+    }
+  }
+}
+document.querySelectorAll('.pin-pad').forEach(buildPinPad);
+
+// ===== Agenda + meldingen =====
+function agendaCouple(provider) {
+  showToast(`${provider === 'google' ? 'Google' : 'Apple'} Calendar gekoppeld ✓`);
+  setTimeout(() => goTo('meldingen'), 500);
+}
+function agendaSkip() { goTo('account-done'); }
+
+// ===== Lena swipe =====
+const lenaWishlist = [
+  { id: 1, name: 'Keramieken kookpot', meta: 'Studio Pieper · keramiek', price: 45, emoji: '🍲', desc: 'Voor langzaam stoven en bakken.' },
+  { id: 2, name: 'Houseplants for All', meta: 'Boek · groen-thuis', price: 24, emoji: '📖', desc: 'Voor wie van haar appartement een mini-jungle wil maken.' },
+  { id: 3, name: 'Set kruidenplanten', meta: '6 stuks · biologisch', price: 32, emoji: '🌱', desc: 'Basilicum, peterselie, bieslook, munt, tijm en rozemarijn.' },
+  { id: 4, name: 'Linnen schort', meta: 'Natural · ambachtelijk', price: 38, emoji: '👕', desc: 'Stevig linnen, met diepe zakken.' },
+  { id: 5, name: 'Handgemaakte vaas', meta: 'Aardewerk · uniek stuk', price: 55, emoji: '🏺', desc: 'Past bij haar plantenobsessie.' }
+];
+const contacts = [
+  { id: 'mark', name: 'Mark', initial: 'M', color: '#1F1640' },
+  { id: 'sophie', name: 'Sophie', initial: 'S', color: '#FF6B5C' },
+  { id: 'noor', name: 'Noor', initial: 'N', color: '#14B89E' },
+  { id: 'thomas', name: 'Thomas', initial: 'T', color: '#4A8AE0' }
+];
+const swipeState = { index: 0, favorites: [], selectedGift: null, selectedContacts: [] };
+
+function initLenaSwipe() { swipeState.index = 0; swipeState.favorites = []; renderLenaSwipe(); updateLenaCounter(); }
+function restartLenaSwipe() { swipeState.index = 0; swipeState.favorites = []; goTo('swipe-lena', false); }
+function renderLenaSwipe() { renderSwipeStack('lena-swipe-stack', lenaWishlist, swipeState.index, addLenaSwipeListeners); }
+function updateLenaCounter() { const el = document.getElementById('lena-swipe-counter'); if (el) el.textContent = `${Math.min(swipeState.index+1, lenaWishlist.length)}/${lenaWishlist.length}`; }
+function lenaSwipeBtn(dir) { const t = document.querySelector('#lena-swipe-stack .swipe-card.interactive'); if (t) swipeCardOut(t, dir, lenaWishlist, swipeState, () => { updateLenaCounter(); if (swipeState.index >= lenaWishlist.length) setTimeout(() => fbThenGo('m2', 'favorites'), 200); else renderLenaSwipe(); }); }
+function addLenaSwipeListeners(card) { addSwipeListeners(card, dir => lenaSwipeBtn(dir)); }
+
+function renderSwipeStack(stackId, items, index, listenerAttacher) {
+  const stack = document.getElementById(stackId);
+  if (!stack) return;
+  stack.innerHTML = '';
+  if (index >= items.length) { stack.innerHTML = '<div class="swipe-empty">Klaar — bekijk je favorieten.</div>'; return; }
+  for (let i = index; i < Math.min(index + 3, items.length); i++) {
+    const item = items[i];
+    const offset = i - index;
+    const card = document.createElement('div');
+    card.className = 'swipe-card';
+    card.style.zIndex = String(100 - offset);
+    card.style.transform = `scale(${1 - offset * 0.04}) translateY(${offset * 8}px)`;
+    card.style.opacity = offset === 0 ? '1' : String(0.95 - offset * 0.1);
+    card.innerHTML = `<div class="swipe-indicator swipe-indicator-like">OPGESLAGEN</div><div class="swipe-indicator swipe-indicator-skip">OVERSLAAN</div><div class="swipe-emoji">${item.emoji}</div><h3 class="swipe-name">${item.name}</h3><p class="swipe-meta">${item.meta}</p><div class="swipe-price">€${item.price}</div><p class="swipe-desc">${item.desc || ''}</p>`;
+    if (offset === 0) { card.classList.add('interactive'); card.dataset.id = String(item.id); listenerAttacher(card); }
+    stack.appendChild(card);
+  }
+}
+
+let drag = { active: false, startX: 0, deltaX: 0, card: null };
+function addSwipeListeners(card, onAction) {
+  card.addEventListener('pointerdown', e => { drag.active = true; drag.startX = e.clientX; drag.deltaX = 0; drag.card = card; card.style.transition = 'none'; try { card.setPointerCapture(e.pointerId); } catch (err) {} });
+  card.addEventListener('pointermove', e => {
+    if (!drag.active || drag.card !== card) return;
+    drag.deltaX = e.clientX - drag.startX;
+    card.style.transform = `translateX(${drag.deltaX}px) rotate(${drag.deltaX * 0.06}deg)`;
+    const l = card.querySelector('.swipe-indicator-like'), s = card.querySelector('.swipe-indicator-skip');
+    if (l) l.style.opacity = String(Math.max(0, Math.min(1, drag.deltaX / 100)));
+    if (s) s.style.opacity = String(Math.max(0, Math.min(1, -drag.deltaX / 100)));
+  });
+  const end = e => {
+    if (!drag.active || drag.card !== card) return;
+    drag.active = false;
+    try { card.releasePointerCapture(e.pointerId); } catch (err) {}
+    card.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s';
+    if (drag.deltaX > 80) onAction('right');
+    else if (drag.deltaX < -80) onAction('left');
+    else { card.style.transform = ''; const l = card.querySelector('.swipe-indicator-like'), s = card.querySelector('.swipe-indicator-skip'); if (l) l.style.opacity = '0'; if (s) s.style.opacity = '0'; }
+    drag.deltaX = 0; drag.card = null;
+  };
+  card.addEventListener('pointerup', end);
+  card.addEventListener('pointercancel', end);
+}
+
+function swipeCardOut(card, dir, items, state, after) {
+  const flyX = dir === 'right' ? 600 : -600;
+  const rot = dir === 'right' ? 25 : -25;
+  card.style.transition = 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s';
+  card.style.transform = `translateX(${flyX}px) rotate(${rot}deg)`;
+  card.style.opacity = '0';
+  const id = parseInt(card.dataset.id, 10);
+  const item = items.find(w => w.id === id);
+  if (dir === 'right' && item) state.favorites.push(item);
+  state.index++;
+  setTimeout(after, 320);
+}
+
+// ===== Favorites =====
+function renderFavorites() {
+  const list = document.getElementById('fav-list');
+  if (!list) return;
+  document.getElementById('fav-count').textContent = String(swipeState.favorites.length);
+  document.getElementById('fav-noun').textContent = swipeState.favorites.length === 1 ? 'idee' : 'ideeën';
+  list.innerHTML = '';
+  if (swipeState.favorites.length === 0) { list.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-secondary); font-size:13px;">Niets opgeslagen — begin opnieuw.</div>'; return; }
+  swipeState.favorites.forEach(item => {
+    const c = document.createElement('button');
+    c.className = 'fav-item';
+    c.innerHTML = `<div class="fav-thumb">${item.emoji}</div><div class="fav-info"><div class="fav-name">${item.name}</div><div class="fav-meta">${item.meta}</div></div><div class="fav-price">€${item.price}</div>`;
+    c.onclick = () => { swipeState.selectedGift = item; goTo('gift'); };
+    list.appendChild(c);
+  });
+}
+
+// ===== Gift =====
+function renderGiftDetail() {
+  const g = swipeState.selectedGift;
+  if (!g) return;
+  document.getElementById('gift-content').innerHTML = `<div class="gift-hero"><div class="gift-emoji-big">${g.emoji}</div></div><div class="gift-info"><h2 class="gift-name">${g.name}</h2><p class="gift-meta">${g.meta}</p><div class="gift-price-big">€${g.price}</div><p class="gift-desc">${g.desc || ''}</p><div class="gift-wishlist-note"><span class="dot-purple"></span>Lena heeft dit op haar wishlist gezet</div></div>`;
+  document.getElementById('gift-buy-price').textContent = '· €' + g.price;
+}
+
+// ===== Purchase =====
+function renderPurchase() {
+  const g = swipeState.selectedGift;
+  if (!g) return;
+  const retailer = (g.meta && g.meta.split(' · ')[0]) || 'webshop';
+  const d = new Date(); d.setDate(d.getDate() + 3);
+  const days = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  const months = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+  document.getElementById('purchase-content').innerHTML = `<div class="purchase-header"><div class="purchase-check">✓</div><h2>Bestelling bevestigd</h2><p>via ${retailer}</p><span class="retailer-badge">demo · in productie ga je naar de echte retailer</span></div><div class="purchase-body"><div class="purchase-section"><p class="purchase-section-title">Wat je bestelt</p><div class="purchase-item"><div class="pi-emoji">${g.emoji}</div><div class="pi-info"><div class="pi-name">${g.name}</div><div class="pi-meta">${g.meta}</div></div><div class="pi-price">€${g.price}</div></div></div><div class="purchase-section"><p class="purchase-section-title">Bezorging</p><div class="purchase-row"><span class="label">Verwacht op</span><span class="val">${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}</span></div><div class="purchase-row"><span class="label">Verzending</span><span class="val">Gratis</span></div></div><div class="purchase-section"><p class="purchase-section-title">Betaling</p><div class="purchase-row"><span class="label">Methode</span><span class="val">iDEAL</span></div><div class="purchase-row"><span class="label">Totaal</span><span class="val">€${g.price}</span></div></div></div>`;
+}
+
+// ===== Group =====
+function renderGroupSetup() {
+  const g = swipeState.selectedGift;
+  if (!g) return;
+  swipeState.selectedContacts = [];
+  document.getElementById('group-summary').innerHTML = `<div class="gs-emoji">${g.emoji}</div><div class="gs-info"><div class="gs-name">${g.name}</div><div class="gs-price">Totaal: €${g.price}</div></div>`;
+  const cl = document.getElementById('contact-list');
+  cl.innerHTML = '';
+  contacts.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'contact-pill';
+    b.dataset.id = c.id;
+    b.innerHTML = `<span class="contact-av" style="background:${c.color}">${c.initial}</span><span>${c.name}</span>`;
+    b.onclick = () => toggleContact(c.id);
+    cl.appendChild(b);
+  });
+  updateGroupSplit();
+}
+function toggleContact(id) {
+  const i = swipeState.selectedContacts.indexOf(id);
+  if (i >= 0) swipeState.selectedContacts.splice(i, 1);
+  else swipeState.selectedContacts.push(id);
+  document.querySelectorAll('.contact-pill').forEach(p => p.classList.toggle('selected', swipeState.selectedContacts.includes(p.dataset.id)));
+  updateGroupSplit();
+}
+function updateGroupSplit() {
+  const total = swipeState.selectedContacts.length + 1;
+  const per = (swipeState.selectedGift?.price || 0) / total;
+  document.getElementById('split-amount').textContent = swipeState.selectedContacts.length === 0 ? '—' : '€' + per.toFixed(2);
+  const b = document.getElementById('invite-btn');
+  b.disabled = swipeState.selectedContacts.length === 0;
+  b.textContent = swipeState.selectedContacts.length === 0 ? 'Kies minstens 1 persoon' : `Verstuur ${swipeState.selectedContacts.length} uitnodiging${swipeState.selectedContacts.length === 1 ? '' : 'en'}`;
+}
+function sendInvites() {
+  if (swipeState.selectedContacts.length === 0) return;
+  const names = swipeState.selectedContacts.map(id => contacts.find(c => c.id === id).name);
+  const nText = names.length === 1 ? names[0] : names.slice(0,-1).join(', ') + ' en ' + names[names.length-1];
+  const per = ((swipeState.selectedGift.price) / (swipeState.selectedContacts.length + 1)).toFixed(2);
+  document.getElementById('gc-msg').innerHTML = `We hebben <strong>${nText}</strong> uitgenodigd. Iedereen draagt <strong>€${per}</strong> bij.`;
+  document.getElementById('push-text').textContent = `Walter wil samen met je een cadeau geven voor Lena — ${swipeState.selectedGift.name} (€${swipeState.selectedGift.price})`;
+  goTo('group-confirm');
+}
+function shareWhatsapp() {
+  const g = swipeState.selectedGift;
+  const text = g ? `Hé! Ik wil samen met je een cadeau geven voor Lena: ${g.name} (€${g.price}). https://cadeau.app/g/abc123` : 'Cadeau-uitnodiging: https://cadeau.app/g/abc123';
+  try { window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank'); } catch(e) {}
+  showToast('WhatsApp geopend ✓');
+}
+
+// ===== Wens-flow =====
+const wensFlowState = { priceMin: 20, priceMax: 100, occasion: 'Verjaardag', hobbies1: [], hobbies2: [], swipeIndex: 0, suggestions: [], saved: [] };
+const myWishes = [];
+
+const hobbyData = [
+  { id: 'koken',    label: 'Koken',     emoji: '🍳', subs: ['Bakken', 'Stoven', 'BBQ', 'Aziatisch', 'Italiaans', 'Veggie'] },
+  { id: 'reizen',   label: 'Reizen',    emoji: '✈️', subs: ['Stedentrips', 'Verre reizen', 'Camping', 'Wellness'] },
+  { id: 'sporten',  label: 'Sporten',   emoji: '🏃', subs: ['Hardlopen', 'Yoga', 'Wielrennen', 'Fitness'] },
+  { id: 'lezen',    label: 'Lezen',     emoji: '📚', subs: ['Fictie', 'Non-fictie', 'Biografie'] },
+  { id: 'wonen',    label: 'Wonen',     emoji: '🏡', subs: ['Decoratie', 'Keramiek', 'Textiel'] },
+  { id: 'muziek',   label: 'Muziek',    emoji: '🎵', subs: ['Vinyl', 'Concerten', 'Instrumenten'] },
+  { id: 'mode',     label: 'Mode',      emoji: '👗', subs: ['Sieraden', 'Tassen', 'Vintage'] },
+  { id: 'tuinieren',label: 'Tuinieren', emoji: '🪴', subs: ['Kamerplanten', 'Moestuin', 'Bloemen'] }
+];
+const wensSuggestionPool = {
+  'Bakken':       [{ name: 'KitchenAid stand-mixer', meta: 'KitchenAid · keuken', price: 489, emoji: '🥣' }, { name: 'Marmeren bakplaat', meta: 'Voor brood en pizza', price: 65, emoji: '🥖' }],
+  'Stoven':       [{ name: 'Le Creuset stoofpan', meta: 'Gietijzer · 24cm', price: 175, emoji: '🍲' }, { name: 'Slowcooker', meta: 'Crock-Pot · 5L', price: 89, emoji: '🥘' }],
+  'BBQ':          [{ name: 'Houtskool-grill set', meta: 'Met thermometer', price: 145, emoji: '🔥' }, { name: 'Premium BBQ-tang', meta: 'RVS', price: 32, emoji: '🍖' }],
+  'Aziatisch':    [{ name: 'Wokpan met deksel', meta: 'Koolstofstaal · 32cm', price: 58, emoji: '🥢' }, { name: 'Sushi-set', meta: 'Bamboe + mes', price: 42, emoji: '🍣' }],
+  'Italiaans':    [{ name: 'Pasta-maker', meta: 'Marcato · handmatig', price: 75, emoji: '🍝' }],
+  'Veggie':       [{ name: 'Plenty kookboek', meta: 'Ottolenghi · vegetarisch', price: 28, emoji: '📖' }],
+  'Stedentrips':  [{ name: 'Polaroid Now camera', meta: 'Direct ontwikkelen', price: 119, emoji: '📷' }, { name: 'Lonely Planet Europa', meta: 'Reisgids 2026', price: 35, emoji: '📕' }],
+  'Verre reizen': [{ name: 'Compacte reistas', meta: 'Patagonia · 35L', price: 145, emoji: '🎒' }],
+  'Camping':      [{ name: 'Tent 2-persoons', meta: 'Lichtgewicht · 2.5kg', price: 195, emoji: '⛺' }, { name: 'Campingstoel', meta: 'Helinox · compact', price: 89, emoji: '🪑' }],
+  'Wellness':     [{ name: 'Spa-voucher', meta: 'Een dag · NL', price: 95, emoji: '🧖' }, { name: 'Etherische olie-set', meta: '6 essenties', price: 38, emoji: '🌸' }],
+  'Hardlopen':    [{ name: 'Hardloopschoenen', meta: 'Asics Gel-Nimbus', price: 165, emoji: '👟' }, { name: 'Reflecterend vest', meta: 'Ademend', price: 48, emoji: '🦺' }],
+  'Yoga':         [{ name: 'Yoga-mat premium', meta: 'Manduka · natuurrubber', price: 95, emoji: '🧘' }, { name: 'Yoga-blok set', meta: 'Kurk · 2 stuks', price: 28, emoji: '🟫' }],
+  'Wielrennen':   [{ name: 'Fietsbril', meta: 'Oakley · sport', price: 145, emoji: '🕶️' }, { name: 'Bidonhouder duo', meta: 'Carbon', price: 38, emoji: '🚴' }],
+  'Fitness':      [{ name: 'Verstelbare halterset', meta: 'PowerBlock · 2-24kg', price: 285, emoji: '🏋️' }, { name: 'Resistance bands', meta: 'Set van 5', price: 22, emoji: '💪' }],
+  'Fictie':       [{ name: 'The Bee Sting', meta: 'Paul Murray', price: 22, emoji: '📕' }],
+  'Non-fictie':   [{ name: 'Atomic Habits', meta: 'James Clear', price: 18, emoji: '📘' }],
+  'Biografie':    [{ name: 'Born a Crime', meta: 'Trevor Noah', price: 16, emoji: '📓' }],
+  'Decoratie':    [{ name: 'Handgemaakte vaas', meta: 'Aardewerk', price: 55, emoji: '🏺' }, { name: 'Wandkleed', meta: 'Etsy · natuurlijk', price: 145, emoji: '🌿' }],
+  'Keramiek':     [{ name: 'Theeset', meta: 'Japans porselein', price: 78, emoji: '🍵' }],
+  'Textiel':      [{ name: 'Linnen plaid', meta: '130×170', price: 89, emoji: '🛌' }, { name: 'Wol kussenhoezen', meta: 'Set 2', price: 58, emoji: '🛋️' }],
+  'Vinyl':        [{ name: 'Bon Iver vinyl', meta: '22, A Million · 2016', price: 28, emoji: '🎵' }, { name: 'Platenspeler', meta: 'Audio-Technica', price: 295, emoji: '🎚️' }],
+  'Concerten':    [{ name: 'Concertkaart-voucher', meta: '€50 · TicketSwap', price: 50, emoji: '🎫' }],
+  'Instrumenten': [{ name: 'Ukulele soprano', meta: 'Kala · beginner', price: 65, emoji: '🎸' }],
+  'Sieraden':     [{ name: 'Zilveren ketting', meta: 'Pernille', price: 78, emoji: '📿' }, { name: 'Gouden oorbellen', meta: 'Maria Black', price: 145, emoji: '💎' }],
+  'Tassen':       [{ name: 'Leren weekendtas', meta: 'Vegan leer', price: 195, emoji: '👜' }, { name: 'Linnen tote', meta: 'Ambachtelijk', price: 38, emoji: '🎒' }],
+  'Vintage':      [{ name: 'Vintage zonnebril', meta: 'Jaren 70', price: 45, emoji: '🕶️' }, { name: 'Vintage horloge', meta: 'Seiko jaren 80', price: 165, emoji: '⌚' }],
+  'Kamerplanten': [{ name: 'Monstera deliciosa', meta: 'Met pot · 60cm', price: 38, emoji: '🪴' }],
+  'Moestuin':     [{ name: 'Moestuin-zaadset', meta: '12 groenten', price: 28, emoji: '🌽' }],
+  'Bloemen':      [{ name: 'Bloemenabonnement', meta: '3 maanden · Bloomon', price: 89, emoji: '💐' }]
+};
+
+function initWensFlow() {
+  wensFlowState.priceMin = 20; wensFlowState.priceMax = 100; wensFlowState.occasion = 'Verjaardag';
+  wensFlowState.hobbies1 = []; wensFlowState.hobbies2 = []; wensFlowState.swipeIndex = 0; wensFlowState.saved = [];
+  document.getElementById('range-min').value = 20;
+  document.getElementById('range-max').value = 100;
+  updateRangeFill();
+  document.querySelectorAll('#occ-chips .occ-chip').forEach(c => c.classList.toggle('selected', c.dataset.occ === 'Verjaardag'));
+}
+function updateRangeFill() {
+  const mi = document.getElementById('range-min'), ma = document.getElementById('range-max');
+  if (!mi || !ma) return;
+  let mn = parseInt(mi.value, 10), mx = parseInt(ma.value, 10);
+  if (mn > mx - 5) {
+    if (document.activeElement === mi) { mx = Math.min(500, mn + 5); ma.value = mx; }
+    else { mn = Math.max(0, mx - 5); mi.value = mn; }
+  }
+  wensFlowState.priceMin = mn; wensFlowState.priceMax = mx;
+  const f = document.getElementById('range-fill');
+  if (f) { f.style.left = (mn/500*100) + '%'; f.style.right = (100 - mx/500*100) + '%'; }
+  document.getElementById('range-min-val').textContent = mn;
+  document.getElementById('range-max-val').textContent = mx;
+}
+setTimeout(() => {
+  const mi = document.getElementById('range-min'), ma = document.getElementById('range-max');
+  if (mi && ma) { ['input','change'].forEach(ev => { mi.addEventListener(ev, updateRangeFill); ma.addEventListener(ev, updateRangeFill); }); updateRangeFill(); }
+  document.querySelectorAll('#occ-chips .occ-chip').forEach(c => c.addEventListener('click', () => {
+    document.querySelectorAll('#occ-chips .occ-chip').forEach(x => x.classList.remove('selected'));
+    c.classList.add('selected');
+    wensFlowState.occasion = c.dataset.occ;
+  }));
+}, 0);
+
+function renderHobbyGrid() {
+  const g = document.getElementById('hobby-grid');
+  if (!g) return;
+  g.innerHTML = '';
+  hobbyData.forEach(h => {
+    const b = document.createElement('button');
+    b.className = 'hobby-chip' + (wensFlowState.hobbies1.includes(h.id) ? ' selected' : '');
+    b.dataset.id = h.id;
+    b.innerHTML = `<span class="hobby-chip-emoji">${h.emoji}</span><span class="hobby-chip-label">${h.label}</span>`;
+    b.onclick = () => toggleHobby(h.id);
+    g.appendChild(b);
+  });
+  updateH1Next();
+}
+function toggleHobby(id) {
+  const i = wensFlowState.hobbies1.indexOf(id);
+  if (i >= 0) {
+    wensFlowState.hobbies1.splice(i, 1);
+    const subs = hobbyData.find(h => h.id === id)?.subs || [];
+    wensFlowState.hobbies2 = wensFlowState.hobbies2.filter(s => !subs.includes(s));
+  } else wensFlowState.hobbies1.push(id);
+  document.querySelectorAll('.hobby-chip').forEach(c => c.classList.toggle('selected', wensFlowState.hobbies1.includes(c.dataset.id)));
+  updateH1Next();
+}
+function updateH1Next() {
+  const b = document.getElementById('h1-next');
+  if (!b) return;
+  b.disabled = wensFlowState.hobbies1.length === 0;
+  b.textContent = wensFlowState.hobbies1.length === 0 ? 'Kies minstens 1' : `Doorgaan met ${wensFlowState.hobbies1.length}`;
+}
+function renderSubHobbies() {
+  const c = document.getElementById('sub-hobbies');
+  if (!c) return;
+  c.innerHTML = '';
+  wensFlowState.hobbies1.forEach(id => {
+    const cat = hobbyData.find(h => h.id === id);
+    if (!cat) return;
+    const sec = document.createElement('div');
+    sec.className = 'sub-section';
+    sec.innerHTML = `<p class="sub-title">${cat.emoji} ${cat.label}</p>`;
+    const ch = document.createElement('div');
+    ch.className = 'sub-chips';
+    cat.subs.forEach(s => {
+      const b = document.createElement('button');
+      b.className = 'sub-chip' + (wensFlowState.hobbies2.includes(s) ? ' selected' : '');
+      b.textContent = s;
+      b.onclick = () => toggleSub(s);
+      ch.appendChild(b);
+    });
+    sec.appendChild(ch);
+    c.appendChild(sec);
+  });
+  updateH2Next();
+}
+function toggleSub(s) {
+  const i = wensFlowState.hobbies2.indexOf(s);
+  if (i >= 0) wensFlowState.hobbies2.splice(i, 1);
+  else wensFlowState.hobbies2.push(s);
+  document.querySelectorAll('#sub-hobbies .sub-chip').forEach(c => c.classList.toggle('selected', wensFlowState.hobbies2.includes(c.textContent)));
+  updateH2Next();
+}
+function updateH2Next() {
+  const b = document.getElementById('h2-next');
+  if (!b) return;
+  b.disabled = wensFlowState.hobbies2.length === 0;
+  b.textContent = wensFlowState.hobbies2.length === 0 ? 'Kies minstens 1' : 'Toon mijn ideeën';
+}
+function startWensSwipe() {
+  let pool = [];
+  wensFlowState.hobbies2.forEach(s => (wensSuggestionPool[s] || []).forEach(it => { if (it.price >= wensFlowState.priceMin && it.price <= wensFlowState.priceMax && !pool.find(p => p.name === it.name)) pool.push({ ...it, id: pool.length + 1 }); }));
+  if (pool.length === 0) wensFlowState.hobbies2.forEach(s => (wensSuggestionPool[s] || []).forEach(it => { if (!pool.find(p => p.name === it.name)) pool.push({ ...it, id: pool.length + 1 }); }));
+  wensFlowState.suggestions = pool.slice(0, 6);
+  wensFlowState.swipeIndex = 0; wensFlowState.saved = [];
+  goTo('wf-swipe');
+}
+function initWensSwipe() {
+  renderWensSwipe();
+  updateWensCounter();
+}
+function renderWensSwipe() {
+  const stack = document.getElementById('wens-swipe-stack');
+  if (!stack) return;
+  stack.innerHTML = '';
+  if (wensFlowState.swipeIndex >= wensFlowState.suggestions.length) {
+    stack.innerHTML = '<div class="swipe-empty">Klaar — je lijst staat klaar.</div>';
+    setTimeout(() => {
+      wensFlowState.saved.forEach(item => { if (!myWishes.find(m => m.name === item.name)) myWishes.push(item); });
+      document.getElementById('wf-done-count').textContent = String(wensFlowState.saved.length);
+      goTo('wf-done', false);
+    }, 250);
+    return;
+  }
+  renderSwipeStack('wens-swipe-stack', wensFlowState.suggestions, wensFlowState.swipeIndex, addWensListeners);
+}
+function addWensListeners(card) { addSwipeListeners(card, dir => wensSwipeBtn(dir)); }
+function updateWensCounter() { const el = document.getElementById('wens-counter'); if (el) el.textContent = `${Math.min(wensFlowState.swipeIndex+1, wensFlowState.suggestions.length)}/${wensFlowState.suggestions.length}`; }
+function wensSwipeBtn(dir) {
+  const t = document.querySelector('#wens-swipe-stack .swipe-card.interactive');
+  if (!t) return;
+  const flyX = dir === 'right' ? 600 : -600;
+  const rot = dir === 'right' ? 25 : -25;
+  t.style.transition = 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s';
+  t.style.transform = `translateX(${flyX}px) rotate(${rot}deg)`;
+  t.style.opacity = '0';
+  const id = parseInt(t.dataset.id, 10);
+  const item = wensFlowState.suggestions.find(w => w.id === id);
+  if (dir === 'right' && item) wensFlowState.saved.push(item);
+  wensFlowState.swipeIndex++;
+  setTimeout(() => { updateWensCounter(); renderWensSwipe(); }, 320);
+}
+
+// ===== My wishes (Wensen tab) =====
+function renderMyWishes() {
+  const empty = document.getElementById('we-empty');
+  const saved = document.getElementById('we-saved');
+  const shareBtn = document.getElementById('we-share-btn');
+  const count = document.getElementById('we-count');
+  const list = document.getElementById('we-list');
+  if (myWishes.length === 0) {
+    if (empty) empty.style.display = 'flex';
+    if (saved) saved.style.display = 'none';
+    if (shareBtn) shareBtn.classList.remove('show');
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  if (saved) saved.style.display = 'block';
+  if (shareBtn) shareBtn.classList.add('show');
+  if (count) count.textContent = String(myWishes.length);
+  if (list) {
+    list.innerHTML = '';
+    myWishes.forEach((w, idx) => {
+      const r = document.createElement('div');
+      r.className = 'we-item';
+      r.innerHTML = `<div class="we-item-emoji">${w.emoji}</div><div class="we-item-info"><div class="we-item-name">${w.name}</div><div class="we-item-meta">${w.meta}</div></div><div class="we-item-price">€${w.price}</div><button class="we-item-remove" data-idx="${idx}">✕</button>`;
+      list.appendChild(r);
+    });
+    list.querySelectorAll('.we-item-remove').forEach(b => b.addEventListener('click', () => { myWishes.splice(parseInt(b.dataset.idx, 10), 1); renderMyWishes(); }));
+  }
+}
+function openWensShare() {
+  document.getElementById('wf-done-count').textContent = String(myWishes.length);
+  goTo('wf-done');
+}
+function shareWensCopy() {
+  const link = 'https://cadeau.app/w/walter-2026';
+  if (navigator.clipboard) navigator.clipboard.writeText(link).then(() => showToast('Link gekopieerd ✓'));
+  else showToast('Link gekopieerd ✓');
+}
+function shareWensWhatsapp() {
+  const text = `Hé! Ik heb m'n wenslijstje gemaakt: https://cadeau.app/w/walter-2026`;
+  try { window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank'); } catch (e) {}
+  showToast('WhatsApp geopend ✓');
+}
+
+// ===== Feedback =====
+let cR = 0, cC = null;
+function openFeedback() { document.getElementById('modal-overlay').classList.add('open'); document.body.style.overflow = 'hidden'; document.getElementById('fb-form').style.display = 'block'; document.getElementById('fb-success').classList.remove('show'); }
+function closeFeedback() { document.getElementById('modal-overlay').classList.remove('open'); document.body.style.overflow = ''; }
+document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target.id === 'modal-overlay') closeFeedback(); });
+document.querySelectorAll('.star-btn').forEach(s => s.addEventListener('click', () => { cR = parseInt(s.dataset.rating, 10); document.querySelectorAll('.star-btn').forEach((sb, i) => sb.classList.toggle('filled', i < cR)); }));
+document.querySelectorAll('.cat-btn').forEach(c => c.addEventListener('click', () => { cC = c.dataset.category; document.querySelectorAll('.cat-btn').forEach(x => x.classList.remove('active')); c.classList.add('active'); }));
+async function submitFeedback() {
+  const cm = document.getElementById('fb-comment').value.trim();
+  const em = document.getElementById('fb-email').value.trim();
+  if (!cR && !cm) { showToast('Geef een ster of schrijf iets'); return; }
+  const btn = document.getElementById('fb-submit');
+  btn.disabled = true; btn.textContent = 'Bezig…';
+  const payload = { demo: 'volledig', rating: cR, category: cC || 'anders', comment: cm, email: em, timestamp: new Date().toISOString(), url: window.location.href };
+  try { const ex = JSON.parse(localStorage.getItem('cadeau_feedback_volledig') || '[]'); ex.push(payload); localStorage.setItem('cadeau_feedback_volledig', JSON.stringify(ex)); } catch (e) {}
+  if (FORMSPREE_ID && FORMSPREE_ID !== 'YOUR_FORMSPREE_ID') {
+    try { await fetch('https://formspree.io/f/' + FORMSPREE_ID, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); } catch (e) {}
+  }
+  document.getElementById('fb-form').style.display = 'none';
+  document.getElementById('fb-success').classList.add('show');
+  setTimeout(() => { cR = 0; cC = null; document.querySelectorAll('.star-btn').forEach(s => s.classList.remove('filled')); document.querySelectorAll('.cat-btn').forEach(c => c.classList.remove('active')); document.getElementById('fb-comment').value = ''; document.getElementById('fb-email').value = ''; btn.disabled = false; btn.textContent = 'Verstuur'; }, 300);
+  setTimeout(() => closeFeedback(), 2500);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFeedback(); });
+window.showFeedbackLog = function() { console.table(JSON.parse(localStorage.getItem('cadeau_feedback_volledig') || '[]')); };
+
+// ===== Inline feedback systeem =====
+const fbMoments = {
+  m1: {
+    step: '1 van 5', after: 'account-done', nextScreen: 'purchase',
+    q: 'Was het logisch dat we nu om een account vroegen, nadat je een cadeau had gekozen?',
+    type: 'chips',
+    options: ['Ja, perfect moment', 'Iets te laat, te veel werk', 'Iets te vroeg, wilde nog niks geven', 'Liever vooraf wel even'],
+    extraQ: 'Welke gegevens zou je willen delen voor betere cadeau-aanbevelingen? (meerdere mogelijk)',
+    extraType: 'chips-multi',
+    extraOptions: ['Naam', 'E-mail', 'Geslacht', 'Geboortedatum', 'Hobby\'s', 'Adres', 'Aankoopgeschiedenis', 'Sociale media'],
+    openLabel: 'Wat zou je veranderen of toevoegen? (optioneel)'
+  },
+  m2: {
+    step: '2 van 5', after: 'swipe-lena-done', nextScreen: 'favorites',
+    q: 'Was het swipen door Lena\'s wensen leuk?',
+    type: 'slider',
+    min: 0, max: 10, anchors: ['Saai', 'Erg leuk'],
+    extraQ: 'Zou je zo cadeaus willen kiezen in het echt?',
+    extraType: 'chips-row',
+    extraOptions: ['Zeker', 'Misschien', 'Liever niet'],
+    openLabel: 'Wat zou je toevoegen of veranderen? (optioneel)'
+  },
+  m3: {
+    step: '3 van 5', after: 'gift-done', nextScreen: null /* enterMainApp */,
+    q: 'Voelt deze manier beter dan hoe je nu cadeaus geeft?',
+    type: 'slider',
+    min: 1, max: 5, anchors: ['Veel slechter', 'Veel beter'],
+    openLabel: 'Wat zou je veranderen? (optioneel)'
+  },
+  m4: {
+    step: '4 van 5', after: 'wf-hobbies2', nextScreen: 'wf-swipe',
+    q: 'Was het kiezen van je voorkeuren duidelijk?',
+    type: 'chips',
+    options: ['Heel duidelijk', 'Mwah, kon beter', 'Te veel keuzes', 'Te weinig keuzes'],
+    openLabel: 'Wat zou je toevoegen of weglaten? (optioneel)'
+  },
+  m5: {
+    step: '5 van 5', after: 'wf-done-end', nextScreen: null /* eind */,
+    q: 'Hoe waarschijnlijk is het dat je Cadeau aanbeveelt aan een vriend?',
+    type: 'slider',
+    min: 0, max: 10, anchors: ['Onwaarschijnlijk', 'Zeker wel'],
+    openLabel: 'Wat is het belangrijkste dat ontbreekt of beter kan?',
+    isFinal: true
+  }
+};
+const fbCompleted = {};
+let fbCurrent = null;
+let fbValue = null;
+let fbExtraValue = null;
+
+function triggerFb(momentId, continuation) {
+  if (fbCompleted[momentId]) { if (continuation) continuation(); return; }
+  const m = fbMoments[momentId];
+  if (!m) { if (continuation) continuation(); return; }
+  fbCurrent = { id: momentId, moment: m, continuation };
+  fbValue = null; fbExtraValue = null;
+  // Sheet vullen
+  document.getElementById('fb-step-label').textContent = m.isFinal ? 'Bedankt!' : `Moment ${m.step}`;
+  document.getElementById('fb-q-text').textContent = m.isFinal ? 'Bedankt voor het meedoen!' : m.q;
+  const body = document.getElementById('fb-q-body');
+  body.innerHTML = '';
+  if (m.isFinal) {
+    const intro = document.createElement('p');
+    intro.style.cssText = 'font-size:14px; color:var(--text-secondary); margin:0 0 14px; line-height:1.55;';
+    intro.textContent = 'Je hebt de hele demo doorlopen. Eén laatste vraag — je antwoord helpt enorm.';
+    body.appendChild(intro);
+    const lbl = document.createElement('p');
+    lbl.className = 'fb-q-sub';
+    lbl.style.marginTop = '0';
+    lbl.textContent = m.q;
+    body.appendChild(lbl);
+  }
+  if (m.type === 'chips') {
+    const wrap = document.createElement('div');
+    wrap.className = 'fb-chips';
+    m.options.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'fb-chip';
+      b.textContent = opt;
+      b.onclick = () => { fbValue = opt; wrap.querySelectorAll('.fb-chip').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updateFbSubmit(); };
+      wrap.appendChild(b);
+    });
+    body.appendChild(wrap);
+  } else if (m.type === 'slider') {
+    const w = document.createElement('div');
+    w.className = 'fb-slider';
+    const mid = Math.round((m.min + m.max) / 2);
+    fbValue = mid;
+    w.innerHTML = `<input type="range" min="${m.min}" max="${m.max}" value="${mid}" id="fb-slider-input"><div class="fb-slider-value"><span class="num" id="fb-slider-num">${mid}</span><span class="max">/ ${m.max}</span></div><div class="fb-slider-anchors"><span>${m.anchors[0]}</span><span>${m.anchors[1]}</span></div>`;
+    body.appendChild(w);
+    setTimeout(() => {
+      const inp = document.getElementById('fb-slider-input');
+      const num = document.getElementById('fb-slider-num');
+      inp.addEventListener('input', () => { fbValue = parseInt(inp.value, 10); num.textContent = fbValue; updateFbSubmit(); });
+    }, 0);
+  }
+  // Extra vraag (m2: chips-row, m1: chips-multi)
+  if (m.extraQ) {
+    const lbl = document.createElement('p');
+    lbl.className = 'fb-q-sub';
+    lbl.textContent = m.extraQ;
+    body.appendChild(lbl);
+    const wrap = document.createElement('div');
+    const isMulti = m.extraType === 'chips-multi';
+    wrap.className = isMulti ? 'fb-chips-row' : (m.extraType === 'chips-row' ? 'fb-chips-row' : 'fb-chips');
+    const selectedArr = [];
+    m.extraOptions.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'fb-chip';
+      b.textContent = opt;
+      b.onclick = () => {
+        if (isMulti) {
+          const i = selectedArr.indexOf(opt);
+          if (i >= 0) { selectedArr.splice(i, 1); b.classList.remove('selected'); }
+          else { selectedArr.push(opt); b.classList.add('selected'); }
+          fbExtraValue = selectedArr.join(', ');
+        } else {
+          fbExtraValue = opt;
+          wrap.querySelectorAll('.fb-chip').forEach(x => x.classList.remove('selected'));
+          b.classList.add('selected');
+        }
+      };
+      wrap.appendChild(b);
+    });
+    body.appendChild(wrap);
+  }
+  // Open tekstveld
+  const openTa = document.getElementById('fb-open-text');
+  openTa.style.display = 'block';
+  openTa.placeholder = m.openLabel;
+  openTa.value = '';
+  // Submit-knop
+  const sub = document.getElementById('fb-submit-btn');
+  sub.textContent = m.isFinal ? 'Verstuur en sluit af' : 'Verstuur en ga door';
+  updateFbSubmit();
+  document.getElementById('fb-inline').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function updateFbSubmit() {
+  const sub = document.getElementById('fb-submit-btn');
+  sub.disabled = (fbValue === null || fbValue === undefined);
+}
+
+function submitInlineFb() {
+  if (!fbCurrent) return;
+  const open = document.getElementById('fb-open-text').value.trim();
+  const payload = { moment: fbCurrent.id, value: fbValue, extra: fbExtraValue, openText: open, timestamp: new Date().toISOString(), url: window.location.href };
+  try { const ex = JSON.parse(localStorage.getItem('cadeau_inline_feedback') || '[]'); ex.push(payload); localStorage.setItem('cadeau_inline_feedback', JSON.stringify(ex)); } catch (e) {}
+  if (FORMSPREE_ID && FORMSPREE_ID !== 'YOUR_FORMSPREE_ID') {
+    try { fetch('https://formspree.io/f/' + FORMSPREE_ID, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); } catch (e) {}
+  }
+  fbCompleted[fbCurrent.id] = true;
+  finishInlineFb();
+}
+
+function closeInlineFb(skipped) {
+  if (skipped && fbCurrent) {
+    try { const ex = JSON.parse(localStorage.getItem('cadeau_inline_feedback') || '[]'); ex.push({ moment: fbCurrent.id, skipped: true, timestamp: new Date().toISOString() }); localStorage.setItem('cadeau_inline_feedback', JSON.stringify(ex)); } catch (e) {}
+    fbCompleted[fbCurrent.id] = true;
+  }
+  finishInlineFb();
+}
+
+function finishInlineFb() {
+  const m = fbCurrent ? fbCurrent.moment : null;
+  const cont = fbCurrent ? fbCurrent.continuation : null;
+  document.getElementById('fb-inline').classList.remove('open');
+  document.body.style.overflow = '';
+  fbCurrent = null;
+  if (m && m.isFinal) {
+    setTimeout(() => showEndOverlay(), 250);
+    return;
+  }
+  if (cont) cont();
+}
+
+function showEndOverlay() {
+  document.getElementById('end-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function shareDemoWhatsapp() {
+  const text = `Hé! Ik heb net een demo van Cadeau geprobeerd — een app waarmee je via wenslijsten cadeaus geeft. Mooi idee, kun je 'm ook even doen? ${window.location.href}`;
+  try { window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank'); } catch (e) {}
+  showToast('WhatsApp geopend ✓');
+}
+
+function resetDemoFromEnd() {
+  document.getElementById('end-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  resetDemo();
+}
+
+// Wrappers voor share — gaan nu naar Profiel ipv direct naar M5
+function shareWensCopyThenProfile() {
+  shareWensCopy();
+  setTimeout(() => goToProfileAfterWens(), 900);
+}
+function shareWensWhatsappThenProfile() {
+  shareWensWhatsapp();
+  setTimeout(() => goToProfileAfterWens(), 900);
+}
+function goToProfileAfterWens() {
+  // Zorg dat phase-3 aan staat (was waarschijnlijk al, maar veilig)
+  document.getElementById('phone-screen').classList.add('phase-3');
+  switchTab('profiel');
+  setTimeout(() => showToast('Verken je profiel — daar rond je de demo af'), 400);
+}
+
+// Eindfeedback triggeren vanuit "Demo afronden" knop in Profiel
+function finishDemo() {
+  triggerFb('m5', () => {});
+}
+
+// Hulpfuncties om bij specifieke transities feedback te triggeren
+function fbThenGo(momentId, screen) { triggerFb(momentId, () => goTo(screen)); }
+function fbThenEnterMainApp(momentId, message) { triggerFb(momentId, () => enterMainApp(message)); }
+
+// Override 'gift-action complete' om M3 te triggeren
+window._enterMainApp = enterMainApp;
+function enterMainAppWithFb(message) { triggerFb('m3', () => window._enterMainApp(message)); }
+
+// ===== Pijl-tips per scherm =====
+const screenArrows = {
+  'wa-inbox':       [{ sel: '.wa-chat-item:first-of-type', label: 'Tik op Lena', dir: 'right' }],
+  'wa-chat':        [{ sel: '.wa-link-bubble', label: 'Klik op de link', dir: 'right' }],
+  'invitation':     [{ sel: '.scr-actions .btn-primary', label: 'Bekijk wishlist', dir: 'down' }],
+  'wishlist-intro': [{ sel: '.scr-actions .btn-primary', label: 'Klik hier', dir: 'down' }],
+  'swipe-lena':     [
+    { sel: '.swipe-action-btn.skip', label: 'Of overslaan', dir: 'down' },
+    { sel: '.swipe-action-btn.like', label: 'Opslaan', dir: 'down' }
+  ],
+  'favorites':      [{ sel: '.fav-item:first-of-type', label: 'Klik om te bekijken', dir: 'right' }],
+  'gift':           [
+    { sel: '.gift-actions .btn-primary', label: 'Alleen', dir: 'down' },
+    { sel: '.gift-actions .btn-accent', label: 'Of samen', dir: 'down' }
+  ],
+  'signup-email':   [{ sel: '.scr-actions .btn-primary', label: 'Doorgaan', dir: 'down' }],
+  'gender':         [{ sel: '.scr-actions .btn-secondary:first-of-type', label: 'Kies één', dir: 'down' }],
+  'signup-name':    [{ sel: '.scr-actions .btn-primary', label: 'Doorgaan', dir: 'down' }],
+  'pin-create':     [{ sel: '.pin-pad', label: 'Type 4 cijfers', dir: 'down' }],
+  'pin-confirm':    [{ sel: '.pin-pad', label: 'Type dezelfde 4 cijfers', dir: 'down' }],
+  'faceid':         [{ sel: '.scr-actions .btn-primary', label: 'Schakel in', dir: 'down' }],
+  'account-done':   [{ sel: '.scr-actions .btn-primary', label: 'Verder met cadeau', dir: 'down' }],
+  'purchase':       [{ sel: '.purchase-actions .btn-primary', label: 'Verder', dir: 'down' }],
+  'group':          [
+    { sel: '.contact-list .contact-pill:first-child', label: 'Kies contacten', dir: 'down' },
+    { sel: '.group-actions .btn-primary', label: 'Verstuur', dir: 'down' }
+  ],
+  'group-confirm':  [{ sel: '.gc-actions .btn-primary', label: 'Verder', dir: 'down' }],
+  'app-geven':      [{ sel: '.nav-item[data-tab="wensen"]', label: 'Klik op Wensen', dir: 'down' }],
+  'app-wensen':     [{ sel: '#fab', label: 'Tik op de + om te beginnen', dir: 'right' }],
+  'app-profiel':    [{ sel: '.pr-menu .pr-row:first-of-type', label: 'Bekijk je groepscadeaus', dir: 'down' }],
+  'payment':        [{ sel: '.pay-actions .btn-primary', label: 'Betaal nu', dir: 'down' }],
+  'profile-groupgifts': [{ sel: '.gg-remind-btn, .gg-pay-btn:not(:disabled)', label: 'Klik hier', dir: 'down' }],
+  'profile-notifications': [{ sel: '.pr-toggle-item:first-child .pr-toggle-switch', label: 'Speel met de schakelaars', dir: 'left' }],
+  'wf-prefs':       [{ sel: '.scr-actions .btn-primary', label: 'Doorgaan', dir: 'down' }],
+  'wf-hobbies1':    [{ sel: '#hobby-grid .hobby-chip:first-child', label: 'Kies hobby\'s', dir: 'right' }],
+  'wf-hobbies2':    [{ sel: '.scr-actions .btn-primary', label: 'Doorgaan na keuze', dir: 'down' }],
+  'wf-swipe':       [
+    { sel: '.swipe-action-btn.skip', label: 'Of overslaan', dir: 'down' },
+    { sel: '.swipe-action-btn.like', label: 'Opslaan', dir: 'down' }
+  ],
+  'wf-done':        [{ sel: '.share-opts .share-opt:first-child', label: 'Of deel je lijst', dir: 'right' }],
+  'profile-friends':[{ sel: '.pr-add-btn', label: 'Nodig uit via WhatsApp', dir: 'down' }],
+  'profile-groups': [{ sel: '.pr-add-btn', label: 'Of maak nieuwe', dir: 'down' }]
+};
+
+const profileSubVisits = new Set();
+
+function getArrowsForScreen(screen) {
+  // State-aware overrides
+  if (screen === 'app-wensen' && myWishes.length > 0) {
+    return [{ sel: '.nav-item[data-tab="profiel"]', label: 'Klik op Profiel', dir: 'down' }];
+  }
+  if (screen === 'app-profiel') {
+    // Progressieve tour door profiel
+    if (!profileSubVisits.has('profile-groupgifts')) {
+      return [{ sel: '.pr-menu .pr-row:first-of-type', label: 'Bekijk groepscadeaus', dir: 'down' }];
+    }
+    if (!profileSubVisits.has('profile-friends')) {
+      return [{ sel: '.pr-menu .pr-row:nth-of-type(3)', label: 'Bekijk Vrienden', dir: 'down' }];
+    }
+    if (!profileSubVisits.has('profile-groups')) {
+      return [{ sel: '.pr-menu .pr-row:nth-of-type(4)', label: 'Bekijk Groepen', dir: 'down' }];
+    }
+    return [{ sel: '#logout-btn', label: 'Sluit demo af', dir: 'down' }];
+  }
+  if (screen === 'profile-groupgifts' && groupGiftData.paid) {
+    return [{ sel: '.back-btn', label: 'Ga terug naar profiel', dir: 'right' }];
+  }
+  return screenArrows[screen] || null;
+}
+
+function renderArrows(screen) {
+  document.querySelectorAll('.tip-arrow').forEach(a => a.remove());
+  const arrows = getArrowsForScreen(screen);
+  if (!arrows) return;
+  setTimeout(() => {
+    const phoneScreen = document.getElementById('phone-screen');
+    if (!phoneScreen) return;
+    const phoneRect = phoneScreen.getBoundingClientRect();
+    arrows.forEach(arrow => {
+      // Eerst proberen binnen actief scherm; daarna fallback naar globale elementen (bottom-nav, FAB)
+      let target = document.querySelector('#screen-' + screen + ' ' + arrow.sel);
+      if (!target) target = phoneScreen.querySelector(arrow.sel);
+      if (!target) return;
+      const tRect = target.getBoundingClientRect();
+      const arrowEl = document.createElement('div');
+      arrowEl.className = 'tip-arrow tip-arrow-' + (arrow.dir || 'down');
+      arrowEl.innerHTML = '<span class="tip-arrow-label">' + arrow.label + '</span>';
+      phoneScreen.appendChild(arrowEl);
+      // Positioneer
+      const relTop = tRect.top - phoneRect.top;
+      const relLeft = tRect.left - phoneRect.left;
+      switch (arrow.dir) {
+        case 'down':
+          arrowEl.style.top = Math.max(4, relTop - 32) + 'px';
+          arrowEl.style.left = (relLeft + tRect.width / 2) + 'px';
+          arrowEl.style.transform = 'translateX(-50%)';
+          break;
+        case 'up':
+          arrowEl.style.top = (relTop + tRect.height + 6) + 'px';
+          arrowEl.style.left = (relLeft + tRect.width / 2) + 'px';
+          arrowEl.style.transform = 'translateX(-50%)';
+          break;
+        case 'right':
+          arrowEl.style.top = (relTop + tRect.height / 2) + 'px';
+          arrowEl.style.left = Math.max(4, relLeft - 90) + 'px';
+          arrowEl.style.transform = 'translateY(-50%)';
+          break;
+        case 'left':
+          arrowEl.style.top = (relTop + tRect.height / 2) + 'px';
+          arrowEl.style.left = (relLeft + tRect.width + 6) + 'px';
+          arrowEl.style.transform = 'translateY(-50%)';
+          break;
+      }
+    });
+  }, 80);
+}
+
+// ===== Geven vs Wensen uitleg (1x) =====
+let explainerShown = false;
+function maybeShowExplainer() {
+  if (explainerShown) return;
+  explainerShown = true;
+  setTimeout(() => document.getElementById('explain-modal').classList.add('open'), 500);
+}
+function dismissExplainer() {
+  document.getElementById('explain-modal').classList.remove('open');
+  // Render arrows pas na dismiss zodat ze niet onder de modal verdwijnen
+  renderArrows(currentScreen);
+}
+
+// ===== Account-gate (na cadeau-keuze) =====
+let pendingAction = null;
+let didGroupPath = false; // Track of user de groepscadeau-flow heeft gedaan
+let soloInfoShown = false; // Solo-info pop-up al getoond?
+
+function requireAccountThen(action) {
+  pendingAction = action;
+  if (action === 'group') didGroupPath = true;
+  goTo('signup-email');
+}
+
+function maybeShowSoloInfo() {
+  if (didGroupPath || soloInfoShown) return;
+  soloInfoShown = true;
+  setTimeout(() => document.getElementById('solo-modal').classList.add('open'), 450);
+}
+function dismissSoloInfo() {
+  document.getElementById('solo-modal').classList.remove('open');
+  renderArrows(currentScreen);
+}
+function completeAccountGate() {
+  triggerFb('m1', () => {
+    if (pendingAction === 'purchase') {
+      paymentContext = 'solo';
+      goTo('payment');
+    } else if (pendingAction === 'group') {
+      goTo('group');
+    } else {
+      goTo('wishlist-intro');
+    }
+    pendingAction = null;
+  });
+}
+
+// ===== Betalen =====
+let paymentContext = 'solo'; // 'solo' of 'group'
+let selectedPayMethod = 'ideal';
+let selectedBank = 'ING';
+
+function selectPayMethod(pm) {
+  selectedPayMethod = pm;
+  document.querySelectorAll('.pay-method').forEach(m => m.classList.toggle('selected', m.dataset.pm === pm));
+  const banks = document.getElementById('pay-banks');
+  if (banks) banks.classList.toggle('show', pm === 'ideal');
+}
+function selectBank(btn, bank) {
+  selectedBank = bank;
+  document.querySelectorAll('.pay-bank').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function renderPayment() {
+  const g = paymentContext === 'group' ? groupGiftData : swipeState.selectedGift;
+  if (!g) return;
+  const amount = paymentContext === 'group' ? (g.price / g.participants.length).toFixed(2) : g.price;
+  document.getElementById('pay-summary').innerHTML = `
+    <div class="pay-summary-emoji">${g.emoji}</div>
+    <div class="pay-summary-info">
+      <div class="pay-summary-name">${g.name}</div>
+      <div class="pay-summary-meta">${paymentContext === 'group' ? 'Jouw deel · groepscadeau voor ' + g.forName : g.meta}</div>
+    </div>
+    <div class="pay-summary-price">€${amount}</div>
+  `;
+  document.getElementById('pay-amount').textContent = amount;
+}
+function confirmPayment() {
+  const btn = document.getElementById('pay-btn');
+  btn.disabled = true;
+  btn.textContent = 'Verbinden met ' + (selectedPayMethod === 'ideal' ? selectedBank : selectedPayMethod) + '…';
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = 'Betaal €<span id="pay-amount">' + (paymentContext === 'group' ? (groupGiftData.price / groupGiftData.participants.length).toFixed(2) : swipeState.selectedGift.price) + '</span>';
+    if (paymentContext === 'group') {
+      groupGiftData.paid = true;
+      showToast('Betaling geslaagd ✓');
+      setTimeout(() => goTo('purchase'), 600);
+    } else {
+      goTo('purchase');
+    }
+  }, 1600);
+}
+
+// ===== Groepscadeau-status =====
+const groupGiftData = {
+  name: 'Handgemaakte vaas',
+  meta: 'Aardewerk · uniek stuk',
+  price: 55,
+  emoji: '🏺',
+  forName: 'Lena',
+  paid: false,
+  participants: [
+    { id: 'me',     name: 'Jij',    initial: 'W', color: '#6D4AFF', status: 'you' },
+    { id: 'mark',   name: 'Mark',   initial: 'M', color: '#1F1640', status: 'accepted' },
+    { id: 'sophie', name: 'Sophie', initial: 'S', color: '#FF6B5C', status: 'pending' },
+    { id: 'noor',   name: 'Noor',   initial: 'N', color: '#14B89E', status: 'accepted' }
+  ]
+};
+
+function renderGroupGifts() {
+  const list = document.getElementById('gg-list');
+  if (!list) return;
+  const g = groupGiftData;
+  const total = g.participants.length;
+  const acceptedCount = g.participants.filter(p => p.status === 'accepted' || p.status === 'you').length;
+  const allAccepted = g.participants.every(p => p.status === 'accepted' || p.status === 'you');
+  const perPerson = (g.price / total).toFixed(2);
+  const collected = (perPerson * acceptedCount).toFixed(2);
+  const pctFill = Math.round((acceptedCount / total) * 100);
+
+  const partsHTML = g.participants.map(p => {
+    let statusHTML = '';
+    if (p.status === 'you') statusHTML = '<span class="gg-part-status you">Initiatief</span>';
+    else if (p.status === 'accepted') statusHTML = '<span class="gg-part-status accepted">Geaccepteerd ✓</span>';
+    else if (p.status === 'declined') statusHTML = '<span class="gg-part-status declined">Afgewezen</span>';
+    else statusHTML = `<button class="gg-remind-btn" onclick="remindParticipant('${p.id}', '${p.name}')">Stuur herinnering</button>`;
+    return `<div class="gg-part">
+      <div class="gg-part-av" style="background:${p.color}">${p.initial}</div>
+      <span class="gg-part-name">${p.name}</span>
+      ${statusHTML}
+    </div>`;
+  }).join('');
+
+  const payAreaHTML = g.paid
+    ? '<div class="gg-pay-area"><p class="gg-wait-msg" style="color:var(--success-dark); font-weight:600;">✓ Je hebt je deel betaald (€' + perPerson + ')</p></div>'
+    : '<div class="gg-pay-area">'
+      + (allAccepted
+        ? `<button class="gg-pay-btn" onclick="startGroupPayment()">Voltooi je betaling — €${perPerson}</button>`
+        : `<button class="gg-pay-btn" disabled>Wacht op antwoord…</button><p class="gg-wait-msg">Zodra iedereen heeft geaccepteerd kun je je deel (€${perPerson}) betalen.</p>`)
+      + '</div>';
+
+  list.innerHTML = `
+    <div class="gg-card">
+      <div class="gg-card-head">
+        <div class="gg-card-emoji">${g.emoji}</div>
+        <div class="gg-card-info">
+          <div class="gg-card-name">${g.name}</div>
+          <div class="gg-card-for">Voor ${g.forName} · totaal €${g.price}</div>
+        </div>
+      </div>
+      <div class="gg-progress"><div class="gg-progress-fill" style="width:${pctFill}%"></div></div>
+      <div class="gg-progress-text"><span><strong>${acceptedCount}/${total}</strong> akkoord</span><span><strong>€${collected}</strong> verzameld</span></div>
+      <div class="gg-parts">${partsHTML}</div>
+      ${payAreaHTML}
+    </div>`;
+}
+
+function remindParticipant(id, name) {
+  showToast('Herinnering verstuurd naar ' + name);
+  setTimeout(() => {
+    const p = groupGiftData.participants.find(x => x.id === id);
+    if (p) p.status = 'accepted';
+    showToast(name + ' heeft geaccepteerd ✓');
+    renderGroupGifts();
+    renderArrows('profile-groupgifts');
+  }, 1600);
+}
+
+function startGroupPayment() {
+  paymentContext = 'group';
+  goTo('payment');
+}
+
+function paymentBack() {
+  if (paymentContext === 'group') goTo('profile-groupgifts', false);
+  else goTo('gift', false);
+}
+
+// ===== Face ID inschakelen =====
+function faceIdEnable() {
+  showToast('Face ID ingeschakeld ✓');
+  setTimeout(() => goTo('account-done'), 700);
+}
+
+// ===== Na aankoop: routeer afhankelijk van context =====
+function afterPurchase() {
+  triggerFb('m3', () => {
+    if (paymentContext === 'group') {
+      showToast('Je deel is betaald ✓');
+      setTimeout(() => goTo('profile-groupgifts', false), 200);
+    } else {
+      enterMainApp('Cadeau onderweg — welkom op Cadeau!');
+    }
+  });
+}
+
+// ===== Vrienden uitnodigen (demo: opent geen echte WhatsApp, navigeert auto terug) =====
+function inviteFriendsWhatsapp() {
+  showToast('In productie open je nu WhatsApp met de uitnodiging.');
+  setTimeout(() => switchTab('profiel'), 1600);
+}
+function inviteGroupMembersWhatsapp() {
+  showToast('In productie open je nu WhatsApp om groepsleden uit te nodigen.');
+  setTimeout(() => switchTab('profiel'), 1600);
+}
+
+// ===== Profiel: bedankt-banner zichtbaarheid =====
+function updateProfileThanks() {
+  const banner = document.getElementById('profile-thanks');
+  if (!banner) return;
+  const all = profileSubVisits.has('profile-groupgifts') && profileSubVisits.has('profile-friends') && profileSubVisits.has('profile-groups');
+  banner.classList.toggle('show', all);
+}
+
+// Welkom-modal sluiten + demo starten
+function startDemo() {
+  document.getElementById('welcome-overlay').classList.add('closed');
+  document.body.style.overflow = '';
+  // Render arrows pas na sluiten zodat ze niet onder de modal verdwijnen
+  setTimeout(() => renderArrows('wa-inbox'), 200);
+}
+
+// Init
+updateTip('wa-inbox');
+// Welkom-modal blokkeert scrollen tot start
+document.body.style.overflow = 'hidden';
+</script>
+</body>
+</html>
